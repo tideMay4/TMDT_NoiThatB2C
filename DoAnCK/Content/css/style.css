@@ -1,0 +1,434 @@
+﻿.hero {
+    background: #f8f6f1;
+}
+
+/*=========================
+HEADER
+=========================*/
+
+.navbar {
+    height: 85px;
+    background: #fff !important;
+}
+
+.logo {
+    font-size: 28px;
+    font-weight: 700;
+    letter-spacing: 2px;
+}
+
+.nav-link {
+    margin: 0 16px;
+    font-weight: 500;
+}
+
+.header-icons {
+    display: flex;
+    gap: 25px;
+    align-items: center;
+}
+
+    .header-icons a {
+        color: #222;
+        font-size: 18px;
+        text-decoration: none;
+    }
+
+.cart {
+    position: relative;
+}
+
+.cart-count {
+    position: absolute;
+    top: -8px;
+    right: -10px;
+    width: 18px;
+    height: 18px;
+    background: #222;
+    color: #fff;
+    border-radius: 50%;
+    font-size: 11px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/*=========================
+BANNER
+=========================*/
+
+.banner {
+    padding: 70px 0 90px;
+}
+
+.sub-title {
+    color: #666;
+    font-size: 15px;
+    display: block;
+    margin-bottom: 15px;
+}
+
+.banner h1 {
+    font-size: 68px;
+    font-weight: 700;
+    line-height: 1.05;
+    margin-bottom: 25px;
+}
+
+.banner p {
+    color: #666;
+    font-size: 17px;
+    line-height: 30px;
+    margin-bottom: 35px;
+}
+
+.btn-shop {
+    display: inline-flex;
+    align-items: center;
+    padding: 15px 30px;
+    background: #2b221e;
+    color: white;
+    text-decoration: none;
+    border-radius: 10px;
+    transition: .3s;
+}
+
+    .btn-shop:hover {
+        background: #8f6d4f;
+        color: white;
+    }
+
+.banner-image {
+    overflow: hidden;
+    border-radius: 30px;
+    box-shadow: 0 20px 50px rgba(0,0,0,.15);
+    border: 8px solid #fff;
+}
+
+    .banner-image img {
+        width: 100%;
+        height: 560px;
+        object-fit: cover;
+        transition: .5s;
+    }
+
+    .banner-image:hover img {
+        transform: scale(1.05);
+    }
+
+/*=========================
+SERVICES
+=========================*/
+
+.services {
+    background: #fff;
+    padding: 40px 0;
+}
+
+    .services i {
+        font-size: 28px;
+        margin-bottom: 15px;
+    }
+
+    .services p {
+        color: #777;
+        font-size: 14px;
+    }
+
+/*=========================
+CATEGORY
+=========================*/
+
+.category {
+    padding: 80px 0;
+}
+
+.section-title {
+    text-align: center;
+    margin-bottom: 45px;
+    font-weight: 600;
+}
+
+.cat-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,.08);
+    transition: .35s;
+    text-align: center;
+}
+
+    .cat-card img {
+        width: 100%;
+        height: 180px;
+        object-fit: cover;
+    }
+
+    .cat-card h6 {
+        padding: 18px;
+    }
+
+    .cat-card:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 18px 40px rgba(0,0,0,.15);
+    }
+
+        .cat-card:hover img {
+            transform: scale(1.08);
+        }
+
+/*=========================
+SALE BANNER
+=========================*/
+
+.sale-section {
+    padding: 30px 0 80px;
+}
+
+.sale-banner {
+    display: block;
+    width: 100%;
+    overflow: hidden;
+    border-radius: 32px;
+    box-shadow: 0 15px 40px rgba(0,0,0,.12);
+}
+
+    .sale-banner img {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 32px;
+        transition: .5s;
+    }
+
+    .sale-banner:hover img {
+        transform: scale(1.02);
+    }
+
+/*=========================
+PRODUCT
+=========================*/
+
+.products {
+    padding-bottom: 90px;
+}
+
+.product-card {
+    background: #fff;
+    border-radius: 18px;
+    overflow: hidden;
+    transition: .35s;
+    box-shadow: 0 6px 20px rgba(0,0,0,.08);
+}
+
+    .product-card img {
+        width: 100%;
+        height: 220px;
+        object-fit: cover;
+        transition: .4s;
+    }
+
+.product-info {
+    padding: 18px;
+}
+
+    .product-info h6 {
+        font-weight: 600;
+        margin-bottom: 10px;
+    }
+
+    .product-info span {
+        font-size: 18px;
+        font-weight: 700;
+    }
+
+.product-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 20px 40px rgba(0,0,0,.15);
+}
+
+    .product-card:hover img {
+        transform: scale(1.08);
+    }
+
+/*=========================
+FOOTER
+=========================*/
+
+.footer {
+    background: #1f1f1f;
+    color: #fff;
+    padding: 70px 0 20px;
+}
+
+.footer-logo {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 20px;
+    letter-spacing: 2px;
+}
+
+.footer-text {
+    color: #bdbdbd;
+    line-height: 28px;
+    margin-bottom: 25px;
+}
+
+.footer h5 {
+    margin-bottom: 25px;
+    font-weight: 600;
+}
+
+.footer ul {
+    padding: 0;
+    list-style: none;
+}
+
+    .footer ul li {
+        margin-bottom: 14px;
+        color: #bbb;
+    }
+
+        .footer ul li a {
+            text-decoration: none;
+            color: #bbb;
+            transition: .3s;
+        }
+
+            .footer ul li a:hover {
+                color: #d9b899;
+                padding-left: 5px;
+            }
+
+        .footer ul li i {
+            width: 20px;
+            color: #d9b899;
+        }
+
+.social-icons {
+    display: flex;
+    gap: 15px;
+}
+
+    .social-icons a {
+        width: 42px;
+        height: 42px;
+        border-radius: 50%;
+        background: #2d2d2d;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        color: white;
+        text-decoration: none;
+        transition: .3s;
+    }
+
+        .social-icons a:hover {
+            background: #d9b899;
+            color: #1f1f1f;
+            transform: translateY(-4px);
+        }
+
+.footer hr {
+    border-color: #444;
+    margin: 40px 0 20px;
+}
+
+.copyright {
+    text-align: center;
+    color: #999;
+    font-size: 15px;
+}
+
+/*=====================================================
+    NEW ARRIVALS - PRODUCT CARD DỌC GIỐNG DANH MỤC
+=====================================================*/
+
+/*.arrival-section {
+    max-width: 1200px;
+    margin: 80px auto;
+    text-align: center;
+    padding: 0 20px;
+}
+
+    .arrival-section h2 {
+        font-size: 28px;
+        font-weight: 800;
+        margin-bottom: 35px;
+        letter-spacing: 1px;
+        color: #111;
+    }
+
+.arrival-grid {
+    display: flex;
+    justify-content: center;
+    align-items: stretch;
+    gap: 22px;
+    flex-wrap: wrap;
+}
+
+.arrival-card {
+    width: 180px;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 12px 30px rgba(0,0,0,.08);
+    transition: .3s;
+    text-align: center;
+}
+
+    .arrival-card:hover {
+        transform: translateY(-6px);
+        box-shadow: 0 18px 40px rgba(0,0,0,.12);
+    }
+
+.arrival-img {
+    width: 100%;
+    height: 150px;
+    background: #f6f3ee;
+    overflow: hidden;
+}
+
+    .arrival-img img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        display: block;
+    }
+
+.arrival-info {
+    padding: 14px 12px 18px;
+}
+
+    .arrival-info h5 {
+        font-size: 15px;
+        font-weight: 700;
+        color: #111;
+        margin-bottom: 8px;
+        line-height: 21px;
+    }
+
+    .arrival-info p {
+        font-size: 15px;
+        font-weight: 800;
+        color: #8b6040;
+        margin: 0;
+    }*/
+
+/* Responsive */
+
+/*@media (max-width: 992px) {
+    .arrival-card {
+        width: 170px;
+    }
+}
+
+@media (max-width: 768px) {
+    .arrival-card {
+        width: 45%;
+    }
+
+    .arrival-img {
+        height: 140px;
+    }
+}*/

@@ -1,0 +1,1818 @@
+﻿@using System
+@using System.Collections.Generic
+@using System.Globalization
+@using System.Linq
+@using DoAnCK.Areas.Admin.Models
+
+@model IEnumerable<DoAnCK.Areas.Admin.Models.ProductViewModel>
+
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+
+    var products = Model != null ? Model.ToList() : new List<ProductViewModel>();
+
+    var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
+
+    var priceHistories = ViewBag.PriceHistories as List<ProductPriceViewModel> ?? new List<ProductPriceViewModel>();
+
+    var firstProduct = products.FirstOrDefault();
+
+    var today = DateTime.Now.ToString("yyyy-MM-dd");
+}
+
+<div class="page-title fade-up">
+
+    <div>
+        <h2>Quản lý sản phẩm</h2>
+        <p>Quản lý sản phẩm nội thất, giá bán, tồn kho, hình ảnh và thông tin SEO.</p>
+    </div>
+
+    <div>
+        <button class="btn-admin" data-bs-toggle="modal" data-bs-target="#createProductModal">
+            <i class="fa-solid fa-plus"></i>
+            Thêm sản phẩm
+        </button>
+    </div>
+
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+
+<!-- ===================== PRODUCT SUMMARY ===================== -->
+
+<div class="dashboard fade-up">
+
+    <div class="stat-card">
+
+        <div class="stat-top">
+
+            <div>
+                <div class="stat-title">Tổng sản phẩm</div>
+                <div class="stat-value">@ViewBag.TotalProducts</div>
+                <div class="stat-footer">
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    Tổng sản phẩm trong hệ thống
+                </div>
+            </div>
+
+            <div class="stat-icon bg-green">
+                <i class="fa-solid fa-couch"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-top">
+
+            <div>
+                <div class="stat-title">Đang hiển thị</div>
+                <div class="stat-value">@ViewBag.VisibleProducts</div>
+                <div class="stat-footer">
+                    <i class="fa-solid fa-check"></i>
+                    Sẵn sàng bán
+                </div>
+            </div>
+
+            <div class="stat-icon bg-blue">
+                <i class="fa-solid fa-eye"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-top">
+
+            <div>
+                <div class="stat-title">Sắp hết hàng</div>
+                <div class="stat-value">@ViewBag.LowStockProducts</div>
+                <div class="stat-footer down">
+                    <i class="fa-solid fa-triangle-exclamation"></i>
+                    Cần nhập thêm
+                </div>
+            </div>
+
+            <div class="stat-icon bg-orange">
+                <i class="fa-solid fa-box-open"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="stat-card">
+
+        <div class="stat-top">
+
+            <div>
+                <div class="stat-title">Đang ẩn</div>
+                <div class="stat-value">@ViewBag.HiddenProducts</div>
+                <div class="stat-footer down">
+                    <i class="fa-solid fa-eye-slash"></i>
+                    Không hiển thị
+                </div>
+            </div>
+
+            <div class="stat-icon bg-pink">
+                <i class="fa-solid fa-ban"></i>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================== PRODUCT TABLE ===================== -->
+
+<div class="table-box fade-up">
+
+    <div class="card-header">
+
+        <div>
+            <div class="card-title">Danh sách sản phẩm</div>
+            <small class="text-muted">Tất cả sản phẩm nội thất đang có trong hệ thống</small>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <button type="button" class="btn-outline-admin">
+                <i class="fa-solid fa-download"></i>
+                Xuất Excel
+            </button>
+
+            <button type="button" class="btn-outline-admin">
+                <i class="fa-solid fa-filter"></i>
+                Bộ lọc
+            </button>
+
+        </div>
+
+    </div>
+
+
+    <div class="filter-bar">
+
+        <div class="filter-left">
+
+            <input type="text"
+                   class="form-control"
+                   placeholder="Tìm kiếm sản phẩm..."
+                   style="width:300px;" />
+
+            <select class="form-select" style="width:180px;">
+
+                <option>Tất cả danh mục</option>
+
+                @foreach (var cate in categories)
+                {
+                    <option value="@cate.MaDM">@cate.TenDM</option>
+                }
+
+            </select>
+
+            <select class="form-select" style="width:180px;">
+                <option>Tất cả trạng thái</option>
+                <option>Đang hiển thị</option>
+                <option>Đang ẩn</option>
+                <option>Hết hàng</option>
+            </select>
+
+        </div>
+
+        <div class="filter-right">
+
+            <select class="form-select" style="width:170px;">
+                <option>Mới nhất</option>
+                <option>Giá tăng dần</option>
+                <option>Giá giảm dần</option>
+                <option>Tồn kho thấp</option>
+            </select>
+
+        </div>
+
+    </div>
+
+
+    <div class="table-responsive">
+
+        <table class="table product-table">
+
+            <thead>
+
+                <tr>
+                    <th style="width:70px;">Mã</th>
+                    <th>Sản phẩm</th>
+                    <th>Danh mục</th>
+                    <th>Giá bán</th>
+                    <th>Tồn kho</th>
+                    <th>Slug SEO</th>
+                    <th>Nổi bật</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @if (products.Any())
+                {
+                    foreach (var item in products)
+                    {
+                        <tr>
+
+                            <td>
+                                #@item.MaSP
+                            </td>
+
+                            <td>
+                                <div class="product-info">
+
+                                    <img src="@Url.Content(item.HinhAnh)" />
+
+                                    <div>
+                                        <h6>@item.TenSP</h6>
+                                        <span>Ngày tạo: @item.NgayTao.ToString("dd/MM/yyyy")</span>
+                                    </div>
+
+                                </div>
+                            </td>
+
+                            <td>
+                                <span class="category-pill">
+                                    @item.DanhMuc
+                                </span>
+                            </td>
+
+                            <td>
+                                <div class="price-box">
+
+                                    <strong>@item.Gia.ToString("N0")đ</strong>
+
+                                    @if (item.GiaCu.HasValue)
+                                    {
+                                        <span>@item.GiaCu.Value.ToString("N0")đ</span>
+                                    }
+
+                                </div>
+                            </td>
+
+                            <td>
+                                @if (item.TonKho > 10)
+                                {
+                                    <span class="stock stock-good">
+                                        @item.TonKho còn
+                                    </span>
+                                }
+                                else if (item.TonKho > 0)
+                                {
+                                    <span class="stock stock-low">
+                                        @item.TonKho còn
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="stock stock-out">
+                                        Hết hàng
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                <span class="slug-text">
+                                    /@item.Slug
+                                </span>
+                            </td>
+
+                            <td>
+                                @if (item.NoiBat)
+                                {
+                                    <span class="badge-warning">
+                                        Nổi bật
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-soft">
+                                        Thường
+                                    </span>
+                                }
+                            </td>
+
+                            <td>
+                                @if (item.TrangThai)
+                                {
+                                    <span class="badge-success">
+                                        Đang hiển thị
+                                    </span>
+                                }
+                                else
+                                {
+                                    <span class="badge-danger">
+                                        Đang ẩn
+                                    </span>
+                                }
+                            </td>
+
+                            <td class="text-end">
+
+                                <button type="button"
+                                        class="btn btn-light btn-sm action-btn"
+                                        title="Xem chi tiết">
+
+                                    <i class="fa-solid fa-eye"></i>
+
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-light btn-sm action-btn"
+                                        title="Sửa sản phẩm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#editProductModal_@item.MaSP">
+
+                                    <i class="fa-solid fa-pen"></i>
+
+                                </button>
+
+                                <button type="button"
+                                        class="btn btn-light btn-sm action-btn text-danger"
+                                        title="Xóa sản phẩm"
+                                        data-bs-toggle="modal"
+                                        data-bs-target="#deleteProductModal_@item.MaSP">
+
+                                    <i class="fa-solid fa-trash"></i>
+
+                                </button>
+
+                            </td>
+
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">
+                            Chưa có sản phẩm nào.
+                        </td>
+                    </tr>
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+
+    <nav>
+
+        <ul class="pagination">
+
+            <li class="page-item active">
+                <a class="page-link" href="#">1</a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" href="#">2</a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" href="#">3</a>
+            </li>
+
+            <li class="page-item">
+                <a class="page-link" href="#">
+                    <i class="fa-solid fa-angle-right"></i>
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+</div>
+
+
+<!-- ===================== MODAL SỬA / XÓA SẢN PHẨM ===================== -->
+
+@foreach (var item in products)
+{
+    <div class="modal fade" id="editProductModal_@item.MaSP" tabindex="-1">
+
+        <div class="modal-dialog modal-xl modal-dialog-centered">
+
+            <div class="modal-content admin-modal">
+
+                @using (Html.BeginForm("Edit", "Product", FormMethod.Post, new { area = "Admin", enctype = "multipart/form-data" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="MaSP" value="@item.MaSP" />
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h5 class="modal-title">Sửa sản phẩm</h5>
+                            <small class="text-muted">Cập nhật thông tin sản phẩm nội thất</small>
+                        </div>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"></button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Tên sản phẩm</label>
+
+                                <input type="text"
+                                       name="TenSP"
+                                       class="form-control"
+                                       value="@item.TenSP"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Danh mục</label>
+
+                                <select name="MaDM" class="form-select" required>
+
+                                    @foreach (var cate in categories)
+                                    {
+                                        if (cate.MaDM == item.MaDM)
+                                        {
+                                            <option value="@cate.MaDM" selected="selected">@cate.TenDM</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@cate.MaDM">@cate.TenDM</option>
+                                        }
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">Giá bán</label>
+
+                                <input type="number"
+                                       name="GiaHienTai"
+                                       class="form-control"
+                                       value="@item.Gia.ToString("0", CultureInfo.InvariantCulture)"
+                                       min="0"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">Tồn kho</label>
+
+                                <input type="number"
+                                       name="SoLuongTon"
+                                       class="form-control"
+                                       value="@item.TonKho"
+                                       min="0"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-4">
+
+                                <label class="form-label">VAT (%)</label>
+
+                                <input type="number"
+                                       name="VAT"
+                                       class="form-control"
+                                       value="@item.VAT.ToString("0.##", CultureInfo.InvariantCulture)"
+                                       min="0" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Thương hiệu</label>
+
+                                <input type="text"
+                                       name="ThuongHieu"
+                                       class="form-control"
+                                       value="@item.ThuongHieu" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Bảo hành</label>
+
+                                <input type="text"
+                                       name="BaoHanh"
+                                       class="form-control"
+                                       value="@item.BaoHanh" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Slug SEO</label>
+
+                                <input type="text"
+                                       name="Slug"
+                                       class="form-control"
+                                       value="@item.Slug" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Đổi hình ảnh</label>
+
+                                <input type="file"
+                                       name="HinhAnhFile"
+                                       class="form-control"
+                                       accept="image/*" />
+
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <label class="form-label">Mô tả sản phẩm</label>
+
+                                <textarea name="MoTa"
+                                          class="form-control"
+                                          rows="4">@item.MoTa</textarea>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Meta Title</label>
+
+                                <input type="text"
+                                       name="MetaTitle"
+                                       class="form-control"
+                                       value="@item.MetaTitle" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Meta Keyword</label>
+
+                                <input type="text"
+                                       name="MetaKeyword"
+                                       class="form-control"
+                                       value="@item.MetaKeyword" />
+
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <label class="form-label">Meta Description</label>
+
+                                <textarea name="MetaDescription"
+                                          class="form-control"
+                                          rows="3">@item.MetaDescription</textarea>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Trạng thái hiển thị</label>
+
+                                <select name="TrangThai" class="form-select">
+
+                                    @if (item.TrangThai)
+                                    {
+                                        <option value="true" selected="selected">Đang hiển thị</option>
+                                        <option value="false">Đang ẩn</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="true">Đang hiển thị</option>
+                                        <option value="false" selected="selected">Đang ẩn</option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Sản phẩm nổi bật</label>
+
+                                <select name="NoiBat" class="form-select">
+
+                                    @if (item.NoiBat)
+                                    {
+                                        <option value="true" selected="selected">Có</option>
+                                        <option value="false">Không</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="true">Có</option>
+                                        <option value="false" selected="selected">Không</option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn-outline-admin"
+                                data-bs-dismiss="modal">
+
+                            Hủy
+
+                        </button>
+
+                        <button type="submit"
+                                class="btn-admin">
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Lưu thay đổi
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal fade" id="deleteProductModal_@item.MaSP" tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content admin-modal">
+
+                @using (Html.BeginForm("Delete", "Product", FormMethod.Post, new { area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="MaSP" value="@item.MaSP" />
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h5 class="modal-title">Xóa sản phẩm</h5>
+                            <small class="text-muted">Xác nhận xóa sản phẩm khỏi hệ thống</small>
+                        </div>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"></button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <p>
+                            Bạn có chắc chắn muốn xóa sản phẩm
+                            <strong>@item.TenSP</strong>
+                            không?
+                        </p>
+
+                        <p class="text-muted mb-0">
+                            Nếu sản phẩm đã phát sinh đơn hàng, giỏ hàng hoặc đánh giá, hệ thống sẽ không cho xóa để tránh lỗi dữ liệu.
+                        </p>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn-outline-admin"
+                                data-bs-dismiss="modal">
+
+                            Hủy
+
+                        </button>
+
+                        <button type="submit"
+                                class="btn-admin">
+
+                            <i class="fa-solid fa-trash"></i>
+                            Xác nhận xóa
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+<!-- ===================== PRICE MANAGEMENT SECTION ===================== -->
+
+<div class="table-box fade-up mt-4">
+
+    <div class="card-header">
+
+        <div>
+            <div class="card-title">Quản lý giá sản phẩm</div>
+            <small class="text-muted">
+                Cập nhật giá bán, thiết lập ngày áp dụng và theo dõi lịch sử thay đổi giá.
+            </small>
+        </div>
+
+        <div class="d-flex gap-2">
+
+            <button type="button" class="btn-outline-admin">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                Lịch sử giá
+            </button>
+
+        </div>
+
+    </div>
+
+
+    @using (Html.BeginForm("UpdatePrice", "Product", FormMethod.Post, new { area = "Admin" }))
+    {
+        @Html.AntiForgeryToken()
+
+        <div class="price-management-box">
+
+            <div class="price-filter-row">
+
+                <div class="price-field large">
+
+                    <label>Tìm sản phẩm</label>
+
+                    <div class="price-search-box">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        <input type="text"
+                               id="priceProductSearch"
+                               placeholder="Nhập tên sản phẩm cần chỉnh giá..." />
+                    </div>
+
+                </div>
+
+                <div class="price-field">
+
+                    <label>Chọn sản phẩm</label>
+
+                    <select name="MaSP" id="priceProductSelect" class="form-select" required>
+
+                        @foreach (var item in products)
+                        {
+                            <option value="@item.MaSP"
+                                    data-price="@item.Gia.ToString("0", CultureInfo.InvariantCulture)"
+                                    data-name="@item.TenSP">
+                                @item.TenSP
+                            </option>
+                        }
+
+                    </select>
+
+                </div>
+
+                <div class="price-field small">
+
+                    <label>Loại cập nhật</label>
+
+                    <select id="priceUpdateType" class="form-select">
+                        <option value="increase">Tăng giá</option>
+                        <option value="decrease">Giảm giá</option>
+                        <option value="discount">Giá khuyến mãi</option>
+                        <option value="restore">Khôi phục giá gốc</option>
+                    </select>
+
+                </div>
+
+            </div>
+
+
+            <div class="price-edit-row">
+
+                <div class="price-card-mini">
+
+                    <span>Giá hiện tại</span>
+
+                    @if (firstProduct != null)
+                    {
+                        <h4 id="currentPriceText">@firstProduct.Gia.ToString("N0")đ</h4>
+                        <p id="currentProductText">@firstProduct.TenSP</p>
+                    }
+                    else
+                    {
+                        <h4 id="currentPriceText">0đ</h4>
+                        <p id="currentProductText">Chưa có sản phẩm</p>
+                    }
+
+                </div>
+
+
+                <div class="price-card-mini">
+
+                    <span>Tỷ lệ điều chỉnh</span>
+
+                    <div class="percent-control">
+
+                        <button type="button" id="btnMinusPercent">
+                            <i class="fa-solid fa-minus"></i>
+                        </button>
+
+                        <input type="number"
+                               id="percentInput"
+                               value="10"
+                               min="0" />
+
+                        <span>%</span>
+
+                        <button type="button" id="btnPlusPercent">
+                            <i class="fa-solid fa-plus"></i>
+                        </button>
+
+                    </div>
+
+                    <p>Có thể tăng hoặc giảm theo phần trăm</p>
+
+                </div>
+
+
+                <div class="price-card-mini highlight">
+
+                    <span>Giá mới</span>
+
+                    <h4 id="newPricePreview">
+                        @if (firstProduct != null)
+                        {
+                            @((firstProduct.Gia * 110 / 100).ToString("N0"))<text>đ</text>
+                        }
+                        else
+                        {
+                            <text>0đ</text>
+                        }
+                    </h4>
+
+                    <p>Dự kiến sau khi cập nhật</p>
+
+                </div>
+
+            </div>
+
+
+            <div class="row g-4 mt-1">
+
+                <div class="col-md-3">
+
+                    <label class="form-label">Giá mới</label>
+
+                    <input type="number"
+                           name="GiaMoi"
+                           id="giaMoiInput"
+                           class="form-control"
+                           placeholder="13750000"
+                           min="1"
+                           required />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label">Ngày bắt đầu áp dụng</label>
+
+                    <input type="date"
+                           name="NgayBatDau"
+                           class="form-control"
+                           value="@today"
+                           required />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label">Ngày kết thúc</label>
+
+                    <input type="date"
+                           name="NgayKetThuc"
+                           class="form-control" />
+
+                </div>
+
+                <div class="col-md-3">
+
+                    <label class="form-label">Trạng thái</label>
+
+                    <select name="TrangThai" class="form-select">
+
+                        <option value="Đang áp dụng">Đang áp dụng</option>
+
+                        <option value="Chờ áp dụng">Chờ áp dụng</option>
+
+                        <option value="Ngừng áp dụng">Ngừng áp dụng</option>
+
+                    </select>
+
+                </div>
+
+                <div class="col-md-12">
+
+                    <label class="form-label">Lý do thay đổi giá</label>
+
+                    <textarea name="LyDoThayDoi"
+                              class="form-control"
+                              rows="3"
+                              placeholder="Ví dụ: Điều chỉnh theo chương trình khuyến mãi tháng 7, cập nhật giá nhập mới..."></textarea>
+
+                </div>
+
+                <div class="col-md-12 d-flex justify-content-end">
+
+                    <button type="submit" class="btn-admin">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Lưu thay đổi
+
+                    </button>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+
+
+    <!-- BẢNG LỊCH SỬ GIÁ -->
+
+    <div class="price-history-section">
+
+        <div class="price-history-title">
+
+            <div>
+                <h5>Lịch sử điều chỉnh giá</h5>
+                <p>Theo dõi các lần thay đổi giá của sản phẩm</p>
+            </div>
+
+            <div>
+                <select class="form-select" style="width:170px;">
+                    <option>Mới nhất</option>
+                    <option>Cũ nhất</option>
+                    <option>Đang áp dụng</option>
+                    <option>Ngừng áp dụng</option>
+                </select>
+            </div>
+
+        </div>
+
+
+        <div class="table-responsive">
+
+            <table class="table price-table">
+
+                <thead>
+
+                    <tr>
+                        <th>Mã giá</th>
+                        <th>Sản phẩm</th>
+                        <th>Giá cũ</th>
+                        <th>Giá mới</th>
+                        <th>Ngày bắt đầu</th>
+                        <th>Ngày kết thúc</th>
+                        <th>Lý do</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+
+                </thead>
+
+                <tbody>
+
+                    @if (priceHistories.Any())
+                    {
+                        foreach (var item in priceHistories)
+                        {
+                            <tr>
+
+                                <td>#G@(item.MaGia)</td>
+
+                                <td>
+                                    <div class="product-info">
+                                        <img src="@Url.Content(item.HinhAnh)" />
+                                        <div>
+                                            <h6>@item.TenSP</h6>
+                                            <span>/@item.Slug</span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <span class="old-price">@item.GiaCu.ToString("N0")đ</span>
+                                </td>
+
+                                <td>
+                                    <strong class="new-price">@item.GiaMoi.ToString("N0")đ</strong>
+                                </td>
+
+                                <td>@item.NgayBatDau.ToString("dd/MM/yyyy")</td>
+
+                                <td>
+                                    @(item.NgayKetThuc.HasValue ? item.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "Không giới hạn")
+                                </td>
+
+                                <td>@item.LyDoThayDoi</td>
+
+                                <td>
+                                    @if (item.TrangThai == "Đang áp dụng")
+                                    {
+                                        <span class="badge-success">Đang áp dụng</span>
+                                    }
+                                    else if (item.TrangThai == "Chờ áp dụng")
+                                    {
+                                        <span class="badge-warning">Chờ áp dụng</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-danger">Ngừng áp dụng</span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+
+                                    <button type="button"
+                                            class="btn btn-light btn-sm action-btn"
+                                            title="Xem chi tiết">
+
+                                        <i class="fa-solid fa-eye"></i>
+
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-light btn-sm action-btn"
+                                            title="Sửa lịch sử giá"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#editPriceModal_@item.MaGia">
+
+                                        <i class="fa-solid fa-pen"></i>
+
+                                    </button>
+
+                                    <button type="button"
+                                            class="btn btn-light btn-sm action-btn text-danger"
+                                            title="Xóa lịch sử giá"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#deletePriceModal_@item.MaGia">
+
+                                        <i class="fa-solid fa-trash"></i>
+
+                                    </button>
+
+                                </td>
+
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">
+                                Chưa có lịch sử thay đổi giá.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================== MODAL SỬA / XÓA LỊCH SỬ GIÁ ===================== -->
+
+@foreach (var item in priceHistories)
+{
+    <div class="modal fade" id="editPriceModal_@item.MaGia" tabindex="-1">
+
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+
+            <div class="modal-content admin-modal">
+
+                @using (Html.BeginForm("EditPrice", "Product", FormMethod.Post, new { area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="MaGia" value="@item.MaGia" />
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h5 class="modal-title">Sửa lịch sử giá</h5>
+                            <small class="text-muted">Cập nhật thông tin thay đổi giá sản phẩm</small>
+                        </div>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"></button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="row g-4">
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Sản phẩm</label>
+
+                                <select name="MaSP" class="form-select" required>
+
+                                    @foreach (var sp in products)
+                                    {
+                                        if (sp.MaSP == item.MaSP)
+                                        {
+                                            <option value="@sp.MaSP" selected="selected">@sp.TenSP</option>
+                                        }
+                                        else
+                                        {
+                                            <option value="@sp.MaSP">@sp.TenSP</option>
+                                        }
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Giá mới</label>
+
+                                <input type="number"
+                                       name="GiaMoi"
+                                       class="form-control"
+                                       value="@item.GiaMoi.ToString("0", CultureInfo.InvariantCulture)"
+                                       min="1"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Ngày bắt đầu</label>
+
+                                <input type="date"
+                                       name="NgayBatDau"
+                                       class="form-control"
+                                       value="@item.NgayBatDau.ToString("yyyy-MM-dd")"
+                                       required />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Ngày kết thúc</label>
+
+                                <input type="date"
+                                       name="NgayKetThuc"
+                                       class="form-control"
+                                       value="@(item.NgayKetThuc.HasValue ? item.NgayKetThuc.Value.ToString("yyyy-MM-dd") : "")" />
+
+                            </div>
+
+                            <div class="col-md-6">
+
+                                <label class="form-label">Trạng thái</label>
+
+                                <select name="TrangThai" class="form-select">
+
+                                    @if (item.TrangThai == "Đang áp dụng")
+                                    {
+                                        <option value="Đang áp dụng" selected="selected">Đang áp dụng</option>
+                                        <option value="Chờ áp dụng">Chờ áp dụng</option>
+                                        <option value="Ngừng áp dụng">Ngừng áp dụng</option>
+                                    }
+                                    else if (item.TrangThai == "Chờ áp dụng")
+                                    {
+                                        <option value="Đang áp dụng">Đang áp dụng</option>
+                                        <option value="Chờ áp dụng" selected="selected">Chờ áp dụng</option>
+                                        <option value="Ngừng áp dụng">Ngừng áp dụng</option>
+                                    }
+                                    else
+                                    {
+                                        <option value="Đang áp dụng">Đang áp dụng</option>
+                                        <option value="Chờ áp dụng">Chờ áp dụng</option>
+                                        <option value="Ngừng áp dụng" selected="selected">Ngừng áp dụng</option>
+                                    }
+
+                                </select>
+
+                            </div>
+
+                            <div class="col-md-12">
+
+                                <label class="form-label">Lý do thay đổi giá</label>
+
+                                <textarea name="LyDoThayDoi"
+                                          class="form-control"
+                                          rows="3">@item.LyDoThayDoi</textarea>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn-outline-admin"
+                                data-bs-dismiss="modal">
+
+                            Hủy
+
+                        </button>
+
+                        <button type="submit"
+                                class="btn-admin">
+
+                            <i class="fa-solid fa-floppy-disk"></i>
+                            Lưu thay đổi
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="modal fade" id="deletePriceModal_@item.MaGia" tabindex="-1">
+
+        <div class="modal-dialog modal-dialog-centered">
+
+            <div class="modal-content admin-modal">
+
+                @using (Html.BeginForm("DeletePrice", "Product", FormMethod.Post, new { area = "Admin" }))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="MaGia" value="@item.MaGia" />
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h5 class="modal-title">Xóa lịch sử giá</h5>
+                            <small class="text-muted">Xác nhận xóa lần điều chỉnh giá</small>
+                        </div>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"></button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <p>
+                            Bạn có chắc chắn muốn xóa lịch sử giá của sản phẩm
+                            <strong>@item.TenSP</strong>
+                            không?
+                        </p>
+
+                        <p class="text-muted mb-0">
+                            Nếu lịch sử giá này đang áp dụng, giá sản phẩm sẽ được đưa về giá cũ.
+                        </p>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <button type="button"
+                                class="btn-outline-admin"
+                                data-bs-dismiss="modal">
+
+                            Hủy
+
+                        </button>
+
+                        <button type="submit"
+                                class="btn-admin">
+
+                            <i class="fa-solid fa-trash"></i>
+                            Xác nhận xóa
+
+                        </button>
+
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+}
+
+
+<!-- ===================== MODAL THÊM SẢN PHẨM ===================== -->
+
+<div class="modal fade" id="createProductModal" tabindex="-1">
+
+    <div class="modal-dialog modal-xl modal-dialog-centered">
+
+        <div class="modal-content admin-modal">
+
+            @using (Html.BeginForm("Create", "Product", FormMethod.Post, new { area = "Admin", enctype = "multipart/form-data" }))
+            {
+                @Html.AntiForgeryToken()
+
+                <div class="modal-header">
+
+                    <div>
+                        <h5 class="modal-title">Thêm sản phẩm mới</h5>
+                        <small class="text-muted">Tạo sản phẩm nội thất mới cho website</small>
+                    </div>
+
+                    <button type="button"
+                            class="btn-close"
+                            data-bs-dismiss="modal"></button>
+
+                </div>
+
+                <div class="modal-body">
+
+                    <div class="row g-4">
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Tên sản phẩm</label>
+
+                            <input type="text"
+                                   name="TenSP"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Sofa hiện đại..."
+                                   required />
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Danh mục</label>
+
+                            <select name="MaDM" class="form-select" required>
+
+                                <option value="">Chọn danh mục</option>
+
+                                @foreach (var cate in categories)
+                                {
+                                    <option value="@cate.MaDM">@cate.TenDM</option>
+                                }
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">Giá bán</label>
+
+                            <input type="number"
+                                   name="GiaHienTai"
+                                   class="form-control"
+                                   placeholder="12500000"
+                                   min="0"
+                                   required />
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">Tồn kho</label>
+
+                            <input type="number"
+                                   name="SoLuongTon"
+                                   class="form-control"
+                                   placeholder="20"
+                                   min="0"
+                                   required />
+
+                        </div>
+
+                        <div class="col-md-4">
+
+                            <label class="form-label">VAT (%)</label>
+
+                            <input type="number"
+                                   name="VAT"
+                                   class="form-control"
+                                   placeholder="10"
+                                   min="0"
+                                   value="0" />
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Thương hiệu</label>
+
+                            <input type="text"
+                                   name="ThuongHieu"
+                                   class="form-control"
+                                   placeholder="Ví dụ: Moderno, Furni..." />
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Bảo hành</label>
+
+                            <input type="text"
+                                   name="BaoHanh"
+                                   class="form-control"
+                                   placeholder="Ví dụ: 12 tháng, 24 tháng..." />
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Slug SEO</label>
+
+                            <input type="text"
+                                   name="Slug"
+                                   class="form-control"
+                                   placeholder="sofa-hien-dai" />
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Hình ảnh</label>
+
+                            <input type="file"
+                                   name="HinhAnhFile"
+                                   class="form-control"
+                                   accept="image/*" />
+
+                        </div>
+
+                        <div class="col-md-12">
+
+                            <label class="form-label">Mô tả sản phẩm</label>
+
+                            <textarea name="MoTa"
+                                      class="form-control"
+                                      rows="4"
+                                      placeholder="Mô tả ngắn về sản phẩm..."></textarea>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Meta Title</label>
+
+                            <input type="text"
+                                   name="MetaTitle"
+                                   class="form-control"
+                                   placeholder="Sofa hiện đại cho phòng khách" />
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Meta Keyword</label>
+
+                            <input type="text"
+                                   name="MetaKeyword"
+                                   class="form-control"
+                                   placeholder="sofa, nội thất phòng khách, sofa hiện đại" />
+
+                        </div>
+
+                        <div class="col-md-12">
+
+                            <label class="form-label">Meta Description</label>
+
+                            <textarea name="MetaDescription"
+                                      class="form-control"
+                                      rows="3"
+                                      placeholder="Mô tả SEO cho sản phẩm..."></textarea>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Trạng thái hiển thị</label>
+
+                            <select name="TrangThai" class="form-select">
+
+                                <option value="true">Đang hiển thị</option>
+
+                                <option value="false">Đang ẩn</option>
+
+                            </select>
+
+                        </div>
+
+                        <div class="col-md-6">
+
+                            <label class="form-label">Sản phẩm nổi bật</label>
+
+                            <select name="NoiBat" class="form-select">
+
+                                <option value="false">Không</option>
+
+                                <option value="true">Có</option>
+
+                            </select>
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <button type="button"
+                            class="btn-outline-admin"
+                            data-bs-dismiss="modal">
+
+                        Hủy
+
+                    </button>
+
+                    <button type="submit"
+                            class="btn-admin">
+
+                        <i class="fa-solid fa-floppy-disk"></i>
+                        Lưu sản phẩm
+
+                    </button>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- ===================== PRICE MANAGEMENT SCRIPT ===================== -->
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        const productSelect = document.getElementById("priceProductSelect");
+        const priceProductSearch = document.getElementById("priceProductSearch");
+        const updateType = document.getElementById("priceUpdateType");
+        const percentInput = document.getElementById("percentInput");
+        const giaMoiInput = document.getElementById("giaMoiInput");
+        const currentPriceText = document.getElementById("currentPriceText");
+        const currentProductText = document.getElementById("currentProductText");
+        const newPricePreview = document.getElementById("newPricePreview");
+
+        const btnMinus = document.getElementById("btnMinusPercent");
+        const btnPlus = document.getElementById("btnPlusPercent");
+
+        let originalOptions = [];
+
+        if (productSelect) {
+            originalOptions = Array.from(productSelect.options).map(function (option) {
+                return {
+                    value: option.value,
+                    text: option.text,
+                    price: option.getAttribute("data-price"),
+                    name: option.getAttribute("data-name")
+                };
+            });
+        }
+
+        function formatMoney(value) {
+            return Number(value).toLocaleString("vi-VN") + "đ";
+        }
+
+        function getCurrentOption() {
+            if (!productSelect || productSelect.selectedIndex < 0) {
+                return null;
+            }
+
+            return productSelect.options[productSelect.selectedIndex];
+        }
+
+        function getCurrentPrice() {
+            const selected = getCurrentOption();
+
+            if (!selected) {
+                return 0;
+            }
+
+            return Number(selected.getAttribute("data-price")) || 0;
+        }
+
+        function getCurrentName() {
+            const selected = getCurrentOption();
+
+            if (!selected) {
+                return "Chưa có sản phẩm";
+            }
+
+            return selected.getAttribute("data-name") || selected.text;
+        }
+
+        function calculateNewPrice() {
+            const currentPrice = getCurrentPrice();
+            const percent = Number(percentInput.value) || 0;
+            const type = updateType ? updateType.value : "increase";
+
+            let newPrice = currentPrice;
+
+            if (type === "increase") {
+                newPrice = currentPrice + (currentPrice * percent / 100);
+            }
+            else if (type === "decrease" || type === "discount") {
+                newPrice = currentPrice - (currentPrice * percent / 100);
+            }
+            else if (type === "restore") {
+                newPrice = currentPrice;
+            }
+
+            if (newPrice < 0) {
+                newPrice = 0;
+            }
+
+            return Math.round(newPrice);
+        }
+
+        function updatePreview() {
+            const currentPrice = getCurrentPrice();
+            const newPrice = calculateNewPrice();
+
+            if (currentPriceText) {
+                currentPriceText.innerText = formatMoney(currentPrice);
+            }
+
+            if (currentProductText) {
+                currentProductText.innerText = getCurrentName();
+            }
+
+            if (newPricePreview) {
+                newPricePreview.innerText = formatMoney(newPrice);
+            }
+
+            if (giaMoiInput) {
+                giaMoiInput.value = newPrice;
+            }
+        }
+
+        function rebuildOptions(keyword) {
+            if (!productSelect) {
+                return;
+            }
+
+            const searchText = keyword.toLowerCase().trim();
+
+            productSelect.innerHTML = "";
+
+            const filteredOptions = originalOptions.filter(function (item) {
+                return item.text.toLowerCase().includes(searchText);
+            });
+
+            filteredOptions.forEach(function (item) {
+                const option = document.createElement("option");
+
+                option.value = item.value;
+                option.text = item.text;
+
+                option.setAttribute("data-price", item.price);
+                option.setAttribute("data-name", item.name);
+
+                productSelect.appendChild(option);
+            });
+
+            if (filteredOptions.length > 0) {
+                productSelect.selectedIndex = 0;
+                updatePreview();
+            }
+            else {
+                if (currentPriceText) {
+                    currentPriceText.innerText = "0đ";
+                }
+
+                if (currentProductText) {
+                    currentProductText.innerText = "Không tìm thấy sản phẩm";
+                }
+
+                if (newPricePreview) {
+                    newPricePreview.innerText = "0đ";
+                }
+
+                if (giaMoiInput) {
+                    giaMoiInput.value = "";
+                }
+            }
+        }
+
+        if (productSelect) {
+            productSelect.addEventListener("change", updatePreview);
+        }
+
+        if (priceProductSearch) {
+            priceProductSearch.addEventListener("input", function () {
+                rebuildOptions(priceProductSearch.value);
+            });
+        }
+
+        if (updateType) {
+            updateType.addEventListener("change", updatePreview);
+        }
+
+        if (percentInput) {
+            percentInput.addEventListener("input", updatePreview);
+        }
+
+        if (giaMoiInput) {
+            giaMoiInput.addEventListener("input", function () {
+                const value = Number(giaMoiInput.value) || 0;
+
+                if (newPricePreview) {
+                    newPricePreview.innerText = formatMoney(value);
+                }
+            });
+        }
+
+        if (btnMinus) {
+            btnMinus.addEventListener("click", function () {
+                let value = Number(percentInput.value) || 0;
+
+                if (value > 0) {
+                    value = value - 1;
+                }
+
+                percentInput.value = value;
+
+                updatePreview();
+            });
+        }
+
+        if (btnPlus) {
+            btnPlus.addEventListener("click", function () {
+                let value = Number(percentInput.value) || 0;
+
+                value = value + 1;
+
+                percentInput.value = value;
+
+                updatePreview();
+            });
+        }
+
+        updatePreview();
+    });
+</script>

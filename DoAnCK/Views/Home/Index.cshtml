@@ -1,0 +1,600 @@
+﻿@model IEnumerable<DoAnCK.Models.SANPHAM>
+
+@{
+    ViewBag.Title = "Trang chủ";
+}
+
+<section class="hero">
+
+    <!--=========================
+        HEADER
+    ==========================-->
+
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+
+        <div class="container">
+
+            <a class="navbar-brand logo" href="#">
+
+                MODERNO
+
+            </a>
+
+            <button class="navbar-toggler"
+                    data-bs-toggle="collapse"
+                    data-bs-target="#menu">
+
+                <span class="navbar-toggler-icon"></span>
+
+            </button>
+
+            <div class="collapse navbar-collapse"
+                 id="menu">
+
+                <ul class="navbar-nav mx-auto">
+
+                    <li class="nav-item">
+                        <a class="nav-link active" href="#">Home</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Shop</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Blog</a>
+                    </li>
+
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">Contact</a>
+                    </li>
+
+                </ul>
+
+                <div class="header-icons">
+
+                    <a href="#">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-regular fa-user"></i>
+                    </a>
+
+                    <a href="#" class="cart">
+
+                        <i class="fa-solid fa-bag-shopping"></i>
+
+                        <span class="cart-count">0</span>
+
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </nav>
+
+    <!--=========================
+        BANNER
+    ==========================-->
+
+    <div class="banner">
+
+        <div class="container">
+
+            <div class="row align-items-center">
+
+                <div class="col-lg-5">
+
+                    <span class="sub-title">
+
+                        Modern Designs, Timeless Comfort.
+
+                    </span>
+
+                    <h1>
+
+                        Furniture
+                        That Defines
+                        Your Space
+
+                    </h1>
+
+                    <p>
+
+                        Discover our carefully selected furniture that blends
+                        elegance, comfort and functionality for every room.
+
+                    </p>
+
+                    <a href="#" class="btn-shop">
+
+                        SHOP NOW
+
+                        <i class="fa-solid fa-arrow-right ms-2"></i>
+
+                    </a>
+
+                </div>
+
+                <div class="col-lg-7">
+
+                    <div class="banner-image">
+
+                        <img src="~/Content/images/banner.jpg"
+                             class="img-fluid">
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!--=========================
+    SERVICES
+==========================-->
+
+<section class="services">
+
+    <div class="container">
+
+        <div class="row text-center">
+
+            <div class="col-md-3">
+
+                <i class="fa-solid fa-truck-fast"></i>
+
+                <h6>Free Shipping</h6>
+
+                <p>On orders over $50</p>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <i class="fa-solid fa-shield-halved"></i>
+
+                <h6>Secure Payment</h6>
+
+                <p>100% Secure Checkout</p>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <i class="fa-solid fa-medal"></i>
+
+                <h6>Premium Quality</h6>
+
+                <p>Crafted with care</p>
+
+            </div>
+
+            <div class="col-md-3">
+
+                <i class="fa-solid fa-headset"></i>
+
+                <h6>24/7 Support</h6>
+
+                <p>We're here to help</p>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!--=========================
+    CATEGORY
+==========================-->
+
+<section class="category">
+
+    <div class="container">
+
+        <h3 class="section-title">
+
+            SHOP BY CATEGORY
+
+        </h3>
+
+        <div class="row g-4">
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="cat-card">
+
+                    <img src="~/Content/images/sopha.jpg">
+
+                    <h6>Sopha</h6>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="cat-card">
+
+                    <img src="~/Content/images/table.jpg">
+
+                    <h6>Table</h6>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="cat-card">
+
+                    <img src="~/Content/images/armchair.jpg">
+
+                    <h6>Armchair</h6>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="cat-card">
+
+                    <img src="~/Content/images/bed.jpg">
+
+                    <h6>Bed</h6>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="cat-card">
+
+                    <img src="~/Content/images/mirror.jpg">
+
+                    <h6>Mirror</h6>
+
+                </div>
+
+            </div>
+
+            <div class="col-lg-2 col-md-4 col-6">
+
+                <div class="cat-card">
+
+                    <img src="~/Content/images/lighting.jpg">
+
+                    <h6>Lighting</h6>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+</section>
+
+<!--=========================
+    SALE BANNER
+==========================-->
+
+<section class="sale-section">
+
+    <div class="container">
+
+        <a href="#" class="sale-banner">
+
+            <img src="~/Content/images/sale2.jpg"
+                 alt="Summer Sale">
+
+        </a>
+
+    </div>
+
+</section>
+
+<!-- ===================== NEW ARRIVALS ===================== -->
+
+<section class="home-arrivals">
+
+    <h3 class="section-title">
+
+        NEW ARRIVALS
+
+    </h3>
+
+    <div class="home-arrival-grid">
+
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model.Take(6))
+            {
+                var hinhAnh = string.IsNullOrEmpty(item.HinhAnh)
+                    ? "~/Content/images/no-image.jpg"
+                    : item.HinhAnh;
+
+                <div class="home-arrival-card">
+
+                    <div class="home-arrival-img">
+
+                        <img src="@Url.Content(hinhAnh)"
+                             alt="@item.TenSP" />
+
+                    </div>
+
+                    <div class="home-arrival-info">
+
+                        <h5>@item.TenSP</h5>
+
+                        <p>@item.GiaHienTai.ToString("N0")đ</p>
+
+                    </div>
+
+                </div>
+            }
+        }
+        else
+        {
+            <p>Chưa có sản phẩm nào.</p>
+        }
+
+    </div>
+
+</section>
+
+<!--=========================
+    FOOTER
+==========================-->
+
+<footer class="footer">
+
+    <div class="container">
+
+        <div class="row">
+
+            <!-- Logo -->
+
+            <div class="col-lg-4">
+
+                <h3 class="footer-logo">
+
+                    MODERNO
+
+                </h3>
+
+                <p class="footer-text">
+
+                    Moderno là cửa hàng nội thất hiện đại,
+                    mang đến những sản phẩm chất lượng,
+                    thiết kế tối giản và phù hợp với mọi không gian sống.
+
+                </p>
+
+                <div class="social-icons">
+
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+
+                    <a href="#"><i class="fab fa-tiktok"></i></a>
+
+                </div>
+
+            </div>
+
+            <!-- Danh mục -->
+
+            <div class="col-lg-2">
+
+                <h5>Danh mục</h5>
+
+                <ul>
+
+                    <li><a href="#">Sofa</a></li>
+
+                    <li><a href="#">Bàn</a></li>
+
+                    <li><a href="#">Ghế</a></li>
+
+                    <li><a href="#">Giường</a></li>
+
+                    <li><a href="#">Tủ</a></li>
+
+                </ul>
+
+            </div>
+
+            <!-- Chính sách -->
+
+            <div class="col-lg-2">
+
+                <h5>Chính sách</h5>
+
+                <ul>
+
+                    <li><a href="#">Bảo hành</a></li>
+
+                    <li><a href="#">Đổi trả</a></li>
+
+                    <li><a href="#">Thanh toán</a></li>
+
+                    <li><a href="#">Vận chuyển</a></li>
+
+                </ul>
+
+            </div>
+
+            <!-- Hỗ trợ -->
+
+            <div class="col-lg-2">
+
+                <h5>Hỗ trợ</h5>
+
+                <ul>
+
+                    <li><a href="#">Giới thiệu</a></li>
+
+                    <li><a href="#">Liên hệ</a></li>
+
+                    <li><a href="#">FAQ</a></li>
+
+                    <li><a href="#">Tin tức</a></li>
+
+                </ul>
+
+            </div>
+
+            <!-- Liên hệ -->
+
+            <div class="col-lg-2">
+
+                <h5>Liên hệ</h5>
+
+                <ul>
+
+                    <li>
+                        <i class="fa-solid fa-location-dot"></i>
+                        TP. Hồ Chí Minh
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-phone"></i>
+                        0123 456 789
+                    </li>
+
+                    <li>
+                        <i class="fa-solid fa-envelope"></i>
+                        moderno@gmail.com
+                    </li>
+
+                </ul>
+
+            </div>
+
+        </div>
+
+        <hr>
+
+        <div class="copyright">
+
+            © 2026 MODERNO Furniture.
+            All Rights Reserved.
+
+        </div>
+
+    </div>
+
+</footer>
+
+<style>
+    .home-arrivals {
+        max-width: 1100px;
+        margin: 80px auto;
+        padding: 0 20px;
+        text-align: center;
+    }
+
+        .home-arrivals h2 {
+            font-size: 22px !important;
+            font-weight: 700 !important;
+            margin-bottom: 28px !important;
+            letter-spacing: 0 !important;
+            color: #111 !important;
+            text-transform: uppercase !important;
+        }
+
+    .home-arrival-grid {
+        display: flex;
+        justify-content: center;
+        align-items: stretch;
+        gap: 22px;
+        flex-wrap: wrap;
+    }
+
+    .home-arrival-card {
+        width: 180px;
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(0,0,0,.08);
+        transition: .3s;
+        text-align: center;
+    }
+
+        .home-arrival-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 40px rgba(0,0,0,.12);
+        }
+
+    .home-arrival-img {
+        width: 100%;
+        height: 150px;
+        background: #f6f3ee;
+        overflow: hidden;
+    }
+
+        .home-arrival-img img {
+            width: 100% !important;
+            height: 100% !important;
+            object-fit: cover !important;
+            display: block !important;
+        }
+
+    .home-arrival-info {
+        padding: 14px 12px 18px;
+    }
+
+        .home-arrival-info h5 {
+            font-size: 14px !important;
+            font-weight: 600 !important;
+            color: #111 !important;
+            margin-bottom: 6px !important;
+            line-height: 18px !important;
+            text-align: center !important;
+        }
+
+        .home-arrival-info p {
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            color: #8b6040 !important;
+            margin: 0 !important;
+            text-align: center !important;
+        }
+
+    @@media (max-width: 992px) {
+        .home-arrival-card {
+            width: 170px;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .home-arrival-card {
+            width: 45%;
+        }
+
+        .home-arrival-img {
+            height: 140px;
+        }
+    }
+</style>
