@@ -55,23 +55,32 @@
 
                 </ul>
 
-                <div class="header-icons">
+                <div class="header-icons d-flex align-items-center">
 
-                    <a href="#">
-                        <i class="fa-solid fa-magnifying-glass"></i>
-                    </a>
+                    <form action="@Url.Action("Search", "Home")" method="get" class="d-flex align-items-center me-3" style="margin-bottom: 0;">
+                        <input type="text" name="keyword" class="form-control form-control-sm rounded-pill px-3"
+                               placeholder="Tìm kiếm nội thất bằng AI..." required
+                               style="min-width: 250px; border: 1px solid #eee; box-shadow: none;">
+                        <button type="submit" class="btn btn-sm btn-dark rounded-pill ms-2 px-3">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </form>
 
-                    <a href="#">
-                        <i class="fa-regular fa-user"></i>
-                    </a>
+                    <form action="@Url.Action("ImageSearch", "Home")" method="post" enctype="multipart/form-data" class="d-flex align-items-center me-3" style="margin-bottom: 0;">
+                        <label for="imageUpload" class="btn btn-sm btn-outline-secondary rounded-pill mb-0 px-3" style="cursor: pointer;" title="Tìm bằng hình ảnh">
+                            <i class="fa-solid fa-camera"></i>
+                        </label>
+                        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display: none;" onchange="this.form.submit();">
+                    </form>
 
+                    <a href="#"><i class="fa-regular fa-user"></i></a>
                     <a href="#" class="cart">
-
                         <i class="fa-solid fa-bag-shopping"></i>
-
                         <span class="cart-count">0</span>
-
                     </a>
+
+                </div>
+                </div>
 
                 </div>
 
