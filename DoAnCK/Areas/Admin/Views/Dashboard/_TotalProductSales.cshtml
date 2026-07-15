@@ -1,0 +1,34 @@
+﻿@model DoAnCK.Areas.Admin.Models.ProductSalesViewModel
+
+<div class="stat-card">
+
+    <div class="stat-top">
+
+        <div>
+            <div class="stat-title">Sản phẩm</div>
+
+            <!-- Hiển thị tổng sản phẩm động -->
+            <div class="stat-value">@Model.TongSanPhamBanRaThangNay</div>
+
+            <!-- Giữ nguyên cấu trúc class footer động và class "down" nếu tăng trưởng âm -->
+            <div class="stat-footer @(Model.IsTangTruongDuong ? "" : "down")">
+                @if (Model.IsTangTruongDuong)
+                {
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    @: +@Model.PhanTramTangTruong% so với tháng trước
+                }
+                else
+                {
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    @: -@Model.PhanTramTangTruong% so với tháng trước
+                }
+            </div>
+        </div>
+
+        <div class="stat-icon bg-pink">
+            <i class="fa-solid fa-couch"></i>
+        </div>
+
+    </div>
+
+</div>
