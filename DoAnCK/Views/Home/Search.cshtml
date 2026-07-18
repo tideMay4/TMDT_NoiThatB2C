@@ -1,0 +1,99 @@
+﻿@model IEnumerable<DoAnCK.Models.SANPHAM>
+
+@{
+    ViewBag.Title = "Kết quả tìm kiếm AI";
+}
+
+<div class="ai-search-page">
+
+    <!-- Banner -->
+    <div class="ai-banner text-center">
+
+        <span class="ai-badge">
+            <i class="fa-solid fa-wand-magic-sparkles"></i>
+            AI Furniture Search
+        </span>
+
+        <h2>Kết quả tìm kiếm</h2>
+
+        <p>
+            AI đã phân tích mô tả và tìm thấy những sản phẩm phù hợp với
+            <strong>"@ViewBag.TuKhoa"</strong>
+        </p>
+
+    </div>
+
+    @if (ViewBag.Message != null)
+    {
+        <div class="alert alert-warning text-center">
+            @ViewBag.Message
+        </div>
+    }
+
+    @if (Model != null && Model.Any())
+    {
+
+        <div class="product-grid">
+
+            @foreach (var item in Model)
+            {
+
+                var hinhAnh = string.IsNullOrEmpty(item.HinhAnh)
+                    ? "~/Content/images/no-image.jpg"
+                    : item.HinhAnh;
+
+                <div class="product-card">
+
+                    <div class="product-image">
+
+                        <img src="@Url.Content(hinhAnh)" alt="@item.TenSP">
+
+                    </div>
+
+                    <div class="product-info">
+
+                        <h5>@item.TenSP</h5>
+
+                        <div class="price">
+                            @item.GiaHienTai.ToString("N0") đ
+                        </div>
+
+                        <a href="@Url.Action("ChiTiet","SanPham",new{id=item.MaSP})"
+                           class="btn-view">
+                            Xem chi tiết
+                        </a>
+
+                    </div>
+
+                </div>
+
+            }
+
+        </div>
+
+    }
+    else
+    {
+
+        <div class="empty-box">
+
+            <i class="fa-regular fa-folder-open"></i>
+
+            <h4>Không tìm thấy sản phẩm phù hợp</h4>
+
+            <p>
+                Hãy thử mô tả chi tiết hơn như:
+                <br />
+                "Ghế sofa màu kem cho phòng khách nhỏ"
+            </p>
+
+            <a href="@Url.Action("Index","Home")"
+               class="btn-home">
+                Quay về trang chủ
+            </a>
+
+        </div>
+
+    }
+
+</div>
