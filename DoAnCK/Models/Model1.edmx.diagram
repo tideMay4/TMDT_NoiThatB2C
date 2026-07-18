@@ -4,20 +4,20 @@
   <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
     <!-- Diagram content (shape and connector positions) -->
     <edmx:Diagrams>
-      <Diagram DiagramId="5904e43034c74014a23f3045dec37473" Name="Diagram1">
+      <Diagram DiagramId="5904e43034c74014a23f3045dec37473" Name="Diagram1" ZoomLevel="20">
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.CHITIET_DONHANG" Width="1.5" PointX="5.25" PointY="6.5" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.CHITIET_GIOHANG" Width="1.5" PointX="8.25" PointY="6.75" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.DANHGIA" Width="1.5" PointX="5.25" PointY="2.375" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.DANHMUC" Width="1.5" PointX="0.75" PointY="6.25" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.DONHANG" Width="1.5" PointX="3" PointY="11.25" IsExpanded="true" />
-        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.GIA" Width="1.5" PointX="5.25" PointY="16" IsExpanded="true" />
+        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.GIA" Width="1.5" PointX="11.5" PointY="4" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.GIOHANG" Width="1.5" PointX="6" PointY="10.625" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.KHACHHANG" Width="1.5" PointX="3" PointY="1.375" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.SANPHAM" Width="1.5" PointX="3" PointY="5.125" IsExpanded="true" />
         <EntityTypeShape EntityType="DoAnNoiThatB2CModel.TAIKHOAN" Width="1.5" PointX="0.75" PointY="1.375" IsExpanded="true" />
-        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.THANHTOAN" Width="1.5" PointX="5.25" PointY="20.625" IsExpanded="true" />
-        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.TIN_TUC" Width="1.5" PointX="3" PointY="15.5" IsExpanded="true" />
-        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.VANCHUYEN" Width="1.5" PointX="5.25" PointY="23.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.THANHTOAN" Width="1.5" PointX="15" PointY="7.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.TIN_TUC" Width="1.5" PointX="7.75" PointY="13.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.VANCHUYEN" Width="1.5" PointX="11.375" PointY="12.875" IsExpanded="true" />
         <AssociationConnector Association="DoAnNoiThatB2CModel.FK_CTDONHANG_DONHANG" ManuallyRouted="false" />
         <AssociationConnector Association="DoAnNoiThatB2CModel.FK_CTDONHANG_SANPHAM" ManuallyRouted="false" />
         <AssociationConnector Association="DoAnNoiThatB2CModel.FK_CTGIOHANG_GIOHANG" ManuallyRouted="false" />
