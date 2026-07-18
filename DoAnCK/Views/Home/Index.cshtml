@@ -55,28 +55,7 @@
 
                 </ul>
 
-                <div class="header-icons d-flex align-items-center">
 
-                    <form action="@Url.Action("Search", "Home")" method="get" class="d-flex align-items-center me-3" style="margin-bottom: 0;">
-                        <input type="text" name="keyword" class="form-control form-control-sm rounded-pill px-3"
-                               placeholder="Tìm kiếm nội thất bằng AI..." required
-                               style="min-width: 250px; border: 1px solid #eee; box-shadow: none;">
-                        <button type="submit" class="btn btn-sm btn-dark rounded-pill ms-2 px-3">
-                            <i class="fa-solid fa-magnifying-glass"></i>
-                        </button>
-                    </form>
-
-                    <form action="@Url.Action("ImageSearch", "Home")" method="post" enctype="multipart/form-data" class="d-flex align-items-center me-3" style="margin-bottom: 0;">
-                        <label for="imageUpload" class="btn btn-sm btn-outline-secondary rounded-pill mb-0 px-3" style="cursor: pointer;" title="Tìm bằng hình ảnh">
-                            <i class="fa-solid fa-camera"></i>
-                        </label>
-                        <input type="file" id="imageUpload" name="imageUpload" accept="image/*" style="display: none;" onchange="this.form.submit();">
-                    </form>
-
-                    <a href="#"><i class="fa-regular fa-user"></i></a>
-                    <a href="#" class="cart">
-                        <i class="fa-solid fa-bag-shopping"></i>
-                        <span class="cart-count">0</span>
                     </a>
 
                 </div>
@@ -323,7 +302,7 @@
 
 <!-- ===================== NEW ARRIVALS ===================== -->
 
-<section class="home-arrivals">
+@*<section class="home-arrivals">
 
     <h3 class="section-title">
 
@@ -341,21 +320,25 @@
                     ? "~/Content/images/no-image.jpg"
                     : item.HinhAnh;
 
-                <div class="home-arrival-card">
+            
+                <div class="home-arrival-card" style="display: flex; flex-direction: column;">
 
                     <div class="home-arrival-img">
-
-                        <img src="@Url.Content(hinhAnh)"
-                             alt="@item.TenSP" />
-
+                        <img src="@Url.Content(hinhAnh)" alt="@item.TenSP" />
                     </div>
 
-                    <div class="home-arrival-info">
-
+                    <div class="home-arrival-info" style="display: flex; flex-direction: column; flex-grow: 1;">
                         <h5>@item.TenSP</h5>
-
                         <p>@item.GiaHienTai.ToString("N0")đ</p>
 
+                        <button class="btn-add-cart"
+                                data-id="@item.MaSP"
+                                data-name="@item.TenSP"
+                                data-price="@item.GiaHienTai"
+                                data-bulky="false"
+                                style="background: #2B2623; color: white; padding: 10px; border:none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: auto; transition: 0.3s; font-weight: 500;">
+                            Thêm vào giỏ
+                        </button>
                     </div>
 
                 </div>
@@ -368,6 +351,48 @@
 
     </div>
 
+</section>*@
+
+<section class="home-arrivals">
+    <h3 class="section-title">NEW ARRIVALS</h3>
+
+    <div class="home-arrival-grid">
+        @if (Model != null && Model.Any())
+        {
+            foreach (var item in Model.Take(6))
+            {
+                var hinhAnh = string.IsNullOrEmpty(item.HinhAnh) ? "~/Content/images/no-image.jpg" : item.HinhAnh;
+
+                <div class="home-arrival-card">
+                    <!-- Wrapper ảnh có hiệu ứng zoom -->
+                    <div class="home-arrival-img-wrapper">
+                        <img src="@Url.Content(hinhAnh)" alt="@item.TenSP" class="product-img" />
+                    </div>
+
+                    <!-- Phần thông tin (Flexbox để căn chỉnh nút luôn ở đáy) -->
+                    <div class="home-arrival-info">
+                        <h5 class="product-name" title="@item.TenSP">@item.TenSP</h5>
+                        <p class="product-price">@item.GiaHienTai.ToString("N0") ₫</p>
+
+                        <!-- Nút bấm động -->
+                        <button class="btn-add-cart"
+                                data-id="@item.MaSP"
+                                data-name="@item.TenSP"
+                                data-price="@item.GiaHienTai"
+                                data-bulky="false"
+                                data-image="@Url.Content(hinhAnh)"
+                                style="...">
+                            <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                        </button>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Chưa có sản phẩm nào.</p>
+        }
+    </div>
 </section>
 
 <!--=========================
@@ -517,7 +542,7 @@
 </footer>
 
 <style>
-    .home-arrivals {
+/*    .home-arrivals {
         max-width: 1100px;
         margin: 80px auto;
         padding: 0 20px;
@@ -605,5 +630,199 @@
         .home-arrival-img {
             height: 140px;
         }
+    }*/
+    .home-arrivals {
+        max-width: 1200px;
+        margin: 80px auto;
+        padding: 0 20px;
+        text-align: center;
     }
+
+        .home-arrivals h3.section-title {
+            font-size: 24px;
+            font-weight: 700;
+            margin-bottom: 40px;
+            color: #2B2623;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+    .home-arrival-grid {
+        display: flex;
+        justify-content: center;
+        gap: 30px;
+        flex-wrap: wrap;
+    }
+
+    /* Khung ngoài cùng của Card */
+    .home-arrival-card {
+        width: 260px; /* Mở rộng thẻ một chút cho thoáng */
+        background: #ffffff;
+        border-radius: 16px;
+        overflow: hidden;
+        box-shadow: 0 8px 25px rgba(0,0,0,0.04); /* Đổ bóng cực êm */
+        border: 1px solid #f0f0f0;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+    }
+
+        .home-arrival-card:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+        }
+
+    /* Khu vực chứa ảnh */
+    .home-arrival-img-wrapper {
+        width: 100%;
+        height: 240px;
+        overflow: hidden;
+        background-color: #f9f9f9;
+    }
+
+    .product-img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+
+    /* Hiệu ứng Zoom ảnh khi hover vào thẻ */
+    .home-arrival-card:hover .product-img {
+        transform: scale(1.08);
+    }
+
+    /* Khu vực chứa chữ và nút */
+    .home-arrival-info {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        flex-grow: 1;
+        text-align: center;
+    }
+
+    .product-name {
+        font-size: 1.1rem;
+        font-weight: 600;
+        color: #2B2623;
+        margin-bottom: 8px;
+        line-height: 1.4;
+        /* Giới hạn 2 dòng, quá dài hiện dấu ... */
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+    }
+
+    .product-price {
+        font-size: 1.15rem;
+        font-weight: 700;
+        color: #8b6040; /* Tone màu nâu cũ của bạn */
+        margin-bottom: 20px;
+    }
+
+    /* Nút bấm Thêm vào giỏ */
+    .btn-add-cart {
+        background: #2B2623; /* Đen than */
+        color: #ffffff;
+        padding: 12px 15px;
+        border: none;
+        border-radius: 8px;
+        cursor: pointer;
+        width: 100%;
+        margin-top: auto; /* Đẩy nút xuống dưới cùng, thẳng hàng nhau */
+        font-weight: 600;
+        font-size: 0.95rem;
+        transition: background 0.3s ease, transform 0.2s ease;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .btn-add-cart:hover {
+            background: #000000;
+            transform: scale(1.03); /* Phình to nhẹ khi bấm */
+        }
 </style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+    $(document).ready(function () {
+        // Hàm load số lượng giỏ hàng ngay khi mở trang web
+        function loadCartCount() {
+            $.get('/Cart/GetCartCount', function (res) {
+                if (res.count > 0) {
+                    $('#cart-badge').text(res.count).fadeIn(); // Hiện bong bóng đỏ
+                } else {
+                    $('#cart-badge').fadeOut(); // Ẩn nếu giỏ hàng bằng 0
+                }
+            });
+        }
+
+        loadCartCount(); // Chạy ngay lập tức
+    });
+
+    //$(document).ready(function () {
+    //    $('.btn-add-cart').click(function (e) {
+    //        e.preventDefault(); // Ngăn load lại trang
+
+    //        let btn = $(this);
+    //        let productData = {
+    //            productId: btn.data('id'),
+    //            productName: btn.data('name'),
+    //            price: btn.data('price'),
+    //            isBulky: btn.data('bulky')
+    //        };
+
+    //        // Bắn dữ liệu về Server
+    //        $.post('/Cart/AddToCart', productData, function (res) {
+    //            if (res.success) {
+    //                // Update ngay lập tức con số trên cục đỏ ở Header
+    //                $('#cart-badge').text(res.totalItems).fadeIn();
+
+    //                // Hiện thông báo đẹp (Có thể dùng thư viện Toastr nếu bạn có)
+    //                alert("Đã thêm " + productData.productName + " vào giỏ hàng thành công!");
+    //            }
+    //        });
+    //    });
+    //});
+
+
+
+    $(document).ready(function () {
+        $('.btn-add-cart').click(function (e) {
+            e.preventDefault();
+            let btn = $(this);
+            let originalHtml = btn.html(); // Lưu lại HTML cũ (chứa cả icon)
+
+            let productData = {
+                productId: btn.data('id'),
+                productName: btn.data('name'),
+                price: parseFloat(btn.data('price')),
+                isBulky: btn.data('bulky'),
+                hinhAnh: btn.data('image') // <--- Đọc link ảnh từ nút bấm gửi lên Server
+            };
+
+            // Hiệu ứng đang tải
+            btn.html('<i class="fa-solid fa-spinner fa-spin"></i> Đang thêm...').prop('disabled', true);
+
+            $.post('/Cart/AddToCart', productData, function (res) {
+                if (res.success) {
+                    // Cập nhật số lượng trên icon giỏ hàng ở Header
+                    $('#cart-badge').text(res.totalItems).fadeIn();
+
+                    // Hiển thị thành công
+                    btn.html('<i class="fa-solid fa-check"></i> Đã thêm').css('background', '#8b6040');
+
+                    // Trả lại trạng thái sau 2 giây
+                    setTimeout(() => {
+                        btn.html(originalHtml).css('background', '#2B2623').prop('disabled', false);
+                    }, 2000);
+                }
+            }).fail(function () {
+                alert("Có lỗi xảy ra, không thể thêm vào giỏ hàng.");
+                btn.html(originalHtml).prop('disabled', false);
+            });
+        });
+    });
+</script>
