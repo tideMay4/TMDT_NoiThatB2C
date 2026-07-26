@@ -1,0 +1,797 @@
+﻿@using DoAnCK.Models
+
+@model DoAnCK.Models.ProductDetailViewModel
+
+@{
+    ViewBag.Title = Model.Product.TenSP;
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var product = Model.Product;
+
+    var imageUrl = string.IsNullOrWhiteSpace(product.HinhAnh)
+        ? "~/Content/images/no-image.jpg"
+        : product.HinhAnh;
+
+    int fullStars = (int)Math.Floor(Model.DiemTrungBinh);
+    bool hasHalfStar = Model.DiemTrungBinh - fullStars >= 0.5;
+}
+
+<style>
+    .detail-page {
+        background: #f8f4ed;
+        padding: 60px 7% 90px;
+        color: #3d332b;
+    }
+
+    .detail-container {
+        max-width: 1180px;
+        margin: 0 auto;
+    }
+
+    .breadcrumb-box {
+        font-size: 14px;
+        color: #7b6e64;
+        margin-bottom: 26px;
+    }
+
+        .breadcrumb-box a {
+            color: #a9825a;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+    .detail-main {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 42px;
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 26px;
+        padding: 32px;
+        box-shadow: 0 18px 48px rgba(111, 78, 55, 0.08);
+    }
+
+    .detail-image {
+        background: #f4eee6;
+        border-radius: 22px;
+        overflow: hidden;
+        height: 520px;
+    }
+
+        .detail-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .detail-info {
+        padding: 8px 0;
+    }
+
+    .detail-category {
+        display: inline-block;
+        background: #f8f2ea;
+        color: #a9825a;
+        border: 1px solid #eadfd2;
+        padding: 8px 15px;
+        border-radius: 30px;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 18px;
+    }
+
+    .detail-info h1 {
+        font-size: 38px;
+        font-weight: 800;
+        line-height: 1.25;
+        margin-bottom: 16px;
+        color: #3d332b;
+    }
+
+    .detail-rating {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 18px;
+        color: #7b6e64;
+        font-size: 14px;
+    }
+
+    .stars {
+        color: #d4a24c;
+        letter-spacing: 1px;
+    }
+
+    .detail-price {
+        font-size: 32px;
+        font-weight: 800;
+        color: #8b6040;
+        margin-bottom: 22px;
+    }
+
+    .detail-short {
+        color: #6f6258;
+        line-height: 1.8;
+        margin-bottom: 24px;
+        font-size: 15px;
+    }
+
+    .detail-stats {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 14px;
+        margin-bottom: 26px;
+    }
+
+    .stat-mini {
+        background: #f8f2ea;
+        border: 1px solid #eadfd2;
+        border-radius: 16px;
+        padding: 15px;
+    }
+
+        .stat-mini span {
+            display: block;
+            font-size: 13px;
+            color: #7b6e64;
+            margin-bottom: 5px;
+        }
+
+        .stat-mini strong {
+            font-size: 16px;
+            color: #3d332b;
+        }
+
+    .detail-actions {
+        display: flex;
+        gap: 14px;
+        margin-top: 10px;
+    }
+
+    .quantity-box {
+        width: 110px;
+        height: 48px;
+        border: 1px solid #eadfd2;
+        border-radius: 14px;
+        padding: 0 14px;
+        background: #fffdf8;
+        outline: none;
+        color: #3d332b;
+        font-weight: 700;
+    }
+
+    .btn-cart,
+    .btn-buy {
+        height: 48px;
+        border-radius: 14px;
+        padding: 0 24px;
+        border: none;
+        font-weight: 700;
+        transition: 0.25s;
+        text-decoration: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .btn-cart {
+        background: #a9825a;
+        color: #fff;
+    }
+
+        .btn-cart:hover {
+            background: #8b6040;
+            color: #fff;
+        }
+
+    .btn-buy {
+        background: #f8f2ea;
+        color: #8b6040;
+        border: 1px solid #eadfd2;
+    }
+
+        .btn-buy:hover {
+            background: #eadfd2;
+            color: #6f4e37;
+        }
+
+    .detail-section {
+        max-width: 1180px;
+        margin: 34px auto 0;
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 26px;
+        padding: 32px;
+        box-shadow: 0 18px 48px rgba(111, 78, 55, 0.06);
+    }
+
+    .section-title {
+        font-size: 24px;
+        font-weight: 800;
+        color: #3d332b;
+        margin-bottom: 18px;
+    }
+
+    .description-content {
+        color: #6f6258;
+        line-height: 1.9;
+        font-size: 15px;
+    }
+
+    .review-summary {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        background: #f8f2ea;
+        border: 1px solid #eadfd2;
+        border-radius: 20px;
+        padding: 22px;
+        margin-bottom: 26px;
+    }
+
+    .review-score h3 {
+        font-size: 38px;
+        font-weight: 800;
+        color: #8b6040;
+        margin: 0;
+    }
+
+    .review-score p {
+        margin: 4px 0 0;
+        color: #7b6e64;
+    }
+
+    .review-form {
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 20px;
+        padding: 22px;
+        margin-bottom: 26px;
+    }
+
+    .star-select {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-bottom: 16px;
+    }
+
+        .star-select label {
+            background: #f8f2ea;
+            border: 1px solid #eadfd2;
+            color: #8b6040;
+            padding: 9px 13px;
+            border-radius: 14px;
+            cursor: pointer;
+            font-weight: 700;
+        }
+
+        .star-select input {
+            margin-right: 5px;
+        }
+
+    .review-form textarea {
+        width: 100%;
+        min-height: 110px;
+        border: 1px solid #eadfd2;
+        border-radius: 16px;
+        padding: 15px;
+        outline: none;
+        resize: vertical;
+        color: #3d332b;
+        background: #fffdf8;
+    }
+
+        .review-form textarea:focus {
+            border-color: #a9825a;
+        }
+
+    .btn-review {
+        margin-top: 14px;
+        height: 46px;
+        padding: 0 24px;
+        border: none;
+        border-radius: 14px;
+        background: #a9825a;
+        color: #fff;
+        font-weight: 700;
+    }
+
+    .review-item {
+        border-bottom: 1px solid #eadfd2;
+        padding: 20px 0;
+    }
+
+        .review-item:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+        }
+
+    .review-head {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        margin-bottom: 8px;
+    }
+
+        .review-head strong {
+            color: #3d332b;
+        }
+
+    .review-date {
+        color: #9a8c80;
+        font-size: 13px;
+    }
+
+    .review-text {
+        color: #6f6258;
+        line-height: 1.7;
+        margin: 8px 0 0;
+    }
+
+    .related-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 22px;
+    }
+
+    .related-card {
+        border: 1px solid #eadfd2;
+        border-radius: 18px;
+        overflow: hidden;
+        background: #fffdf8;
+        transition: 0.25s;
+    }
+
+        .related-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 16px 36px rgba(111, 78, 55, 0.1);
+        }
+
+    .related-img {
+        height: 170px;
+        overflow: hidden;
+        background: #f4eee6;
+    }
+
+        .related-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+    .related-info {
+        padding: 15px;
+    }
+
+        .related-info h4 {
+            font-size: 15px;
+            font-weight: 800;
+            min-height: 42px;
+            color: #3d332b;
+            margin-bottom: 10px;
+        }
+
+        .related-info p {
+            font-size: 15px;
+            font-weight: 800;
+            color: #8b6040;
+            margin: 0;
+        }
+
+    .alert-detail {
+        max-width: 1180px;
+        margin: 0 auto 20px;
+    }
+
+    @@media (max-width: 992px) {
+        .detail-main {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-image {
+            height: 420px;
+        }
+
+        .related-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .detail-page {
+            padding: 40px 18px 70px;
+        }
+
+        .detail-main,
+        .detail-section {
+            padding: 22px;
+        }
+
+        .detail-info h1 {
+            font-size: 30px;
+        }
+
+        .detail-stats {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-actions {
+            flex-direction: column;
+        }
+
+        .quantity-box,
+        .btn-cart,
+        .btn-buy {
+            width: 100%;
+        }
+
+        .related-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    .review-note {
+        background: #f8f2ea;
+        border: 1px dashed #d8c5ad;
+    }
+
+        .review-note h4 {
+            color: #8b6040;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .review-note p {
+            color: #7b6e64;
+            margin: 0;
+            line-height: 1.7;
+        }
+</style>
+
+
+<section class="detail-page">
+
+    <div class="detail-container">
+
+        <div class="breadcrumb-box">
+            <a href="@Url.Action("Index", "Home")">Home</a>
+            /
+            <a href="@Url.Content("~/Product")">Product</a>
+            /
+            <span>@product.TenSP</span>
+        </div>
+
+        @if (TempData["Success"] != null)
+        {
+            <div class="alert alert-success alert-detail">
+                @TempData["Success"]
+            </div>
+        }
+
+        @if (TempData["Error"] != null)
+        {
+            <div class="alert alert-danger alert-detail">
+                @TempData["Error"]
+            </div>
+        }
+
+        <div class="detail-main">
+
+            <div class="detail-image">
+                <img src="@Url.Content(imageUrl)" alt="@product.TenSP" />
+            </div>
+
+            <div class="detail-info">
+
+                <span class="detail-category">
+                    @(product.DANHMUC != null ? product.DANHMUC.TenDM : "Chưa phân loại")
+                </span>
+
+                <h1>@product.TenSP</h1>
+
+                <div class="detail-rating">
+
+                    <div class="stars">
+                        @for (int i = 1; i <= 5; i++)
+                        {
+                            if (i <= Math.Round(Model.DiemTrungBinh))
+                            {
+                                <i class="fa-solid fa-star"></i>
+                            }
+                            else
+                            {
+                                <i class="fa-regular fa-star"></i>
+                            }
+                        }
+                    </div>
+
+                    <span>
+                        @Model.DiemTrungBinh.ToString("0.0") / 5
+                        -
+                        @Model.TongDanhGia đánh giá
+                        -
+                        @Model.SoLuotMua lượt mua
+                    </span>
+
+                </div>
+
+                <div class="detail-price">
+                    @product.GiaHienTai.ToString("N0")đ
+                </div>
+
+                <div class="detail-short">
+                    @if (!string.IsNullOrWhiteSpace(product.MoTa))
+                    {
+                        @product.MoTa
+                    }
+                    else
+                    {
+                        <text>Sản phẩm nội thất hiện đại, phù hợp với nhiều không gian sống.</text>
+                    }
+                </div>
+
+                <div class="detail-stats">
+
+                    <div class="stat-mini">
+                        <span>Tồn kho</span>
+                        <strong>@product.SoLuongTon sản phẩm</strong>
+                    </div>
+
+                    <div class="stat-mini">
+                        <span>Số lượt mua</span>
+                        <strong>@Model.SoLuotMua lượt</strong>
+                    </div>
+
+                    <div class="stat-mini">
+                        <span>Thương hiệu</span>
+                        <strong>@(string.IsNullOrWhiteSpace(product.ThuongHieu) ? "MODERNO" : product.ThuongHieu)</strong>
+                    </div>
+
+                    <div class="stat-mini">
+                        <span>Bảo hành</span>
+                        <strong>@(string.IsNullOrWhiteSpace(product.BaoHanh) ? "Chưa cập nhật" : product.BaoHanh)</strong>
+                    </div>
+
+                </div>
+
+                <div class="detail-actions">
+
+                    <input type="number"
+                           class="quantity-box"
+                           value="1"
+                           min="1"
+                           max="@product.SoLuongTon" />
+
+                    <a href="#" class="btn-cart">
+                        <i class="fa-solid fa-cart-plus me-2"></i>
+                        Thêm vào giỏ
+                    </a>
+
+                    <a href="#" class="btn-buy">
+                        Mua ngay
+                    </a>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <div class="detail-section">
+
+        <h2 class="section-title">Mô tả sản phẩm</h2>
+
+        <div class="description-content">
+            @if (!string.IsNullOrWhiteSpace(product.MoTa))
+            {
+                @product.MoTa
+            }
+            else
+            {
+                <text>
+                    Sản phẩm được thiết kế theo phong cách hiện đại, tối giản,
+                    phù hợp với không gian phòng khách, phòng ngủ hoặc không gian làm việc.
+                </text>
+            }
+        </div>
+
+    </div>
+
+
+    <div class="detail-section">
+
+        <h2 class="section-title">Đánh giá và bình luận sản phẩm</h2>
+
+        <div class="review-summary">
+
+            <div class="review-score">
+                <h3>@Model.DiemTrungBinh.ToString("0.0")/5</h3>
+                <p>Dựa trên @Model.TongDanhGia đánh giá</p>
+            </div>
+
+            <div class="stars">
+                @for (int i = 1; i <= 5; i++)
+                {
+                    if (i <= Math.Round(Model.DiemTrungBinh))
+                    {
+                        <i class="fa-solid fa-star"></i>
+                    }
+                    else
+                    {
+                        <i class="fa-regular fa-star"></i>
+                    }
+                }
+            </div>
+
+        </div>
+
+
+        @if (Model.DaDangNhap && Model.DaMuaSanPham && !Model.DaDanhGia)
+        {
+            <div class="review-form">
+
+                <h4>Viết đánh giá của bạn</h4>
+
+                @using (Html.BeginForm("AddReview", "Product", FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+
+                    <input type="hidden" name="MaSP" value="@product.MaSP" />
+
+                    <div class="star-select">
+
+                        <label>
+                            <input type="radio" name="SoSao" value="1" required />
+                            1 sao
+                        </label>
+
+                        <label>
+                            <input type="radio" name="SoSao" value="2" />
+                            2 sao
+                        </label>
+
+                        <label>
+                            <input type="radio" name="SoSao" value="3" />
+                            3 sao
+                        </label>
+
+                        <label>
+                            <input type="radio" name="SoSao" value="4" />
+                            4 sao
+                        </label>
+
+                        <label>
+                            <input type="radio" name="SoSao" value="5" checked />
+                            5 sao
+                        </label>
+
+                    </div>
+
+                    <textarea name="BinhLuan"
+                              placeholder="Nhập bình luận của bạn về sản phẩm..."
+                              required></textarea>
+
+                    <button type="submit" class="btn-review">
+                        <i class="fa-solid fa-paper-plane me-2"></i>
+                        Gửi đánh giá
+                    </button>
+                }
+
+            </div>
+        }
+        else
+        {
+            <div class="review-form review-note">
+
+                @if (!Model.DaDangNhap)
+                {
+                    <h4>Bạn cần đăng nhập để đánh giá</h4>
+                    <p>Vui lòng đăng nhập tài khoản khách hàng trước khi gửi đánh giá sản phẩm.</p>
+                }
+                else if (!Model.DaMuaSanPham)
+                {
+                    <h4>Chỉ khách hàng đã mua sản phẩm mới được đánh giá</h4>
+                    <p>Bạn có thể xem đánh giá của khách hàng khác, nhưng chỉ được đánh giá sau khi đã mua sản phẩm này.</p>
+                }
+                else if (Model.DaDanhGia)
+                {
+                    <h4>Bạn đã đánh giá sản phẩm này</h4>
+                    <p>Mỗi khách hàng chỉ được gửi một đánh giá cho một sản phẩm.</p>
+                }
+
+            </div>
+        }
+
+
+        @if (Model.Reviews.Any())
+        {
+            foreach (var item in Model.Reviews)
+            {
+                <div class="review-item">
+
+                    <div class="review-head">
+
+                        <div>
+                            <strong>@item.TenKhachHang</strong>
+
+                            <div class="stars">
+                                @for (int i = 1; i <= 5; i++)
+                                {
+                                    if (i <= item.SoSao)
+                                    {
+                                        <i class="fa-solid fa-star"></i>
+                                    }
+                                    else
+                                    {
+                                        <i class="fa-regular fa-star"></i>
+                                    }
+                                }
+                            </div>
+                        </div>
+
+                        <span class="review-date">
+                            @item.NgayDanhGia.ToString("dd/MM/yyyy HH:mm")
+                        </span>
+
+                    </div>
+
+                    <p class="review-text">
+                        @item.BinhLuan
+                    </p>
+
+                </div>
+            }
+        }
+        else
+        {
+            <div class="empty-product">
+                <i class="fa-regular fa-comment-dots"></i>
+                <h4>Chưa có đánh giá</h4>
+                <p>Hãy là người đầu tiên đánh giá sản phẩm này.</p>
+            </div>
+        }
+
+    </div>
+
+
+    @if (Model.RelatedProducts.Any())
+    {
+        <div class="detail-section">
+
+            <h2 class="section-title">Sản phẩm liên quan</h2>
+
+            <div class="related-grid">
+
+                @foreach (var item in Model.RelatedProducts)
+                {
+                    var relatedImage = string.IsNullOrWhiteSpace(item.HinhAnh)
+                        ? "~/Content/images/no-image.jpg"
+                        : item.HinhAnh;
+
+                    <a href="@Url.RouteUrl("ProductDetail", new { slug = item.Slug })"
+                       class="related-card">
+
+                        <div class="related-img">
+                            <img src="@Url.Content(relatedImage)" alt="@item.TenSP" />
+                        </div>
+
+                        <div class="related-info">
+                            <h4>@item.TenSP</h4>
+                            <p>@item.GiaHienTai.ToString("N0")đ</p>
+                        </div>
+
+                    </a>
+                }
+
+            </div>
+
+        </div>
+    }
+
+</section>

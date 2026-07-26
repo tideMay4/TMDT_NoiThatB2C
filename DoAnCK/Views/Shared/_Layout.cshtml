@@ -8,19 +8,13 @@
     <meta name="viewport"
           content="width=device-width, initial-scale=1" />
 
-    <title>@ViewBag.Title</title>
-
-    <!-- Bootstrap -->
+    <title>@ViewBag.Title - Moderno</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
           rel="stylesheet">
 
-    <!-- Font Awesome -->
-
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
-
-    <!-- Google Font -->
 
     <link rel="preconnect"
           href="https://fonts.googleapis.com">
@@ -35,13 +29,392 @@
     <link href="~/Content/css/style.css"
           rel="stylesheet" />
 
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Poppins', sans-serif;
+            background: #f8f4ed;
+            color: #2b241f;
+        }
+
+        a {
+            text-decoration: none;
+        }
+
+        /* HEADER GIỐNG TRANG CHỦ */
+
+        .site-header {
+            width: 100%;
+            background: #fffdf8;
+            border-bottom: 1px solid #eadfd2;
+            position: sticky;
+            top: 0;
+            z-index: 999;
+        }
+
+        .site-header-inner {
+            max-width: 1180px;
+            height: 86px;
+            margin: 0 auto;
+            padding: 0 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+
+        .site-logo {
+            font-size: 26px;
+            font-weight: 800;
+            letter-spacing: 5px;
+            color: #6f4e37;
+            text-transform: uppercase;
+        }
+
+            .site-logo:hover {
+                color: #6f4e37;
+            }
+
+        .site-nav {
+            display: flex;
+            align-items: center;
+            gap: 34px;
+        }
+
+            .site-nav a {
+                font-size: 14px;
+                font-weight: 600;
+                color: #2b241f;
+                transition: 0.25s;
+            }
+
+                .site-nav a:hover,
+                .site-nav a.active {
+                    color: #b08a63;
+                }
+
+        .site-icons {
+            display: flex;
+            align-items: center;
+            gap: 18px;
+        }
+
+            .site-icons a {
+                color: #6f4e37;
+                font-size: 18px;
+                position: relative;
+            }
+
+        .cart-count {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            width: 18px;
+            height: 18px;
+            background: #b08a63;
+            color: #fff;
+            border-radius: 50%;
+            font-size: 11px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 700;
+        }
+
+        /* FOOTER GIỐNG TRANG CHỦ */
+
+        .site-footer {
+            background: #1f1f1f;
+            color: #ffffff;
+            padding: 70px 7% 24px;
+        }
+
+        .footer-inner {
+            max-width: 1180px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1.5fr 0.8fr 0.9fr 0.8fr 1fr;
+            gap: 42px;
+        }
+
+        .footer-brand h3 {
+            font-size: 28px;
+            font-weight: 800;
+            letter-spacing: 3px;
+            margin-bottom: 22px;
+        }
+
+        .footer-brand p {
+            color: #d6d6d6;
+            font-size: 14px;
+            line-height: 1.8;
+            margin-bottom: 22px;
+        }
+
+        .footer-social {
+            display: flex;
+            gap: 14px;
+        }
+
+            .footer-social a {
+                width: 38px;
+                height: 38px;
+                border-radius: 50%;
+                background: #2d2d2d;
+                color: #ffffff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                transition: 0.25s;
+            }
+
+                .footer-social a:hover {
+                    background: #b08a63;
+                }
+
+        .footer-col h4 {
+            font-size: 17px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            color: #ffffff;
+        }
+
+        .footer-col a,
+        .footer-col p {
+            display: block;
+            color: #d6d6d6;
+            font-size: 14px;
+            margin-bottom: 13px;
+            line-height: 1.6;
+        }
+
+            .footer-col a:hover {
+                color: #b08a63;
+            }
+
+        .footer-col i {
+            color: #d4ad7d;
+            margin-right: 8px;
+        }
+
+        .footer-bottom {
+            max-width: 1180px;
+            margin: 45px auto 0;
+            padding-top: 22px;
+            border-top: 1px solid #333333;
+            text-align: center;
+            color: #bdbdbd;
+            font-size: 13px;
+        }
+
+        @@media (max-width: 992px) {
+            .site-header-inner {
+                height: auto;
+                padding: 22px 24px;
+                flex-direction: column;
+                gap: 18px;
+            }
+
+            .site-nav {
+                flex-wrap: wrap;
+                justify-content: center;
+                gap: 22px;
+            }
+
+            .footer-inner {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @@media (max-width: 576px) {
+            .footer-inner {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    @RenderSection("styles", required: false)
+
 </head>
 
 <body>
 
+    @{
+        string currentController = ViewContext.RouteData.Values["controller"] != null
+            ? ViewContext.RouteData.Values["controller"].ToString()
+            : "";
+
+        string currentAction = ViewContext.RouteData.Values["action"] != null
+            ? ViewContext.RouteData.Values["action"].ToString()
+            : "";
+    }
+
+    <!-- HEADER -->
+
+    <header class="site-header">
+
+        <div class="site-header-inner">
+
+            <a href="@Url.Action("Index", "Home")" class="site-logo">
+                MODERNO
+            </a>
+
+            <nav class="site-nav">
+
+                <a href="@Url.Action("Index", "Home")"
+                   class="@(currentController == "Home" && currentAction == "Index" ? "active" : "")">
+                    Home
+                </a>
+
+                <a href="@Url.Content("~/Product")"
+                   class="@(currentController == "Product" ? "active" : "")">
+                    Product
+                </a>
+
+                <a href="@Url.Action("About", "Home")"
+                   class="@(currentController == "Home" && currentAction == "About" ? "active" : "")">
+                    About
+                </a>
+
+                <a href="#">
+                    Blog
+                </a>
+
+                <a href="@Url.Action("Contact", "Home")"
+                   class="@(currentController == "Home" && currentAction == "Contact" ? "active" : "")">
+                    Contact
+                </a>
+
+            </nav>
+
+            <div class="site-icons">
+
+                <a href="#">
+                    <i class="fa-solid fa-magnifying-glass"></i>
+                </a>
+
+                <a href="#">
+                    <i class="fa-regular fa-user"></i>
+                </a>
+
+                <a href="@Url.Action("Index", "Cart")">
+                    <i class="fa-solid fa-bag-shopping"></i>
+                    <span class="cart-count">0</span>
+                </a>
+
+            </div>
+
+        </div>
+
+    </header>
+
+
     @RenderBody()
 
+
+    <!-- FOOTER -->
+
+    <footer class="site-footer">
+
+        <div class="footer-inner">
+
+            <div class="footer-brand">
+
+                <h3>MODERNO</h3>
+
+                <p>
+                    Moderno là cửa hàng nội thất hiện đại, mang đến những sản phẩm
+                    chất lượng, thiết kế tối giản và phù hợp với mọi không gian sống.
+                </p>
+
+                <div class="footer-social">
+
+                    <a href="#">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-instagram"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-youtube"></i>
+                    </a>
+
+                    <a href="#">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </a>
+
+                </div>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h4>Danh mục</h4>
+
+                <a href="@Url.Content("~/Product")">Sofa</a>
+                <a href="@Url.Content("~/Product")">Bàn</a>
+                <a href="@Url.Content("~/Product")">Ghế</a>
+                <a href="@Url.Content("~/Product")">Giường</a>
+                <a href="@Url.Content("~/Product")">Tủ</a>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h4>Chính sách</h4>
+
+                <a href="#">Bảo hành</a>
+                <a href="#">Đổi trả</a>
+                <a href="#">Thanh toán</a>
+                <a href="#">Vận chuyển</a>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h4>Hỗ trợ</h4>
+
+                <a href="@Url.Action("About", "Home")">Giới thiệu</a>
+                <a href="@Url.Action("Contact", "Home")">Liên hệ</a>
+                <a href="#">FAQ</a>
+                <a href="#">Tin tức</a>
+
+            </div>
+
+            <div class="footer-col">
+
+                <h4>Liên hệ</h4>
+
+                <p>
+                    <i class="fa-solid fa-location-dot"></i>
+                    TP. Hồ Chí Minh
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-phone"></i>
+                    0123 456 789
+                </p>
+
+                <p>
+                    <i class="fa-solid fa-envelope"></i>
+                    moderno@gmail.com
+                </p>
+
+            </div>
+
+        </div>
+
+        <div class="footer-bottom">
+            © 2026 MODERNO Furniture. All Rights Reserved.
+        </div>
+
+    </footer>
+
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    @RenderSection("scripts", required: false)
 
 </body>
 

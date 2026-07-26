@@ -1,0 +1,566 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@using DoAnCK.Models
+
+@model IEnumerable<DoAnCK.Models.SANPHAM>
+
+@{
+    ViewBag.Title = "Product";
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    var categories = ViewBag.Categories as List<DANHMUC> ?? new List<DANHMUC>();
+    var categoryCounts = ViewBag.CategoryCounts as Dictionary<int, int> ?? new Dictionary<int, int>();
+    var selectedCategory = ViewBag.SelectedCategory as DANHMUC;
+
+    var products = Model != null ? Model.ToList() : new List<SANPHAM>();
+
+    string keyword = ViewBag.Keyword as string ?? "";
+    string sort = ViewBag.Sort as string ?? "";
+
+    int totalProducts = ViewBag.TotalProducts != null ? (int)ViewBag.TotalProducts : 0;
+
+    string baseProductUrl = Url.Content("~/Product");
+
+    string currentCategoryUrl = selectedCategory != null && !string.IsNullOrWhiteSpace(selectedCategory.Slug)
+        ? Url.Content("~/Product/" + selectedCategory.Slug)
+        : baseProductUrl;
+}
+
+<style>
+    .product-page {
+        background: #f8f4ed;
+        min-height: 100vh;
+        padding: 70px 7% 90px;
+        color: #3d332b;
+    }
+
+    .product-hero {
+        text-align: center;
+        margin-bottom: 48px;
+    }
+
+        .product-hero p {
+            font-size: 13px;
+            letter-spacing: 1.5px;
+            text-transform: uppercase;
+            color: #a9825a;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+
+        .product-hero h1 {
+            font-size: 46px;
+            font-weight: 800;
+            color: #3d332b;
+            margin-bottom: 12px;
+        }
+
+        .product-hero span {
+            font-size: 15px;
+            color: #7b6e64;
+        }
+
+    .product-layout {
+        max-width: 1180px;
+        margin: 0 auto;
+        display: grid;
+        grid-template-columns: 280px 1fr;
+        gap: 32px;
+        align-items: flex-start;
+    }
+
+    .product-sidebar {
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 22px;
+        padding: 24px;
+        position: sticky;
+        top: 110px;
+        box-shadow: 0 12px 34px rgba(111, 78, 55, 0.06);
+    }
+
+        .product-sidebar h3 {
+            font-size: 18px;
+            font-weight: 800;
+            color: #3d332b;
+            margin-bottom: 20px;
+        }
+
+    .category-link {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 14px 15px;
+        margin-bottom: 10px;
+        border-radius: 14px;
+        color: #5f5147;
+        background: #f8f2ea;
+        transition: 0.25s;
+        border: 1px solid transparent;
+        text-decoration: none;
+    }
+
+        .category-link span {
+            font-size: 14px;
+            font-weight: 700;
+        }
+
+        .category-link small {
+            background: #fffdf8;
+            border: 1px solid #eadfd2;
+            color: #a9825a;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .category-link:hover,
+        .category-link.active {
+            background: #a9825a;
+            color: #ffffff;
+            border-color: #a9825a;
+        }
+
+            .category-link:hover small,
+            .category-link.active small {
+                background: #fffdf8;
+                color: #8b6040;
+                border-color: #fffdf8;
+            }
+
+    .product-content {
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 24px;
+        padding: 28px;
+        box-shadow: 0 12px 34px rgba(111, 78, 55, 0.06);
+    }
+
+    .product-content-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+        .product-content-header h2 {
+            font-size: 26px;
+            font-weight: 800;
+            color: #3d332b;
+            margin-bottom: 6px;
+        }
+
+        .product-content-header p {
+            color: #7b6e64;
+            margin: 0;
+            font-size: 14px;
+        }
+
+    .product-filter-form {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+        flex-wrap: wrap;
+        margin-bottom: 26px;
+        padding: 16px;
+        background: #f8f2ea;
+        border: 1px solid #eadfd2;
+        border-radius: 18px;
+    }
+
+    .search-input-wrap {
+        position: relative;
+        flex: 1;
+        min-width: 240px;
+    }
+
+        .search-input-wrap i {
+            position: absolute;
+            top: 50%;
+            left: 15px;
+            transform: translateY(-50%);
+            color: #a9825a;
+        }
+
+        .search-input-wrap input {
+            width: 100%;
+            height: 46px;
+            border: 1px solid #eadfd2;
+            border-radius: 14px;
+            padding: 0 16px 0 42px;
+            background: #fffdf8;
+            color: #3d332b;
+            outline: none;
+            font-size: 14px;
+        }
+
+            .search-input-wrap input:focus {
+                border-color: #a9825a;
+            }
+
+    .sort-select {
+        height: 46px;
+        min-width: 180px;
+        border: 1px solid #eadfd2;
+        border-radius: 14px;
+        padding: 0 14px;
+        background: #fffdf8;
+        color: #5f5147;
+        outline: none;
+        font-size: 14px;
+    }
+
+    .btn-filter {
+        height: 46px;
+        border: none;
+        border-radius: 14px;
+        padding: 0 22px;
+        background: #a9825a;
+        color: #ffffff;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+        .btn-filter:hover {
+            background: #8b6040;
+        }
+
+    .btn-clear {
+        height: 46px;
+        border-radius: 14px;
+        padding: 0 18px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #8b6040;
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        font-weight: 700;
+        font-size: 14px;
+        text-decoration: none;
+    }
+
+        .btn-clear:hover {
+            background: #eadfd2;
+            color: #6f4e37;
+        }
+
+    .product-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 24px;
+    }
+
+    .product-card {
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 20px;
+        overflow: hidden;
+        transition: 0.3s;
+    }
+
+        .product-card:hover {
+            transform: translateY(-6px);
+            box-shadow: 0 18px 45px rgba(111, 78, 55, 0.12);
+        }
+
+    .product-img {
+        height: 230px;
+        background: #f4eee6;
+        overflow: hidden;
+    }
+
+        .product-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
+        }
+
+    .product-info {
+        padding: 18px;
+    }
+
+        .product-info p {
+            font-size: 13px;
+            color: #a9825a;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .product-info h4 {
+            font-size: 17px;
+            font-weight: 800;
+            color: #3d332b;
+            margin-bottom: 12px;
+            line-height: 1.4;
+            min-height: 48px;
+        }
+
+    .product-price {
+        font-size: 17px;
+        font-weight: 800;
+        color: #8b6040;
+        margin-bottom: 16px;
+    }
+
+    .product-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 100%;
+        height: 42px;
+        background: #a9825a;
+        color: #ffffff;
+        border-radius: 12px;
+        font-size: 14px;
+        font-weight: 700;
+        transition: 0.25s;
+        text-decoration: none;
+    }
+
+        .product-btn:hover {
+            background: #8b6040;
+            color: #ffffff;
+        }
+
+    .empty-product {
+        text-align: center;
+        padding: 70px 20px;
+        color: #7b6e64;
+    }
+
+        .empty-product i {
+            font-size: 46px;
+            color: #a9825a;
+            margin-bottom: 18px;
+        }
+
+        .empty-product h4 {
+            font-size: 22px;
+            font-weight: 800;
+            color: #3d332b;
+            margin-bottom: 8px;
+        }
+
+    @@media (max-width: 1100px) {
+        .product-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+
+    @@media (max-width: 900px) {
+        .product-layout {
+            grid-template-columns: 1fr;
+        }
+
+        .product-sidebar {
+            position: static;
+        }
+
+        .product-content-header {
+            flex-direction: column;
+        }
+    }
+
+    @@media (max-width: 600px) {
+        .product-page {
+            padding: 45px 18px 60px;
+        }
+
+        .product-hero h1 {
+            font-size: 34px;
+        }
+
+        .product-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<section class="product-page">
+
+    <div class="product-hero">
+
+        <p>Modern Furniture Collection</p>
+
+        @if (selectedCategory != null)
+        {
+            <h1>@selectedCategory.TenDM</h1>
+
+            if (!string.IsNullOrWhiteSpace(selectedCategory.MoTa))
+            {
+                <span>@selectedCategory.MoTa</span>
+            }
+            else
+            {
+                <span>Danh sách sản phẩm thuộc danh mục @selectedCategory.TenDM.</span>
+            }
+        }
+        else
+        {
+            <h1>Product</h1>
+            <span>Khám phá các danh mục sản phẩm nội thất đang có tại cửa hàng.</span>
+        }
+
+    </div>
+
+
+    <div class="product-layout">
+
+        <aside class="product-sidebar">
+
+            <h3>Danh mục sản phẩm</h3>
+
+            <a href="@Url.Content("~/Product")"
+               class="category-link @(selectedCategory == null ? "active" : "")">
+
+                <span>Tất cả sản phẩm</span>
+                <small>@totalProducts</small>
+
+            </a>
+
+            @foreach (var cate in categories)
+            {
+                var count = categoryCounts.ContainsKey(cate.MaDM) ? categoryCounts[cate.MaDM] : 0;
+
+                <a href="@Url.Content("~/Product/" + cate.Slug)"
+                   class="category-link @(selectedCategory != null && selectedCategory.MaDM == cate.MaDM ? "active" : "")">
+
+                    <span>@cate.TenDM</span>
+                    <small>@count</small>
+
+                </a>
+            }
+
+        </aside>
+
+
+        <div class="product-content">
+
+            <div class="product-content-header">
+
+                <div>
+                    @if (selectedCategory != null)
+                    {
+                        <h2>@selectedCategory.TenDM</h2>
+                    }
+                    else
+                    {
+                        <h2>Tất cả sản phẩm</h2>
+                    }
+
+                    <p>Hiển thị @products.Count sản phẩm</p>
+                </div>
+
+            </div>
+
+
+            <form method="get"
+                  action="@currentCategoryUrl"
+                  class="product-filter-form">
+
+                <div class="search-input-wrap">
+
+                    <i class="fa-solid fa-magnifying-glass"></i>
+
+                    <input type="text"
+                           name="keyword"
+                           value="@keyword"
+                           placeholder="Tìm kiếm sản phẩm theo tên, slug, mô tả SEO..." />
+
+                </div>
+
+                <select name="sort"
+                        class="sort-select"
+                        onchange="this.form.submit()">
+
+                    <option value="" @(string.IsNullOrEmpty(sort) ? "selected" : "")>Mới nhất</option>
+
+                    <option value="price-asc" @(sort == "price-asc" ? "selected" : "")>Giá tăng dần</option>
+
+                    <option value="price-desc" @(sort == "price-desc" ? "selected" : "")>Giá giảm dần</option>
+
+                    <option value="name-asc" @(sort == "name-asc" ? "selected" : "")>Tên A - Z</option>
+
+                </select>
+
+                <button type="submit" class="btn-filter">
+
+                    <i class="fa-solid fa-filter"></i>
+                    Lọc
+
+                </button>
+
+                <a href="@currentCategoryUrl" class="btn-clear">
+
+                    Xóa lọc
+
+                </a>
+
+            </form>
+
+
+            @if (products.Any())
+            {
+                <div class="product-grid">
+
+                    @foreach (var item in products)
+                    {
+                        var imageUrl = string.IsNullOrWhiteSpace(item.HinhAnh)
+                            ? "~/Content/images/no-image.jpg"
+                            : item.HinhAnh;
+
+                        <div class="product-card">
+
+                            <div class="product-img">
+
+                                <img src="@Url.Content(imageUrl)"
+                                     alt="@item.TenSP" />
+
+                            </div>
+
+                            <div class="product-info">
+
+                                <p>@(item.DANHMUC != null ? item.DANHMUC.TenDM : "Chưa phân loại")</p>
+
+                                <h4>@item.TenSP</h4>
+
+                                <div class="product-price">
+                                    @item.GiaHienTai.ToString("N0")đ
+                                </div>
+
+                                <a href="@Url.RouteUrl("ProductDetail", new { slug = item.Slug })" class="product-btn">
+                                    Xem chi tiết
+                                </a>
+
+                            </div>
+
+                        </div>
+                    }
+
+                </div>
+            }
+            else
+            {
+                <div class="empty-product">
+
+                    <i class="fa-solid fa-box-open"></i>
+
+                    <h4>Không tìm thấy sản phẩm</h4>
+
+                    <p>Không có sản phẩm phù hợp với danh mục hoặc từ khóa tìm kiếm.</p>
+
+                </div>
+            }
+
+        </div>
+
+    </div>
+
+</section>
