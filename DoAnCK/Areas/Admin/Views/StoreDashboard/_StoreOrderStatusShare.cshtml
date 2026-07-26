@@ -1,0 +1,98 @@
+﻿@* Areas/Admin/Views/StoreDashboard/_StoreOrderStatusShare.cshtml *@
+
+<div class="card shadow-sm border-0 rounded-3 h-100 p-3">
+    <div class="d-flex justify-content-between align-items-center mb-2">
+        <div>
+            <h6 class="fw-bold mb-0" style="color: #7A5C43; font-size: 1.05rem;">
+                <i class="fa-solid fa-chart-pie me-2"></i>Tỉ lệ trạng thái đơn hàng
+            </h6>
+            <small class="text-muted">Phân bổ đơn hàng theo trạng thái hiện tại</small>
+        </div>
+        <span class="badge bg-light text-dark border">
+            Tổng: <strong>@(ViewBag.TotalOrders ?? 0)</strong> đơn
+        </span>
+    </div>
+
+    <!-- Khung chứa Biểu đồ -->
+    <div class="position-relative d-flex align-items-center justify-content-center flex-grow-1" style="min-height: 240px;">
+        @if (ViewBag.TotalOrders != null && (int)ViewBag.TotalOrders > 0)
+        {
+            <canvas id="storeOrderStatusChart" style="max-height: 230px;"></canvas>
+        }
+        else
+        {
+            <div class="text-center text-muted my-auto py-4">
+                <i class="fa-solid fa-chart-line fa-2x mb-2 text-secondary opacity-50"></i>
+                <p class="mb-0 fs-7">Chưa có dữ liệu đơn hàng để hiển thị biểu đồ.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Script Chart.js vẽ biểu đồ -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var canvas = document.getElementById('storeOrderStatusChart');
+        if (!canvas) return;
+
+        var labelsData = @Html.Raw(ViewBag.StatusLabels ?? "[]");
+        var countsData = @Html.Raw(ViewBag.StatusCounts ?? "[]");
+
+        // Tự động gán màu cho các trạng thái quen thuộc
+        var colorMap = {
+            "Hoàn thành": "#2e7d32",     // Xanh lá
+            "Đã giao": "#2e7d32",
+            "Đang giao": "#0288d1",      // Xanh dương
+            "Đang vận chuyển": "#0288d1",
+            "Đang xử lý": "#ed6c02",     // Cam
+            "Chờ xử lý": "#ed6c02",
+            "Chờ xác nhận": "#ff9800",
+            "Đã hủy": "#d32f2f"          // Đỏ
+        };
+
+        // Tạo mảng màu tương ứng với dữ liệu trả về từ C#
+        var backgroundColors = labelsData.map(function (label) {
+            return colorMap[label] || "#757575"; // Mặc định xám nếu trạng thái lạ
+        });
+
+        var ctx = canvas.getContext('2d');
+        new Chart(ctx, {
+            type: 'doughnut', // Dạng vành khăn
+            data: {
+                labels: labelsData,
+                datasets: [{
+                    data: countsData,
+                    backgroundColor: backgroundColors,
+                    borderWidth: 2,
+                    borderColor: '#ffffff'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            boxWidth: 12,
+                            padding: 12,
+                            font: { size: 12 }
+                        }
+                    },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                var total = context.dataset.data.reduce((a, b) => a + b, 0);
+                                var value = context.raw;
+                                var percentage = ((value / total) * 100).toFixed(1);
+                                return ' ' + context.label + ': ' + value + ' đơn (' + percentage + '%)';
+                            }
+                        }
+                    }
+                },
+                cutout: '65%' // Độ rỗng ở giữa biểu đồ
+            }
+        });
+    });
+</script>

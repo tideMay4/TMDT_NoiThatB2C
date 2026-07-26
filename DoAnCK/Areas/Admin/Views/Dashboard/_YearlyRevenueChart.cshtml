@@ -1,0 +1,68 @@
+﻿@model DoAnCK.Areas.Admin.Models.YearlyRevenueChartViewModel
+
+<div class="card-box">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Doanh thu sàn năm @Model.Nam</div>
+            <small class="text-muted">Tổng: @Model.TongDoanhThuCaNam.ToString("N0") VNĐ</small>
+        </div>
+        <a href="#" class="card-link">Xem báo cáo</a>
+    </div>
+
+    <div class="chart-box" style="position: relative; height: 300px;">
+        <canvas id="revenueChart"></canvas>
+    </div>
+</div>
+
+<script>
+    // 1. Lưu dữ liệu động từ C# vào biến window toàn cục
+    window.yearlyRevenueData = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DoanhThu12Thang));
+
+    // 2. Hàm vẽ chart dùng chung
+    function renderYearlyRevenueChart() {
+        const ctxRev = document.getElementById('revenueChart');
+        if (!ctxRev) return;
+
+        // Xóa chart cũ nếu đã tồn tại để tránh đè canvas
+        const existingChart = Chart.getChart(ctxRev);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        const labelsRevenue = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+
+        new Chart(ctxRev.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: labelsRevenue,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: window.yearlyRevenueData || [],
+                    borderColor: '#8B5E3C',
+                    backgroundColor: 'rgba(139, 94, 60, 0.12)',
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#6F4E37',
+                    pointRadius: 5,
+                    pointHoverRadius: 7
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: { legend: { display: false } },
+                scales: {
+                    x: { grid: { display: false }, ticks: { color: '#786C66' } },
+                    y: { grid: { borderDash: [4, 4], color: '#EBE3DB' }, ticks: { color: '#786C66' } }
+                }
+            }
+        });
+    }
+
+    // Tự động gọi khi script này nạp xong
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(renderYearlyRevenueChart, 100);
+    } else {
+        document.addEventListener("DOMContentLoaded", renderYearlyRevenueChart);
+    }
+</script>

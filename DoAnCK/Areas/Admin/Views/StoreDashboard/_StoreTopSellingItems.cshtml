@@ -1,0 +1,65 @@
+﻿@model List<DoAnCK.Areas.Admin.Models.StoreTopProductViewModel>
+
+<div class="card-box shadow-sm p-3 rounded-3 background-white">
+    <div class="card-header d-flex justify-content-between align-items-center bg-transparent border-0 px-0 pb-2">
+        <div>
+            <div class="card-title fw-bold" style="color: #7A5C43; font-size: 1.05rem;">
+                <i class="fa-solid fa-fire text-danger me-1"></i>Sản phẩm bán chạy
+            </div>
+            <small class="text-muted">Sản phẩm có lượng tiêu thụ tốt nhất của shop</small>
+        </div>
+        <span class="badge" style="background-color: #7A5C43;">Top sản phẩm</span>
+    </div>
+
+    <div class="chart-box mt-2" style="position: relative; max-height: 320px; overflow-y: auto;">
+        @if (Model != null && Model.Any())
+        {
+            // Tính tổng số lượng bán của top này để làm gốc tính %
+            int totalTopSold = Model.Sum(x => x.SoLuongDaBan);
+
+            foreach (var item in Model)
+            {
+                // Tính % đóng góp của sản phẩm này
+                double percent = totalTopSold > 0 ? Math.Round((double)item.SoLuongDaBan / totalTopSold * 100, 1) : 0;
+
+                <div class="sold-item mb-3">
+                    <!-- Tên SP & Số lượng + % -->
+                    <div class="d-flex justify-content-between align-items-center mb-1">
+                        <span class="fw-semibold text-truncate" style="color: #332C28; font-size: 13px; max-width: 70%;" title="@item.TenSP">
+                            @item.TenSP
+                        </span>
+                        <span class="fw-bold" style="color: #7A5C43; font-size: 13px;">
+                            @item.SoLuongDaBan.ToString("N0") sp <small class="text-muted fw-normal">(@percent%)</small>
+                        </span>
+                    </div>
+
+                    <!-- Progress Bar đơn -->
+                    <div class="progress" style="height: 8px; background-color: #EBE3DB; border-radius: 6px;">
+                        <div class="progress-bar"
+                             role="progressbar"
+                             style="width: @percent%; background-color: #7A5C43; border-radius: 6px;"
+                             aria-valuenow="@percent"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             title="@item.TenSP: @item.SoLuongDaBan sản phẩm">
+                        </div>
+                    </div>
+
+                    <!-- Doanh thu mang lại -->
+                    <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 11px; color: #786C66;">
+                        <span><i class="fa-solid fa-tag me-1" style="color: #7A5C43;"></i>Giá bán: @item.GiaBan.ToString("N0")đ</span>
+                        <span class="fw-semibold text-success"><i class="fa-solid fa-coins me-1"></i>@item.TongDoanhThu.ToString("N0")đ</span>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center py-4">
+                <p class="text-muted text-center my-auto">
+                    <i class="fa-solid fa-box-open me-2"></i>Chưa có dữ liệu bán hàng.
+                </p>
+            </div>
+        }
+    </div>
+</div>

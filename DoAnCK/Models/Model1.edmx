@@ -4,7 +4,7 @@
   <edmx:Runtime>
     <!-- SSDL content -->
     <edmx:StorageModels>
-      <Schema Namespace="DoAnNoiThatB2CModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+    <Schema Namespace="DoAnNoiThatB2CModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
         <EntityType Name="CHITIET_DONHANG">
           <Key>
             <PropertyRef Name="MaCTDH" />
@@ -25,6 +25,17 @@
           <Property Name="MaSP" Type="int" Nullable="false" />
           <Property Name="SoLuong" Type="int" Nullable="false" />
           <Property Name="Gia" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CUAHANG">
+          <Key>
+            <PropertyRef Name="MaTK" />
+          </Key>
+          <Property Name="MaTK" Type="int" Nullable="false" />
+          <Property Name="TenCH" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Logo" Type="nvarchar" MaxLength="255" />
+          <Property Name="MoTa" Type="nvarchar(max)" />
+          <Property Name="NgayThanhLap" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="DANHGIA">
           <Key>
@@ -95,8 +106,6 @@
           </Key>
           <Property Name="MaKH" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
           <Property Name="MaTK" Type="int" Nullable="false" />
-          <Property Name="HoTen" Type="nvarchar" MaxLength="100" Nullable="false" />
-          <Property Name="SDT" Type="varchar" MaxLength="20" />
           <Property Name="DiaChi" Type="nvarchar" MaxLength="255" />
           <Property Name="NgayDangKy" Type="datetime" Nullable="false" />
         </EntityType>
@@ -121,6 +130,8 @@
           <Property Name="NoiBat" Type="bit" Nullable="false" />
           <Property Name="TrangThai" Type="bit" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
+          <Property Name="MaTK_Store" Type="int" />
+          <Property Name="LuotXem" Type="int" Nullable="false" />
         </EntityType>
         <EntityType Name="TAIKHOAN">
           <Key>
@@ -134,6 +145,8 @@
           <Property Name="VaiTro" Type="nvarchar" MaxLength="30" Nullable="false" />
           <Property Name="TrangThai" Type="bit" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
+          <Property Name="RefreshToken" Type="nvarchar" MaxLength="255" />
+          <Property Name="RefreshTokenExpiryTime" Type="datetime" />
         </EntityType>
         <EntityType Name="THANHTOAN">
           <Key>
@@ -226,6 +239,20 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_CUAHANG_TAIKHOAN">
+          <End Role="TAIKHOAN" Type="Self.TAIKHOAN" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CUAHANG" Type="Self.CUAHANG" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="TAIKHOAN">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_DANHGIA_KHACHHANG">
           <End Role="KHACHHANG" Type="Self.KHACHHANG" Multiplicity="1" />
           <End Role="DANHGIA" Type="Self.DANHGIA" Multiplicity="*" />
@@ -298,6 +325,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SANPHAM_CUAHANG">
+          <End Role="CUAHANG" Type="Self.CUAHANG" Multiplicity="0..1" />
+          <End Role="SANPHAM" Type="Self.SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="SANPHAM">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SANPHAM_DANHMUC">
           <End Role="DANHMUC" Type="Self.DANHMUC" Multiplicity="1" />
           <End Role="SANPHAM" Type="Self.SANPHAM" Multiplicity="*" />
@@ -349,6 +388,7 @@
         <EntityContainer Name="DoAnNoiThatB2CModelStoreContainer">
           <EntitySet Name="CHITIET_DONHANG" EntityType="Self.CHITIET_DONHANG" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CHITIET_GIOHANG" EntityType="Self.CHITIET_GIOHANG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CUAHANG" EntityType="Self.CUAHANG" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DANHGIA" EntityType="Self.DANHGIA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DANHMUC" EntityType="Self.DANHMUC" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DONHANG" EntityType="Self.DONHANG" Schema="dbo" store:Type="Tables" />
@@ -376,6 +416,10 @@
             <End Role="SANPHAM" EntitySet="SANPHAM" />
             <End Role="CHITIET_GIOHANG" EntitySet="CHITIET_GIOHANG" />
           </AssociationSet>
+          <AssociationSet Name="FK_CUAHANG_TAIKHOAN" Association="Self.FK_CUAHANG_TAIKHOAN">
+            <End Role="TAIKHOAN" EntitySet="TAIKHOAN" />
+            <End Role="CUAHANG" EntitySet="CUAHANG" />
+          </AssociationSet>
           <AssociationSet Name="FK_DANHGIA_KHACHHANG" Association="Self.FK_DANHGIA_KHACHHANG">
             <End Role="KHACHHANG" EntitySet="KHACHHANG" />
             <End Role="DANHGIA" EntitySet="DANHGIA" />
@@ -400,6 +444,10 @@
             <End Role="TAIKHOAN" EntitySet="TAIKHOAN" />
             <End Role="KHACHHANG" EntitySet="KHACHHANG" />
           </AssociationSet>
+          <AssociationSet Name="FK_SANPHAM_CUAHANG" Association="Self.FK_SANPHAM_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANG" />
+            <End Role="SANPHAM" EntitySet="SANPHAM" />
+          </AssociationSet>
           <AssociationSet Name="FK_SANPHAM_DANHMUC" Association="Self.FK_SANPHAM_DANHMUC">
             <End Role="DANHMUC" EntitySet="DANHMUC" />
             <End Role="SANPHAM" EntitySet="SANPHAM" />
@@ -417,8 +465,7 @@
             <End Role="VANCHUYEN" EntitySet="VANCHUYEN" />
           </AssociationSet>
         </EntityContainer>
-      </Schema>
-    </edmx:StorageModels>
+      </Schema></edmx:StorageModels>
     <!-- CSDL content -->
     <edmx:ConceptualModels>
       <Schema Namespace="DoAnNoiThatB2CModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
@@ -526,8 +573,6 @@
           </Key>
           <Property Name="MaKH" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
           <Property Name="MaTK" Type="Int32" Nullable="false" />
-          <Property Name="HoTen" Type="String" MaxLength="100" FixedLength="false" Unicode="true" Nullable="false" />
-          <Property Name="SDT" Type="String" MaxLength="20" FixedLength="false" Unicode="false" />
           <Property Name="DiaChi" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
           <Property Name="NgayDangKy" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="DANHGIAs" Relationship="Self.FK_DANHGIA_KHACHHANG" FromRole="KHACHHANG" ToRole="DANHGIA" />
@@ -561,6 +606,9 @@
           <NavigationProperty Name="DANHGIAs" Relationship="Self.FK_DANHGIA_SANPHAM" FromRole="SANPHAM" ToRole="DANHGIA" />
           <NavigationProperty Name="DANHMUC" Relationship="Self.FK_SANPHAM_DANHMUC" FromRole="SANPHAM" ToRole="DANHMUC" />
           <NavigationProperty Name="GIAs" Relationship="Self.FK_GIA_SANPHAM" FromRole="SANPHAM" ToRole="GIA" />
+          <Property Name="MaTK_Store" Type="Int32" />
+          <NavigationProperty Name="CUAHANG" Relationship="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG" FromRole="SANPHAM" ToRole="CUAHANG" />
+          <Property Name="LuotXem" Type="Int32" Nullable="false" />
         </EntityType>
         <EntityType Name="TAIKHOAN">
           <Key>
@@ -576,6 +624,9 @@
           <Property Name="NgayTao" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="KHACHHANGs" Relationship="Self.FK_KHACHHANG_TAIKHOAN" FromRole="TAIKHOAN" ToRole="KHACHHANG" />
           <NavigationProperty Name="TIN_TUC" Relationship="Self.FK_TIN_TUC_TAIKHOAN" FromRole="TAIKHOAN" ToRole="TIN_TUC" />
+          <NavigationProperty Name="CUAHANG" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN" FromRole="TAIKHOAN" ToRole="CUAHANG" />
+          <Property Name="RefreshToken" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="RefreshTokenExpiryTime" Type="DateTime" Precision="3" />
         </EntityType>
         <EntityType Name="THANHTOAN">
           <Key>
@@ -861,7 +912,55 @@
             <End Role="TAIKHOAN" EntitySet="TAIKHOANs" />
             <End Role="TIN_TUC" EntitySet="TIN_TUC" />
           </AssociationSet>
+          <EntitySet Name="CUAHANGs" EntityType="DoAnNoiThatB2CModel.CUAHANG" />
+          <AssociationSet Name="FK_CUAHANG_TAIKHOAN" Association="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN">
+            <End Role="TAIKHOAN" EntitySet="TAIKHOANs" />
+            <End Role="CUAHANG" EntitySet="CUAHANGs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SANPHAM_CUAHANG" Association="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANGs" />
+            <End Role="SANPHAM" EntitySet="SANPHAMs" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="CUAHANG">
+          <Key>
+            <PropertyRef Name="MaTK" />
+          </Key>
+          <Property Name="MaTK" Type="Int32" Nullable="false" />
+          <Property Name="TenCH" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="DiaChi" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Logo" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NgayThanhLap" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="TAIKHOAN" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN" FromRole="CUAHANG" ToRole="TAIKHOAN" />
+          <NavigationProperty Name="SANPHAMs" Relationship="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG" FromRole="CUAHANG" ToRole="SANPHAM" />
+        </EntityType>
+        <Association Name="FK_CUAHANG_TAIKHOAN">
+          <End Type="DoAnNoiThatB2CModel.TAIKHOAN" Role="TAIKHOAN" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DoAnNoiThatB2CModel.CUAHANG" Role="CUAHANG" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="TAIKHOAN">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SANPHAM_CUAHANG">
+          <End Type="DoAnNoiThatB2CModel.CUAHANG" Role="CUAHANG" Multiplicity="0..1" />
+          <End Type="DoAnNoiThatB2CModel.SANPHAM" Role="SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="SANPHAM">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -963,8 +1062,6 @@
               <MappingFragment StoreEntitySet="KHACHHANG">
                 <ScalarProperty Name="MaKH" ColumnName="MaKH" />
                 <ScalarProperty Name="MaTK" ColumnName="MaTK" />
-                <ScalarProperty Name="HoTen" ColumnName="HoTen" />
-                <ScalarProperty Name="SDT" ColumnName="SDT" />
                 <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
                 <ScalarProperty Name="NgayDangKy" ColumnName="NgayDangKy" />
               </MappingFragment>
@@ -973,6 +1070,8 @@
           <EntitySetMapping Name="SANPHAMs">
             <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.SANPHAM">
               <MappingFragment StoreEntitySet="SANPHAM">
+                <ScalarProperty Name="LuotXem" ColumnName="LuotXem" />
+                <ScalarProperty Name="MaTK_Store" ColumnName="MaTK_Store" />
                 <ScalarProperty Name="MaSP" ColumnName="MaSP" />
                 <ScalarProperty Name="MaDM" ColumnName="MaDM" />
                 <ScalarProperty Name="TenSP" ColumnName="TenSP" />
@@ -996,6 +1095,8 @@
           <EntitySetMapping Name="TAIKHOANs">
             <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.TAIKHOAN">
               <MappingFragment StoreEntitySet="TAIKHOAN">
+                <ScalarProperty Name="RefreshTokenExpiryTime" ColumnName="RefreshTokenExpiryTime" />
+                <ScalarProperty Name="RefreshToken" ColumnName="RefreshToken" />
                 <ScalarProperty Name="MaTK" ColumnName="MaTK" />
                 <ScalarProperty Name="HoTen" ColumnName="HoTen" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -1050,6 +1151,18 @@
                 <ScalarProperty Name="NgayGiaoDuKien" ColumnName="NgayGiaoDuKien" />
                 <ScalarProperty Name="NgayGiaoThucTe" ColumnName="NgayGiaoThucTe" />
                 <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUAHANGs">
+            <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.CUAHANG">
+              <MappingFragment StoreEntitySet="CUAHANG">
+                <ScalarProperty Name="NgayThanhLap" ColumnName="NgayThanhLap" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="Logo" ColumnName="Logo" />
+                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
+                <ScalarProperty Name="TenCH" ColumnName="TenCH" />
+                <ScalarProperty Name="MaTK" ColumnName="MaTK" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

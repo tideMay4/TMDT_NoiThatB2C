@@ -40,6 +40,8 @@ namespace DoAnCK.Models
         public bool NoiBat { get; set; }
         public bool TrangThai { get; set; }
         public System.DateTime NgayTao { get; set; }
+        public Nullable<int> MaTK_Store { get; set; }
+        public int LuotXem { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CHITIET_DONHANG> CHITIET_DONHANG { get; set; }
@@ -50,5 +52,6 @@ namespace DoAnCK.Models
         public virtual DANHMUC DANHMUC { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GIA> GIAs { get; set; }
+        public virtual CUAHANG CUAHANG { get; set; }
     }
 }

@@ -25,38 +25,19 @@
 
 <div class="dashboard fade-up">
 
+    <!-- Cột 1 -->
     @Html.Action("_TotalRevenue", "Dashboard")
 
-
+    <!-- Cột 2 -->
     @Html.Action("_TotalOrders", "Dashboard")
 
+    <!-- Cột 3 -->
+    @Html.Action("_TotalActiveStores", "Dashboard")
 
-    <div class="stat-card">
-
-        <div class="stat-top">
-
-            <div>
-                <div class="stat-title">Khách hàng</div>
-                <div class="stat-value">1.258</div>
-                <div class="stat-footer">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    +5.4% so với tháng trước
-                </div>
-            </div>
-
-            <div class="stat-icon bg-orange">
-                <i class="fa-solid fa-users"></i>
-            </div>
-
-        </div>
-
-    </div>
-
-
-    @Html.Action("_TotalProductSales", "Dashboard")
+    <!-- Cột 4 -->
+    @Html.Action("_TotalCustomers", "Dashboard")
 
 </div>
-
 
 <!-- ===================== MAIN CONTENT ===================== -->
 
@@ -64,31 +45,11 @@
 
     <!-- Revenue Chart -->
 
-    <div class="card-box">
+    @Html.Action("_YearlyRevenueChart", "Dashboard")
 
-        <div class="card-header">
+    <!-- Top ProductView -->
 
-            <div>
-                <div class="card-title">Tổng quan doanh thu</div>
-                <small class="text-muted">Hiệu suất doanh thu theo tháng</small>
-            </div>
-
-            <a href="#" class="card-link">
-                Xem báo cáo
-            </a>
-
-        </div>
-
-        <div class="chart-box">
-            <canvas id="revenueChart"></canvas>
-        </div>
-
-    </div>
-
-
-    <!-- Top Categories -->
-
-    @Html.Action("_TopCategories", "Dashboard")
+    @Html.Action("_TopProductViews", "Dashboard")
 
 </div>
 
@@ -97,293 +58,7 @@
 
 <div class="table-box fade-up">
 
-    <div class="card-header">
-
-        <div>
-            <div class="card-title">Đơn hàng gần đây</div>
-            <small class="text-muted">Các đơn hàng mới nhất của khách hàng</small>
-        </div>
-
-        <div class="d-flex gap-2">
-
-            <button class="btn-outline-admin">
-                <i class="fa-solid fa-filter"></i>
-                Bộ lọc
-            </button>
-
-            <button class="btn-admin">
-                <i class="fa-solid fa-plus"></i>
-                Tạo đơn mới
-            </button>
-
-        </div>
-
-    </div>
-
-
-    <div class="filter-bar">
-
-        <div class="filter-left">
-
-            <input type="text"
-                   class="form-control"
-                   placeholder="Tìm kiếm đơn hàng..."
-                   style="width:280px;" />
-
-            <select class="form-select" style="width:190px;">
-                <option>Tất cả trạng thái</option>
-                <option>Hoàn thành</option>
-                <option>Đang giao</option>
-                <option>Chờ xử lý</option>
-                <option>Đã hủy</option>
-            </select>
-
-        </div>
-
-        <div class="filter-right">
-
-            <select class="form-select" style="width:140px;">
-                <option>2026</option>
-                <option>2025</option>
-                <option>2024</option>
-            </select>
-
-        </div>
-
-    </div>
-
-
-    <div class="table-responsive">
-
-        <table class="table">
-
-            <thead>
-
-                <tr>
-                    <th>Mã đơn</th>
-                    <th>Khách hàng</th>
-                    <th>Sản phẩm</th>
-                    <th>Ngày đặt</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th class="text-end">Thao tác</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <tr>
-
-                    <td>#ORD-1025</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=1" />
-                            <div>
-                                <h6>Nguyễn Văn A</h6>
-                                <span>nguyenvana@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Sofa Luxury</td>
-
-                    <td>07/07/2026</td>
-
-                    <td>18.500.000đ</td>
-
-                    <td>
-                        <span class="badge-success">Hoàn thành</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1024</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=2" />
-                            <div>
-                                <h6>Trần Thị B</h6>
-                                <span>tranthib@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Bàn gỗ tự nhiên</td>
-
-                    <td>07/07/2026</td>
-
-                    <td>9.300.000đ</td>
-
-                    <td>
-                        <span class="badge-warning">Đang giao</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1023</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=3" />
-                            <div>
-                                <h6>Lê Minh C</h6>
-                                <span>leminhc@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Bộ giường ngủ</td>
-
-                    <td>06/07/2026</td>
-
-                    <td>25.900.000đ</td>
-
-                    <td>
-                        <span class="badge-success">Hoàn thành</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1022</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=4" />
-                            <div>
-                                <h6>Phạm Quốc D</h6>
-                                <span>phamquocd@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Ghế văn phòng</td>
-
-                    <td>06/07/2026</td>
-
-                    <td>4.700.000đ</td>
-
-                    <td>
-                        <span class="badge-danger">Đã hủy</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1021</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=5" />
-                            <div>
-                                <h6>Đỗ Thanh E</h6>
-                                <span>dothanhe@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Ghế sân vườn</td>
-
-                    <td>05/07/2026</td>
-
-                    <td>3.200.000đ</td>
-
-                    <td>
-                        <span class="badge-warning">Chờ xử lý</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
-
-    </div>
-
-
-    <nav>
-
-        <ul class="pagination">
-
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">
-                    <i class="fa-solid fa-angle-right"></i>
-                </a>
-            </li>
-
-        </ul>
-
-    </nav>
+    @Html.Action("_RecentTransactions", "Dashboard")
 
 </div>
 
@@ -392,56 +67,11 @@
 
 <div class="content-grid mt-4 fade-up">
 
-    <div class="content-grid mt-4 fade-up">
+    <!-- Bên Trái: Biểu đồ cột Thị phần sản phẩm bán ra theo Cửa hàng -->
+    @Html.Action("_StoreSalesShare", "Dashboard", new { area = "Admin" })
 
-        @Html.Action("_BestSellers", "Dashboard", new { area = "Admin" })
-
-    </div>
-
-
-    <div class="card-box">
-
-        <div class="card-header">
-
-            <div>
-                <div class="card-title">Hoạt động gần đây</div>
-                <small class="text-muted">Các thao tác mới nhất trong hệ thống</small>
-            </div>
-
-        </div>
-
-        <div class="activity-list">
-
-            <div class="activity-item">
-                <div class="activity-dot green"></div>
-                <div>
-                    <h6>Đơn hàng mới</h6>
-                    <p>#ORD-1025 vừa được tạo</p>
-                    <span>5 phút trước</span>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-dot blue"></div>
-                <div>
-                    <h6>Cập nhật sản phẩm</h6>
-                    <p>Thông tin Sofa hiện đại đã được chỉnh sửa</p>
-                    <span>25 phút trước</span>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-dot orange"></div>
-                <div>
-                    <h6>Khách hàng mới</h6>
-                    <p>Một tài khoản khách hàng mới đã đăng ký</p>
-                    <span>1 giờ trước</span>
-                </div>
-            </div>
-
-        </div>
-
-    </div>
+    <!-- Bên Phải: Top sản phẩm bán chạy (So sánh giữa các Cửa hàng) -->
+    @Html.Action("_TopSoldItemsCompare", "Dashboard", new { area = "Admin" })
 
 </div>
 

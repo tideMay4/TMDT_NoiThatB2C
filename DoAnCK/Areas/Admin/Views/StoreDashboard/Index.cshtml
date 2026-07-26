@@ -1,0 +1,144 @@
+﻿@{
+    ViewBag.Title = "Dashboard Cửa hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<!-- ===================== PAGE TITLE ===================== -->
+
+<div class="page-title fade-up">
+
+    <div>
+        <h2>Dashboard Cửa Hàng</h2>
+        <p>Chào mừng quay lại, <strong>@ViewBag.TenCuaHang</strong>. Đây là tổng quan tình hình kinh doanh của cửa hàng hôm nay.</p>
+    </div>
+
+    <div>
+        <a href="@Url.Action("Create", "Product", new { area = "Admin" })" class="btn-admin">
+            <i class="fa-solid fa-plus"></i>
+            Thêm sản phẩm mới
+        </a>
+    </div>
+
+</div>
+
+
+<!-- ===================== STATISTICS ===================== -->
+
+<div class="dashboard fade-up">
+
+    <!-- Cột 1: Doanh thu riêng cửa hàng -->
+    @Html.Action("_StoreTotalRevenue", "StoreDashboard", new { area = "Admin" })
+
+    <!-- Cột 2: Tổng đơn hàng của shop -->
+    @Html.Action("_StoreTotalOrders", "StoreDashboard", new { area = "Admin" })
+
+    <!-- Cột 3: Sản phẩm đang bán -->
+    @Html.Action("_StoreTotalProducts", "StoreDashboard", new { area = "Admin" })
+
+    <!-- Cột 4: Đơn hàng cần xử lý -->
+    @Html.Action("_StorePendingOrders", "StoreDashboard", new { area = "Admin" })
+
+</div>
+
+<!-- ===================== MAIN CONTENT ===================== -->
+
+<div class="content-grid fade-up">
+
+    <!-- Biểu đồ doanh thu shop theo tháng -->
+    @Html.Action("_StoreRevenueChart", "StoreDashboard", new { area = "Admin" })
+
+    <!-- Top sản phẩm xem nhiều của shop -->
+    @Html.Action("_StoreTopViews", "StoreDashboard", new { area = "Admin" })
+
+</div>
+
+
+<!-- ===================== ORDER SECTION ===================== -->
+
+<div class="table-box fade-up">
+
+    <!-- Đơn hàng gần đây của riêng shop -->
+    @Html.Action("_StoreRecentOrders", "StoreDashboard", new { area = "Admin" })
+
+</div>
+
+
+<!-- ===================== PRODUCT + ACTIVITY ===================== -->
+
+<div class="content-grid mt-4 fade-up" style="grid-template-columns: repeat(2, 1fr) !important;">
+
+    <!-- Bên Trái: Tỉ lệ trạng thái đơn hàng của shop -->
+    @Html.Action("_StoreOrderStatusShare", "StoreDashboard", new { area = "Admin" })
+
+    <!-- Bên Phải: Top sản phẩm bán chạy nhất của shop -->
+    @Html.Action("_StoreTopSellingItems", "StoreDashboard", new { area = "Admin" })
+
+</div>
+
+
+<div class="admin-footer">
+    © 2026 Furni Store Dashboard. Website bán nội thất B2C.
+</div>
+
+
+<!-- ===================== CHART SCRIPT ===================== -->
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+
+    const ctx = document.getElementById('storeRevenueChart');
+
+    if (ctx) {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
+                datasets: [{
+                    label: 'Doanh thu cửa hàng',
+                    data: [45, 78, 62, 95, 110, 140, 180],
+                    borderColor: '#b08a63',
+                    backgroundColor: 'rgba(176, 138, 99, 0.18)',
+                    pointBackgroundColor: '#7b5738',
+                    pointBorderColor: '#7b5738',
+                    pointRadius: 4,
+                    pointHoverRadius: 6,
+                    borderWidth: 3,
+                    tension: 0.4,
+                    fill: true
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                },
+
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: '#efe5da'
+                        },
+                        ticks: {
+                            color: '#7f7368'
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            color: '#7f7368'
+                        }
+                    }
+                }
+            }
+        });
+    }
+
+</script>

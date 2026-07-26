@@ -32,6 +32,9 @@
         <AssociationConnector Association="DoAnNoiThatB2CModel.FK_GIOHANG_KHACHHANG" ManuallyRouted="false" />
         <AssociationConnector Association="DoAnNoiThatB2CModel.FK_KHACHHANG_TAIKHOAN" ManuallyRouted="false" />
         <AssociationConnector Association="DoAnNoiThatB2CModel.FK_TIN_TUC_TAIKHOAN" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="DoAnNoiThatB2CModel.CUAHANG" Width="1.5" PointX="3" PointY="19.625" />
+        <AssociationConnector Association="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN" />
+        <AssociationConnector Association="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG" />
       </Diagram>
     </edmx:Diagrams>
   </edmx:Designer>

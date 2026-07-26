@@ -1,0 +1,85 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>403 - Access Denied</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: #0d1117;
+            color: #ffffff;
+            text-align: center;
+        }
+
+        .error-container {
+            padding: 40px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 16px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            max-width: 500px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        h1 {
+            font-size: 80px;
+            font-weight: 700;
+            color: #ff4d4f;
+            margin-bottom: 10px;
+            line-height: 1;
+        }
+
+        h2 {
+            font-size: 22px;
+            margin-bottom: 15px;
+            color: #f0f6fc;
+        }
+
+        p {
+            font-size: 14px;
+            color: #8b949e;
+            margin-bottom: 25px;
+        }
+
+        .btn-home {
+            display: inline-block;
+            padding: 12px 28px;
+            background: #238636;
+            color: #ffffff;
+            text-decoration: none;
+            border-radius: 20px;
+            font-weight: 600;
+            font-size: 14px;
+            transition: background 0.3s ease;
+        }
+
+            .btn-home:hover {
+                background: #2ea043;
+            }
+    </style>
+</head>
+<body>
+    <div class="error-container">
+        <h1>403</h1>
+        <h2>Access Denied / Cấm Truy Cập</h2>
+        <p>Tài khoản của bạn không có đủ thẩm quyền để truy cập vào khu vực này.</p>
+        <a href="@Url.Action("Index", "Home")" class="btn-home">Quay về Trang Chủ</a>
+    </div>
+</body>
+</html>

@@ -1,0 +1,26 @@
+﻿@model DoAnCK.Areas.Admin.Models.PendingOrdersViewModel
+
+<div class="stat-card">
+
+    <div class="stat-top">
+
+        <div>
+            <div class="stat-title">Đơn hàng cần xử lý</div>
+
+            <!-- Hiển thị số lượng đơn hàng chờ xử lý -->
+            <div class="stat-value">@Model.SoDonHangCanXuLy</div>
+
+            <!-- Cảnh báo hoặc thông báo trạng thái -->
+            <div class="stat-footer @(Model.SoDonHangCanXuLy > 0 ? "down" : "")">
+                <i class="fa-solid fa-clock-rotate-left"></i>
+                @Model.ThongBao
+            </div>
+        </div>
+
+        <div class="stat-icon bg-yellow" style="background-color: rgba(241, 196, 15, 0.15); color: #f39c12;">
+            <i class="fa-solid fa-boxes-packing"></i>
+        </div>
+
+    </div>
+
+</div>
