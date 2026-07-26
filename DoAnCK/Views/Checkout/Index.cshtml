@@ -1,0 +1,735 @@
+﻿@model TMDT_NoiThatB2C.Models.CheckoutViewModel
+@{
+    ViewBag.Title = "Thanh toán đơn hàng";
+    // Đảm bảo dòng này tồn tại để gọi thanh Menu (Header) "MODERNO" từ Layout chung
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* NHÚNG CSS TONE MÀU "MODERNO" */
+    :root {
+        --brand-dark: #2B2623; /* Màu đen/nâu than của nút Shop Now */
+        --brand-bg: #F8F7F5; /* Màu nền kem sáng của trang chủ */
+        --text-main: #333333;
+        --text-muted: #888888;
+        --border-soft: #EAE8E3;
+        --danger-color: #D9534F;
+    }
+
+    /* Ép nền của toàn trang thành màu kem sáng */
+    body {
+        background-color: var(--brand-bg) !important;
+    }
+
+    .checkout-wrapper {
+        font-family: 'Montserrat', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        padding: 40px 0;
+    }
+
+    .checkout-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        color: var(--text-main);
+    }
+
+    /* Style các khối Card bo góc mềm mại, đổ bóng nhẹ như trang chủ */
+    .checkout-details, .order-summary {
+        flex: 1;
+        min-width: 320px;
+        background: #FFFFFF;
+        padding: 35px;
+        border-radius: 16px; /* Bo góc lớn giống khung ảnh trang chủ */
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03); /* Bóng đổ cực kỳ mờ và sang */
+        border: 1px solid rgba(0,0,0,0.02);
+    }
+
+    .section-title {
+        font-size: 1.5rem;
+        font-weight: 700;
+        margin-bottom: 25px;
+        color: var(--brand-dark);
+        border: none; /* Bỏ gạch chân cứng nhắc */
+    }
+
+    .form-group {
+        margin-bottom: 20px;
+    }
+
+    .form-control {
+        width: 100%;
+        padding: 15px;
+        border: 1px solid var(--border-soft);
+        border-radius: 8px; /* Bo góc input */
+        box-sizing: border-box;
+        background-color: #FAFAFA;
+        transition: all 0.3s ease;
+        font-family: inherit;
+    }
+
+        .form-control:focus {
+            outline: none;
+            border-color: var(--brand-dark);
+            background-color: #FFF;
+        }
+
+    .payment-options {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .payment-method {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        padding: 15px;
+        border: 1px solid var(--border-soft);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s ease;
+        background: #FAFAFA;
+        font-weight: 500;
+    }
+
+        .payment-method:hover {
+            border-color: var(--brand-dark);
+        }
+
+    .qr-container {
+        margin-top: 20px;
+        padding: 20px;
+        text-align: center;
+        background: #FAFAFA;
+        border: 1px dashed var(--border-soft);
+        border-radius: 8px;
+    }
+
+    .qr-image {
+        max-width: 180px;
+        margin: 15px 0;
+        border-radius: 8px;
+    }
+
+    .cart-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 15px 0;
+        border-bottom: 1px solid var(--border-soft);
+    }
+
+    .item-info {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .item-name {
+        font-weight: 600;
+        color: var(--brand-dark);
+    }
+
+    .item-qty {
+        color: var(--text-muted);
+        font-size: 0.9em;
+    }
+
+    .item-price {
+        font-weight: 600;
+    }
+
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .highlight-bulky {
+        color: var(--danger-color);
+        font-size: 0.85rem;
+        font-weight: normal;
+    }
+
+    .total-line {
+        border-top: 2px solid var(--border-soft);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--brand-dark);
+        margin-top: 15px;
+        padding-top: 20px;
+    }
+
+    /* Nút Đặt hàng giống hệt nút Shop Now */
+    .btn-submit-order {
+        width: 100%;
+        padding: 16px;
+        background-color: var(--brand-dark);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        cursor: pointer;
+        margin-top: 30px;
+        transition: 0.3s;
+    }
+
+        .btn-submit-order:hover {
+            background-color: #000000;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+</style>
+
+<div class="checkout-wrapper">
+    <div class="checkout-container">
+        <div class="checkout-details">
+            <h3 class="section-title">Thông tin giao hàng</h3>
+            <form id="checkoutForm">
+                @*<div class="form-group">
+                        <input type="text" class="form-control" name="FullName" placeholder="Họ và tên" required />
+                    </div>
+                    <div class="form-group">
+                        <input type="tel" class="form-control" name="PhoneNumber" placeholder="Số điện thoại" required />
+                    </div>
+                    <div class="form-group">
+                        <textarea class="form-control" name="Address" placeholder="Địa chỉ giao hàng chi tiết" rows="4" required></textarea>
+                    </div>*@
+
+                <div class="form-group">
+                    <input type="text" class="form-control" name="FullName" placeholder="Họ và tên" required />
+                </div>
+                <div class="form-group">
+                    <input type="tel" class="form-control" name="PhoneNumber" placeholder="Số điện thoại" required />
+                </div>
+
+                <label style="font-weight: 600; margin-top: 15px; margin-bottom: 5px; display: block;">Địa chỉ giao hàng:</label>
+
+                <div class="row" style="margin-bottom: 15px; display: flex; gap: 15px;">
+                    <div class="col" style="flex: 1;">
+                        <select class="form-control" id="city" name="City" required style="cursor: pointer; background-color: #FAFAFA;">
+                            <option value="" selected disabled>Chọn Tỉnh / Thành phố</option>
+                        </select>
+                    </div>
+
+                    <div class="col" style="flex: 1;">
+                        <select class="form-control" id="district" name="District" required style="cursor: pointer; background-color: #FAFAFA;">
+                            <option value="" selected disabled>Chọn Quận / Huyện</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <select class="form-control" id="ward" name="Ward" required style="cursor: pointer; background-color: #FAFAFA;">
+                        <option value="" selected disabled>Chọn Phường / Xã</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <input type="text" class="form-control" id="street" name="Street" placeholder="Số nhà, tên đường..." required />
+
+                    <input type="hidden" id="txtCityName" name="CityName" value="" />
+                </div>
+
+                @*<h3 class="section-title mt-4" style="margin-top: 30px;">Phương thức thanh toán</h3>
+                    <div class="payment-options">
+                        <label class="payment-method">
+                            <input type="radio" name="PaymentType" value="COD" checked>
+                            <span>Thanh toán khi nhận hàng (Tiền mặt)</span>
+                        </label>
+                        <label class="payment-method">
+                            <input type="radio" name="PaymentType" value="QR">
+                            <span>Chuyển khoản qua mã QR</span>
+                        </label>
+                    </div>
+
+                    <div id="qrCodeSection" class="qr-container" style="display: none;">
+                        <p style="color: var(--text-muted); font-size: 0.9em;">Vui lòng quét mã QR bên dưới để thanh toán.</p>
+                        <img src="https://via.placeholder.com/180x180.png?text=QR+Code" alt="Mã QR" class="qr-image" />
+                        <p style="margin-bottom: 0;"><strong>Nội dung CK:</strong> THANHTOAN [SĐT Của Bạn]</p>
+                    </div>*@
+
+
+                <h3 class="section-title mt-4" style="margin-top: 30px;">Phương thức thanh toán</h3>
+                <div class="payment-options">
+                    <label class="payment-method">
+                        <input type="radio" name="PaymentType" value="COD" checked>
+                        <span>Thanh toán khi nhận hàng (Tiền mặt)</span>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="PaymentType" value="QR_BANK">
+                        <span>Chuyển khoản qua mã QR Ngân hàng</span>
+                    </label>
+
+                    <label class="payment-method">
+                        <input type="radio" name="PaymentType" value="QR_MOMO">
+                        <span>Thanh toán qua mã QR Momo</span>
+                    </label>
+                </div>
+
+                <div id="qrCodeSection" class="qr-container" style="display: none; margin-top: 20px; padding: 25px; text-align: center; background: #FAFAFA; border: 1px dashed var(--border-soft); border-radius: 8px;">
+
+                    <p style="color: var(--text-muted); font-size: 0.95em; margin-bottom: 15px;" id="qrInstruction">
+                        Vui lòng nhấn vào "ĐẶT HÀNG" để tạo mã QR và thanh toán chuyển khoản.
+                    </p>
+
+                    @*<img id="qrImage" src="" alt="Mã QR" style="max-width: 200px; margin: 0 auto 20px auto; display: block; border-radius: 8px; box-shadow: 0 4px 15px rgba(0,0,0,0.1);" />
+
+                    <div style="background: #fff; padding: 15px; border-radius: 8px; border: 1px solid var(--border-soft); display: inline-block; text-align: left;">
+                        <p style="margin-bottom: 8px;"><strong>Chủ tài khoản:</strong> <span style="color: var(--brand-dark);">Cửa hàng MODERNO</span></p>
+                        <p style="margin-bottom: 8px;" id="qrAccountDetail"><strong>Số tài khoản:</strong> 123456789 (Ngân hàng)</p>
+                        <p style="margin-bottom: 0; color: var(--danger-color); font-weight: bold;">Nội dung: THANHTOAN [SĐT của bạn]</p>
+                    </div>*@
+                </div>
+
+                <div id="qrCodeSection" style="display: none; margin-top: 20px; padding: 20px; text-align: center; background: #FFF; border: 2px dashed #0056b3; border-radius: 8px;">
+                    <p id="qrInstruction" style="font-weight: bold; color: #333;"></p>
+
+                    <img id="qrImage" src="" alt="Mã QR Thanh toán" style="max-width: 220px; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); margin: 10px 0;" />
+
+                    <div id="qrAccountDetail" style="text-align: left; background: #f8f9fa; padding: 12px; border-radius: 6px; font-size: 0.95em; line-height: 1.6; display: inline-block;">
+                    </div>
+                </div>
+
+                <button type="button" class="btn-submit-order" id="btnPlaceOrder">ĐẶT HÀNG</button>
+            </form>
+        </div>
+
+        <div class="order-summary">
+            <h3 class="section-title">Đơn hàng của bạn</h3>
+            <div class="cart-items">
+                @if (Model != null && Model.CartItems != null && Model.CartItems.Any())
+                {
+                    foreach (var item in Model.CartItems)
+                    {
+                        var isBulkyStr = item.IsBulky.ToString().ToLower();
+                        var lineTotal = item.Price * item.Quantity;
+
+                        <div class="cart-item" data-is-bulky="@isBulkyStr">
+                            <div class="item-info">
+                                <span class="item-name">
+                                    @item.ProductName
+                                    @if (item.IsBulky)
+                                    {<span class="highlight-bulky">(Cồng kềnh)</span>}
+                                </span>
+                                <span class="item-qty">Số lượng: @item.Quantity</span>
+                            </div>
+                            <span class="item-price" data-price="@lineTotal">@lineTotal.ToString("N0") ₫</span>
+                        </div>
+                    }
+                }
+                else
+                {
+                    <p style="color: var(--text-muted); font-style: italic;">Giỏ hàng của bạn đang trống.</p>
+                }
+            </div>
+
+            <div style="margin-top: 20px;">
+                <div class="summary-line">
+                    <span>Tạm tính</span>
+                    <span id="subTotal" style="color: var(--text-main);">0 ₫</span>
+                </div>
+                <div class="summary-line">
+                    <span>Phí vận chuyển</span>
+                    <span id="shippingFee" style="color: var(--text-main);">0 ₫</span>
+                </div>
+                <div class="summary-line">
+                    <span class="highlight-bulky">Phí phụ thu hàng cồng kềnh</span>
+                    <span id="bulkyFee" class="highlight-bulky">0 ₫</span>
+                </div>
+                <div class="summary-line total-line">
+                    <span>Tổng cộng</span>
+                    <span id="totalPrice">0 ₫</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@*<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script>
+        $(document).ready(function () {
+            const SHIPPING_FEE = @(Model != null ? Model.ShippingFee : 0);
+            const BULKY_ITEM_FEE = @(Model != null ? Model.BulkyFeePerItem : 0);
+
+            function calculateTotal() {
+                let subTotal = 0;
+                let hasBulkyItem = false;
+
+                $('.cart-item').each(function () {
+                    let price = parseFloat($(this).find('.item-price').attr('data-price')) || 0;
+                    subTotal += price;
+
+                    if ($(this).attr('data-is-bulky') === "true") {
+                        hasBulkyItem = true;
+                    }
+                });
+
+                let currentBulkyFee = hasBulkyItem ? BULKY_ITEM_FEE : 0;
+                let total = subTotal + SHIPPING_FEE + currentBulkyFee;
+
+                $('#subTotal').text(subTotal.toLocaleString('vi-VN') + ' ₫');
+                $('#shippingFee').text(SHIPPING_FEE.toLocaleString('vi-VN') + ' ₫');
+                $('#bulkyFee').text(currentBulkyFee.toLocaleString('vi-VN') + ' ₫');
+                $('#totalPrice').text(total.toLocaleString('vi-VN') + ' ₫');
+            }
+
+            calculateTotal();
+
+            $('input[name="PaymentType"]').change(function () {
+                if ($(this).val() === 'QR') {
+                    $('#qrCodeSection').slideDown();
+                } else {
+                    $('#qrCodeSection').slideUp();
+                }
+            });
+
+            $('#btnPlaceOrder').click(function () {
+                // 1. Lấy số tiền từ giao diện và xóa bỏ dấu chấm, chữ ₫ để biến thành số nguyên (Ví dụ: 25.530.000 ₫ -> 25530000)
+                let rawTotal = $('#totalPrice').text().replace(/\./g, '').replace(' ₫', '').trim();
+
+                // 2. Gom dữ liệu từ Form
+                let formData = {
+                    FullName: $('input[name="FullName"]').val(),
+                    PhoneNumber: $('input[name="PhoneNumber"]').val(),
+                    // Chú ý: dùng đúng tên thuộc tính địa chỉ theo giao diện dropdown/text của bạn
+                    Address: $('#street').val() ? ($('#street').val() + ', ' + $('#ward option:selected').text() + ', ' + $('#district option:selected').text() + ', ' + $('#city option:selected').text()) : $('input[name="Address"]').val(),
+                    PaymentMethod: $('input[name="PaymentType"]:checked').val(),
+                    TotalPrice: parseInt(rawTotal)
+                };
+
+                // Kiểm tra nhanh xem khách đã điền đủ họ tên, số điện thoại chưa
+                if (!formData.FullName || !formData.PhoneNumber) {
+                    alert("Vui lòng nhập đầy đủ Họ tên và Số điện thoại giao hàng!");
+                    return;
+                }
+
+                // 3. XỬ LÝ THEO TỪNG PHƯƠNG THỨC THANH TOÁN
+                $(this).text('Đang xử lý đơn hàng...').prop('disabled', true);
+
+                if (formData.PaymentMethod === 'QR_MOMO') {
+                    // TRƯỜNG HỢP 1: THANH TOÁN MOMO SANDBOX
+                    $.ajax({
+                        url: '/Checkout/PaymentWithMoMo',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            if (res.success && res.url) {
+                                window.location.href = res.url; // Chuyển sang trang MoMo quét mã
+                            } else {
+                                alert("Không thể khởi tạo thanh toán MoMo: " + (res.message || "Lỗi hệ thống"));
+                                $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            }
+                        },
+                        error: function () {
+                            alert("Lỗi kết nối đến server MoMo.");
+                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                        }
+                    });
+
+                } else if (formData.PaymentMethod === 'QR_BANK') {
+                    // TRƯỜNG HỢP 2: TẠO MÃ VIETQR NGÂN HÀNG ĐỘNG (MIỄN PHÍ)
+                    $.ajax({
+                        url: '/Checkout/CreateVietQR',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            if (res.success) {
+                                // Hiển thị khung QR lên màn hình
+                                $('#qrInstruction').text("Vui lòng quét mã VietQR bên dưới để thanh toán chuyển khoản:");
+                                $('#qrImage').attr("src", res.qrUrl);
+                                $('#qrAccountDetail').html(`
+                            <strong>Ngân hàng:</strong> Vietcombank<br/>
+                            <strong>Chủ TK:</strong> Cửa hàng MODERNO<br/>
+                            <strong>Số TK:</strong> 123456789<br/>
+                            <strong>Số tiền:</strong> ${formData.TotalPrice.toLocaleString('vi-VN')} ₫<br/>
+                            <strong>Nội dung CK:</strong> ${res.orderCode}
+                        `);
+                                $('#qrCodeSection').slideDown();
+
+                                // Đổi tên nút thành xác nhận hoặc thông báo chờ khách quét
+                                $('#btnPlaceOrder').text('XÁC NHẬN ĐÃ CHUYỂN KHOẢN').prop('disabled', false).addClass('btn-success');
+
+                                // Đổi hành vi nút bấm lần tiếp theo thành hoàn tất đơn hàng
+                                $('#btnPlaceOrder').off('click').click(function () {
+                                    window.location.href = '/Checkout/OrderSuccess?orderCode=' + res.orderCode;
+                                });
+                            } else {
+                                alert("Không thể tạo mã VietQR lúc này.");
+                                $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            }
+                        }
+                    });
+
+                } else {
+                    // TRƯỜNG HỢP 3: THANH TOÁN TIỀN MẶT (COD)
+                    $.ajax({
+                        url: '/Checkout/ProcessCOD',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            if (res.success) {
+                                window.location.href = '/Checkout/OrderSuccess?orderCode=' + res.orderCode;
+                            } else {
+                                alert("Đã xảy ra lỗi khi lưu đơn hàng.");
+                                $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+
+        $(document).ready(function () {
+            // 1. GỌI API MIỄN PHÍ LẤY DANH SÁCH 63 TỈNH THÀNH
+            $.ajax({
+                url: "https://provinces.open-api.vn/api/?depth=3",
+                method: "GET",
+                success: function (data) {
+                    let cityHtml = '<option value="" selected disabled>Chọn Tỉnh / Thành phố</option>';
+                    $.each(data, function (index, city) {
+                        cityHtml += `<option value="${city.code}" data-name="${city.name}">${city.name}</option>`;
+                    });
+                    $("#city").html(cityHtml);
+
+                    // 2. KHI KHÁCH CHỌN TỈNH/THÀNH -> ĐỔ DỮ LIỆU RA QUẬN/HUYỆN
+                    $("#city").change(function () {
+                        let cityCode = $(this).val();
+                        let cityName = $(this).find(':selected').data('name');
+
+                        // Lưu tên Tỉnh vào ô ẩn để gửi về C# tính tiền
+                        $("#txtCityName").val(cityName);
+
+                        // Gửi AJAX về C# để tính phí ship theo Tỉnh
+                        updateShippingFee(cityName);
+
+                        let selectedCity = data.find(c => c.code == cityCode);
+                        let districtHtml = '<option value="" selected disabled>Chọn Quận / Huyện</option>';
+
+                        if (selectedCity && selectedCity.districts) {
+                            $.each(selectedCity.districts, function (index, district) {
+                                districtHtml += `<option value="${district.code}">${district.name}</option>`;
+                            });
+                        }
+                        $("#district").html(districtHtml);
+                        $("#ward").html('<option value="" selected disabled>Chọn Phường / Xã</option>'); // Reset Phường
+                    });
+
+                    // 3. KHI KHÁCH CHỌN QUẬN/HUYỆN -> ĐỔ DỮ LIỆU RA PHƯỜNG/XÃ
+                    $("#district").change(function () {
+                        let cityCode = $("#city").val();
+                        let districtCode = $(this).val();
+                        let selectedCity = data.find(c => c.code == cityCode);
+                        let selectedDistrict = selectedCity.districts.find(d => d.code == districtCode);
+
+                        let wardHtml = '<option value="" selected disabled>Chọn Phường / Xã</option>';
+                        if (selectedDistrict && selectedDistrict.wards) {
+                            $.each(selectedDistrict.wards, function (index, ward) {
+                                wardHtml += `<option value="${ward.code}">${ward.name}</option>`;
+                            });
+                        }
+                        $("#ward").html(wardHtml);
+                    });
+                }
+            });
+
+            // 4. HÀM GỬI YÊU CẦU TÍNH TIỀN VỀ C#
+            function updateShippingFee(cityName) {
+                $.post('/Checkout/CalculatePriceByLocation', { cityName: cityName }, function (res) {
+                    if (res.success) {
+                        $('#shippingFee').text(res.shippingFee.toLocaleString('vi-VN') + ' ₫');
+                        $('#totalPrice').text(res.totalPrice.toLocaleString('vi-VN') + ' ₫');
+                    }
+                });
+            }
+        });
+
+
+
+    </script>*@
+
+
+
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script>
+        $(document).ready(function () {
+            // Phần 1: Tính toán tổng tiền
+            const SHIPPING_FEE = @(Model != null ? Model.ShippingFee : 0);
+            const BULKY_ITEM_FEE = @(Model != null ? Model.BulkyFeePerItem : 0);
+
+            function calculateTotal() {
+                let subTotal = 0;
+                let hasBulkyItem = false;
+
+                $('.cart-item').each(function () {
+                    let price = parseFloat($(this).find('.item-price').attr('data-price')) || 0;
+                    subTotal += price;
+
+                    if ($(this).attr('data-is-bulky') === "true") {
+                        hasBulkyItem = true;
+                    }
+                });
+
+                let currentBulkyFee = hasBulkyItem ? BULKY_ITEM_FEE : 0;
+                let total = subTotal + SHIPPING_FEE + currentBulkyFee;
+
+                $('#subTotal').text(subTotal.toLocaleString('vi-VN') + ' ₫');
+                $('#shippingFee').text(SHIPPING_FEE.toLocaleString('vi-VN') + ' ₫');
+                $('#bulkyFee').text(currentBulkyFee.toLocaleString('vi-VN') + ' ₫');
+                $('#totalPrice').text(total.toLocaleString('vi-VN') + ' ₫');
+            }
+
+            calculateTotal();
+
+            // Phần 2: Hiển thị/Ẩn QR Code
+            $('input[name="PaymentType"]').change(function () {
+                if ($(this).val() === 'QR_BANK') { // Mình sửa lại 'QR' thành 'QR_BANK' cho khớp C# của bạn nhé
+                    $('#qrCodeSection').slideDown();
+                } else {
+                    $('#qrCodeSection').slideUp();
+                }
+            });
+
+            // Phần 3: Xử lý nút Đặt hàng
+            $('#btnPlaceOrder').click(function () {
+                let rawTotal = $('#totalPrice').text().replace(/\./g, '').replace(' ₫', '').trim();
+
+                let formData = {
+                    FullName: $('input[name="FullName"]').val(),
+                    PhoneNumber: $('input[name="PhoneNumber"]').val(),
+                    Address: $('#street').val() ? ($('#street').val() + ', ' + $('#ward option:selected').text() + ', ' + $('#district option:selected').text() + ', ' + $('#city option:selected').text()) : $('input[name="Address"]').val(),
+                    PaymentMethod: $('input[name="PaymentType"]:checked').val(),
+                    TotalPrice: parseInt(rawTotal)
+                };
+
+                if (!formData.FullName || !formData.PhoneNumber) {
+                    alert("Vui lòng nhập đầy đủ Họ tên và Số điện thoại giao hàng!");
+                    return;
+                }
+
+                $(this).text('Đang xử lý đơn hàng...').prop('disabled', true);
+
+                if (formData.PaymentMethod === 'QR_MOMO') {
+                    $.ajax({
+                        url: '/Checkout/PaymentWithMoMo',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            if (res.success && res.url) {
+                                window.location.href = res.url;
+                            } else {
+                                alert("Không thể khởi tạo thanh toán MoMo: " + (res.message || "Lỗi hệ thống"));
+                                $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            }
+                        },
+                        error: function () {
+                            alert("Lỗi kết nối đến server MoMo.");
+                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                        }
+                    });
+
+                } else if (formData.PaymentMethod === 'QR_BANK') {
+                    // Bạn đang làm tích hợp PayOS ở bước trước, nên đổi '/Checkout/CreateVietQR' thành '/Checkout/PaymentWithPayOS'
+                    $.ajax({
+                        url: '/Checkout/PaymentWithPayOS',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            if (res.success && res.url) {
+                                // Nếu dùng PayOS, nhảy sang trang PayOS quét mã
+                                window.location.href = res.url;
+                            } else {
+                                alert("Không thể tạo mã VietQR lúc này: " + res.message);
+                                $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            }
+                        },
+                        error: function() {
+                            alert("Lỗi kết nối PayOS.");
+                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                        }
+                    });
+
+                } else {
+                    $.ajax({
+                        url: '/Checkout/ProcessCOD',
+                        type: 'POST',
+                        data: formData,
+                        success: function (res) {
+                            if (res.success) {
+                                window.location.href = '/Checkout/OrderSuccess?orderCode=' + res.orderCode;
+                            } else {
+                                alert("Đã xảy ra lỗi khi lưu đơn hàng.");
+                                $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            }
+                        }
+                    });
+                }
+            });
+        });
+
+        // Phần 4: Gọi API Tỉnh/Thành phố
+        $(document).ready(function () {
+            $.ajax({
+                url: "https://provinces.open-api.vn/api/?depth=3",
+                method: "GET",
+                success: function (data) {
+                    let cityHtml = '<option value="" selected disabled>Chọn Tỉnh / Thành phố</option>';
+                    $.each(data, function (index, city) {
+                        cityHtml += `<option value="${city.code}" data-name="${city.name}">${city.name}</option>`;
+                    });
+                    $("#city").html(cityHtml);
+
+                    $("#city").change(function () {
+                        let cityCode = $(this).val();
+                        let cityName = $(this).find(':selected').data('name');
+
+                        $("#txtCityName").val(cityName);
+                        updateShippingFee(cityName);
+
+                        let selectedCity = data.find(c => c.code == cityCode);
+                        let districtHtml = '<option value="" selected disabled>Chọn Quận / Huyện</option>';
+
+                        if (selectedCity && selectedCity.districts) {
+                            $.each(selectedCity.districts, function (index, district) {
+                                districtHtml += `<option value="${district.code}">${district.name}</option>`;
+                            });
+                        }
+                        $("#district").html(districtHtml);
+                        $("#ward").html('<option value="" selected disabled>Chọn Phường / Xã</option>');
+                    });
+
+                    $("#district").change(function () {
+                        let cityCode = $("#city").val();
+                        let districtCode = $(this).val();
+                        let selectedCity = data.find(c => c.code == cityCode);
+                        let selectedDistrict = selectedCity.districts.find(d => d.code == districtCode);
+
+                        let wardHtml = '<option value="" selected disabled>Chọn Phường / Xã</option>';
+                        if (selectedDistrict && selectedDistrict.wards) {
+                            $.each(selectedDistrict.wards, function (index, ward) {
+                                wardHtml += `<option value="${ward.code}">${ward.name}</option>`;
+                            });
+                        }
+                        $("#ward").html(wardHtml);
+                    });
+                }
+            });
+
+            function updateShippingFee(cityName) {
+                $.post('/Checkout/CalculatePriceByLocation', { cityName: cityName }, function (res) {
+                    if (res.success) {
+                        $('#shippingFee').text(res.shippingFee.toLocaleString('vi-VN') + ' ₫');
+                        $('#totalPrice').text(res.totalPrice.toLocaleString('vi-VN') + ' ₫');
+                    }
+                });
+            }
+        });
+</script>

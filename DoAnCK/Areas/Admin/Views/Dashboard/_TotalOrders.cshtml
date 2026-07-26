@@ -1,0 +1,34 @@
+﻿@model DoAnCK.Areas.Admin.Models.OrderViewModel
+
+<div class="stat-card">
+
+    <div class="stat-top">
+
+        <div>
+            <div class="stat-title">Tổng đơn hàng</div>
+
+            <!-- Hiển thị tổng số đơn hàng động -->
+            <div class="stat-value">@Model.TongDonHangThangNay</div>
+
+            <!-- Hiển thị phần trăm động theo xu hướng tăng/giảm -->
+            <div class="stat-footer">
+                @if (Model.IsTangTruongDuong)
+                {
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    @: +@Model.PhanTramTangTruong% so với tháng trước
+                }
+                else
+                {
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    @: -@Model.PhanTramTangTruong% so với tháng trước
+                }
+            </div>
+        </div>
+
+        <div class="stat-icon bg-blue">
+            <i class="fa-solid fa-cart-shopping"></i>
+        </div>
+
+    </div>
+
+</div>

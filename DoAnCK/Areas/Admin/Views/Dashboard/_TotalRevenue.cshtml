@@ -1,0 +1,41 @@
+﻿@model DoAnCK.Areas.Admin.Models.RevenueViewModel
+
+<div class="stat-card">
+
+    <div class="stat-top">
+
+        <div>
+            <div class="stat-title">Tổng doanh thu</div>
+
+            <div class="stat-value">
+                @if (Model.TongDoanhThuThangNay >= 1000000)
+                {
+                    @((Model.TongDoanhThuThangNay / 1000000.0m).ToString("N1") + "M")
+                }
+                else
+                {
+                    @(string.Format("{0:N0}đ", Model.TongDoanhThuThangNay))
+                }
+            </div>
+
+            <div class="stat-footer">
+                @if (Model.IsTangTruongDuong)
+                {
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    @: +@Model.PhanTramTangTruong% so với tháng trước
+                }
+                else
+                {
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    @: -@Model.PhanTramTangTruong% so với tháng trước
+                }
+            </div>
+        </div>
+
+        <div class="stat-icon bg-green">
+            <i class="fa-solid fa-wallet"></i>
+        </div>
+
+    </div>
+
+</div>

@@ -25,48 +25,10 @@
 
 <div class="dashboard fade-up">
 
-    <div class="stat-card">
-
-        <div class="stat-top">
-
-            <div>
-                <div class="stat-title">Tổng doanh thu</div>
-                <div class="stat-value">580M</div>
-                <div class="stat-footer">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    +12.5% so với tháng trước
-                </div>
-            </div>
-
-            <div class="stat-icon bg-green">
-                <i class="fa-solid fa-wallet"></i>
-            </div>
-
-        </div>
-
-    </div>
+    @Html.Action("_TotalRevenue", "Dashboard")
 
 
-    <div class="stat-card">
-
-        <div class="stat-top">
-
-            <div>
-                <div class="stat-title">Tổng đơn hàng</div>
-                <div class="stat-value">245</div>
-                <div class="stat-footer">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    +8.2% so với tháng trước
-                </div>
-            </div>
-
-            <div class="stat-icon bg-blue">
-                <i class="fa-solid fa-cart-shopping"></i>
-            </div>
-
-        </div>
-
-    </div>
+    @Html.Action("_TotalOrders", "Dashboard")
 
 
     <div class="stat-card">
@@ -91,26 +53,7 @@
     </div>
 
 
-    <div class="stat-card">
-
-        <div class="stat-top">
-
-            <div>
-                <div class="stat-title">Sản phẩm</div>
-                <div class="stat-value">350</div>
-                <div class="stat-footer down">
-                    <i class="fa-solid fa-arrow-trend-down"></i>
-                    -2.1% so với tháng trước
-                </div>
-            </div>
-
-            <div class="stat-icon bg-pink">
-                <i class="fa-solid fa-couch"></i>
-            </div>
-
-        </div>
-
-    </div>
+    @Html.Action("_TotalProductSales", "Dashboard")
 
 </div>
 
@@ -145,70 +88,7 @@
 
     <!-- Top Categories -->
 
-    <div class="card-box">
-
-        <div class="card-header">
-
-            <div>
-                <div class="card-title">Danh mục bán chạy</div>
-                <small class="text-muted">Nhóm sản phẩm có hiệu suất tốt</small>
-            </div>
-
-        </div>
-
-        <div class="progress-item">
-
-            <div class="progress-title">
-                <span>Sofa</span>
-                <span>78%</span>
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar bg-success" style="width:78%"></div>
-            </div>
-
-        </div>
-
-        <div class="progress-item">
-
-            <div class="progress-title">
-                <span>Bàn</span>
-                <span>65%</span>
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar bg-warning" style="width:65%"></div>
-            </div>
-
-        </div>
-
-        <div class="progress-item">
-
-            <div class="progress-title">
-                <span>Phòng ngủ</span>
-                <span>52%</span>
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar bg-info" style="width:52%"></div>
-            </div>
-
-        </div>
-
-        <div class="progress-item">
-
-            <div class="progress-title">
-                <span>Văn phòng</span>
-                <span>43%</span>
-            </div>
-
-            <div class="progress">
-                <div class="progress-bar bg-danger" style="width:43%"></div>
-            </div>
-
-        </div>
-
-    </div>
+    @Html.Action("_TopCategories", "Dashboard")
 
 </div>
 
@@ -512,72 +392,9 @@
 
 <div class="content-grid mt-4 fade-up">
 
-    <div class="card-box">
+    <div class="content-grid mt-4 fade-up">
 
-        <div class="card-header">
-
-            <div>
-                <div class="card-title">Sản phẩm bán chạy</div>
-                <small class="text-muted">Các sản phẩm nội thất được mua nhiều nhất</small>
-            </div>
-
-            <a href="/Admin/Product" class="card-link">Xem tất cả</a>
-
-        </div>
-
-        <div class="table-responsive">
-
-            <table class="table">
-
-                <tbody>
-
-                    <tr>
-                        <td>
-                            <div class="product-info">
-                                <img src="@Url.Content("~/Content/images/sopha.jpg")" />
-                                <div>
-                                    <h6>Sofa hiện đại</h6>
-                                    <span>Phòng khách</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>120 đã bán</td>
-                        <td class="text-end">12.500.000đ</td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <div class="product-info">
-                                <img src="@Url.Content("~/Content/images/table.jpg")" />
-                                <div>
-                                    <h6>Bàn gỗ</h6>
-                                    <span>Phòng ăn</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>98 đã bán</td>
-                        <td class="text-end">6.800.000đ</td>
-                    </tr>
-
-                    <tr>
-                        <td>
-                            <div class="product-info">
-                                <img src="@Url.Content("~/Content/images/bed.jpg")" />
-                                <div>
-                                    <h6>Giường cao cấp</h6>
-                                    <span>Phòng ngủ</span>
-                                </div>
-                            </div>
-                        </td>
-                        <td>75 đã bán</td>
-                        <td class="text-end">15.900.000đ</td>
-                    </tr>
-
-                </tbody>
-
-            </table>
-
-        </div>
+        @Html.Action("_BestSellers", "Dashboard", new { area = "Admin" })
 
     </div>
 
