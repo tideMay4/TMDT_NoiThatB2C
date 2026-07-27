@@ -702,7 +702,25 @@ CREATE TABLE dbo.DANHGIA
 
 GO 
 
- 
+-- 1. Tạo bảng CUAHANG
+CREATE TABLE dbo.CUAHANG (
+    MaCH INT IDENTITY(1,1) PRIMARY KEY, -- Mã tự động tăng
+    TenCH NVARCHAR(150) NOT NULL,
+    DienThoai VARCHAR(20),
+    DiaChi NVARCHAR(255),
+    TrangThai INT DEFAULT 1 -- 1: Hoạt động, 2: Sắp khai trương, 0: Tạm đóng
+);
+GO
+
+INSERT INTO CUAHANG (TenCH, DienThoai, DiaChi, TrangThai)
+VALUES 
+(N'MODERNO Quận 1', '028.7300.1111', N'123 Nguyễn Du, Bến Nghé, Q.1, TP.HCM', 1),
+(N'MODERNO Quận 7', '028.7300.2222', N'456 Nguyễn Thị Thập, Tân Quy, Q.7, TP.HCM', 1),
+(N'MODERNO Gò Vấp', '028.7300.3333', N'789 Phan Văn Trị, P.7, Q.Gò Vấp, TP.HCM', 0),
+(N'MODERNO Thủ Đức', '028.7300.4444', N'Khu công nghệ cao, TP.Thủ Đức, TP.HCM', 2);
+GO
+
+ select * from CUAHANG
 
 /*========================================================= 
 

@@ -8,6 +8,7 @@ using System.IO;
 using Newtonsoft.Json.Linq;
 using TMDT_NoiThatB2C.Others;
 using System;
+using DoAnCK.Models;
 
 namespace TMDT_NoiThatB2C.Controllers
 {
@@ -272,26 +273,100 @@ namespace TMDT_NoiThatB2C.Controllers
         [HttpPost]
         public ActionResult ProcessCOD(string FullName, string PhoneNumber, string Address, decimal TotalPrice)
         {
-            string orderCode = "MDN" + DateTime.Now.ToString("ddMMHHmm");
+            try
+            {
+                using (var db = new DoAnNoiThatB2CEntities()) // Nhớ đổi đúng tên Context của bạn
+                {
+                    var order = new DONHANG
+                    {
+                        NgayDat = DateTime.Now,
+                        TongTien = TotalPrice
+                        // Tạm thời chưa gán các cột khác để xem DB báo lỗi cột nào
+                    };
 
-            // TODO: Viết code tạo bản ghi dữ liệu Đơn hàng (Order) và Chi tiết đơn hàng (OrderDetail) vào SQL Server ở đây
-            // Ví dụ: 
-            // var order = new Order { Code = orderCode, CustomerName = FullName, Total = TotalPrice, PaymentMethod = "COD", Status = "Pending" };
-            // _db.Orders.Add(order);
-            // _db.SaveChanges();
+                    db.DONHANGs.Add(order);
+                    db.SaveChanges();
 
-            // Xóa giỏ hàng sau khi đặt thành công
-            Session["ShoppingCartSession"] = null;
-
-            return Json(new { success = true, orderCode = orderCode });
+                    Session["ShoppingCartSession"] = null;
+                    return Json(new { success = true, orderCode = order.MaDH.ToString() });
+                }
+            }
+            catch (System.Data.Entity.Validation.DbEntityValidationException dbEx)
+            {
+                // BẮT LỖI TỪNG CỘT TRONG DATABASE BỊ THIẾU DỮ LIỆU
+                string errorMsg = "";
+                foreach (var validationErrors in dbEx.EntityValidationErrors)
+                {
+                    foreach (var validationError in validationErrors.ValidationErrors)
+                    {
+                        errorMsg += $"Cột '{validationError.PropertyName}' đang bị lỗi: {validationError.ErrorMessage}\n";
+                    }
+                }
+                return Json(new { success = false, message = "Lỗi xác thực Database:\n" + errorMsg });
+            }
+            catch (Exception ex)
+            {
+                // Bắt lỗi hệ thống thông thường
+                string inner = ex.InnerException != null ? "\nChi tiết sâu: " + ex.InnerException.Message : "";
+                return Json(new { success = false, message = ex.Message + inner });
+            }
         }
+        //// HÀM 3: TRANG HIỂN THỊ THÀNH CÔNG ĐỒNG BỘ
+        //public ActionResult OrderSuccess(string orderCode)
+        //{
+        //    // 1. Chuyển đổi mã đơn hàng từ chữ (string) sang số (int)
+        //    int maDonHangInt = 0;
 
-        // HÀM 3: TRANG HIỂN THỊ THÀNH CÔNG ĐỒNG BỘ
+        //    // Nếu chuyển đổi thất bại (ví dụ url là chữ không phải số), maDonHangInt sẽ bằng 0
+        //    if (!int.TryParse(orderCode, out maDonHangInt))
+        //    {
+        //        ViewBag.Message = "Mã đơn hàng không hợp lệ.";
+        //        return View();
+        //    }
+
+        //    // 2. Khởi tạo Database Context
+        //    using (var db = new DoAnNoiThatB2CEntities())
+        //    {
+        //        // 3. Bây giờ đem 2 biến số nguyên đi so sánh với nhau (MaDH == maDonHangInt)
+        //        var donHang = db.DONHANGs.FirstOrDefault(d => d.MaDH == maDonHangInt);
+
+        //        if (donHang == null)
+        //        {
+        //            ViewBag.Message = "Không tìm thấy thông tin đơn hàng.";
+        //            return View();
+        //        }
+
+        //        // Truyền thẳng đối tượng đơn hàng ra View
+        //        return View(donHang);
+        //    }
+        //}
+
+        // 3. HÀM HIỂN THỊ HÓA ĐƠN THÀNH CÔNG ĐỒNG BỘ ĐÃ KHỬ LỖI CHỮ
         public ActionResult OrderSuccess(string orderCode)
         {
-            ViewBag.OrderCode = orderCode;
-            return View();
+            int maDonHangInt = 0;
+
+            // Kiểm tra và ép kiểu an toàn từ chuỗi sang số nguyên
+            if (!int.TryParse(orderCode, out maDonHangInt))
+            {
+                ViewBag.Message = "Mã đơn hàng không đúng định dạng số.";
+                return View();
+            }
+
+            using (var db = new DoAnNoiThatB2CEntities())
+            {
+                var donHang = db.DONHANGs.FirstOrDefault(d => d.MaDH == maDonHangInt);
+
+                if (donHang == null)
+                {
+                    ViewBag.Message = "Không tìm thấy thông tin đơn hàng số #" + maDonHangInt;
+                    return View();
+                }
+
+                return View(donHang);
+            }
         }
+
         [HttpPost]
         public ActionResult PaymentWithPayOS(string FullName, string PhoneNumber, string Address, decimal TotalPrice)
         {
@@ -308,7 +383,7 @@ namespace TMDT_NoiThatB2C.Controllers
                 //if (amount > 50000) amount = 2000;
 
 
-         
+
 
                 string description = $"Moderno {orderCode}";
                 string cancelUrl = "https://localhost:61802/Checkout/Index";
@@ -362,5 +437,8 @@ namespace TMDT_NoiThatB2C.Controllers
                 return Json(new { success = false, message = ex.Message });
             }
         }
+
+
+
     }
 }

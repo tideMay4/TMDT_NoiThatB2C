@@ -1,0 +1,123 @@
+﻿@model DoAnCK.Models.KHACHHANG
+@{
+    ViewBag.Title = "Chỉnh sửa Khách Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .admin-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 32px 40px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        max-width: 800px;
+        margin-top: 24px;
+        border: 1px solid #f1f3f5;
+    }
+
+    .form-label-moderno {
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control-moderno {
+        width: 100%;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        color: #212529;
+        background-color: #f8f9fa;
+        transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+
+        .form-control-moderno:focus {
+            background-color: #fff;
+            border-color: #A38262;
+            outline: none;
+            box-shadow: 0 0 0 0.25rem rgba(163, 130, 98, 0.15);
+        }
+
+    .btn-brown {
+        background-color: #A38262;
+        color: white;
+        border: none;
+        padding: 12px 30px;
+        border-radius: 50rem;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+
+        .btn-brown:hover {
+            background-color: #8b6b4c;
+            transform: translateY(-2px);
+        }
+
+    .btn-light-mod {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 11px 24px;
+        border-radius: 50rem;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+
+        .btn-light-mod:hover {
+            background: #f8f9fa;
+        }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">
+    <div class="mb-4">
+        <h2 class="page-title">Chỉnh sửa hồ sơ khách hàng</h2>
+        <a href="@Url.Action("Index", "KhachHang")" style="color: #6c757d; text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    </div>
+
+    <div class="admin-card">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.MaKH)
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label-moderno">Họ và Tên khách hàng</label>
+                    @Html.TextBoxFor(m => m.HoTen, new { @class = "form-control-moderno", required = "required" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-moderno">Số điện thoại</label>
+                    @Html.TextBoxFor(m => m.SDT, new { @class = "form-control-moderno", required = "required" })
+                </div>
+                <div class="col-md-12 mt-4">
+                    <label class="form-label-moderno">Địa chỉ thường trú</label>
+                    @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control-moderno" })
+                </div>
+            </div>
+
+            <div style="text-align: right; border-top: 1px solid #e9ecef; padding-top: 24px; margin-top: 20px;">
+                <a href="@Url.Action("Index", "KhachHang")" class="btn-light-mod me-2">Hủy bỏ</a>
+                <button type="submit" class="btn-brown"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu thay đổi</button>
+            </div>
+        }
+    </div>
+</div>

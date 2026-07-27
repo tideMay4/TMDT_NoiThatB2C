@@ -1,4 +1,3 @@
-in giá tiền thuế ra tất cả
-qr ngân hàng quét vô có số tài khoản tồn tại	
+in giá tiền bao gồm thuế ra tất cả	
 lỗi xác nhận thanh toán
 sau khi thanh toán sẽ có hóa đơn

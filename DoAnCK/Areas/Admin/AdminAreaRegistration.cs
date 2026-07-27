@@ -1,4 +1,32 @@
-﻿using System.Web.Mvc;
+﻿//using System.Web.Mvc;
+
+//namespace DoAnCK.Areas.Admin
+//{
+//    public class AdminAreaRegistration : AreaRegistration
+//    {
+//        public override string AreaName
+//        {
+//            get { return "Admin"; }
+//        }
+
+//        public override void RegisterArea(AreaRegistrationContext context)
+//        {
+//            context.MapRoute(
+//                "Admin_default",
+//                "Admin/{controller}/{action}/{id}",
+//                new
+//                {
+//                    controller = "Dashboard",
+//                    action = "Index",
+//                    id = UrlParameter.Optional
+//                }
+//            );
+//        }
+//    }
+//}
+
+
+using System.Web.Mvc;
 
 namespace DoAnCK.Areas.Admin
 {
@@ -19,7 +47,9 @@ namespace DoAnCK.Areas.Admin
                     controller = "Dashboard",
                     action = "Index",
                     id = UrlParameter.Optional
-                }
+                },
+                // Dòng này giúp MVC luôn tìm đúng thư mục Controllers của Admin, tránh xung đột
+                new[] { "DoAnCK.Areas.Admin.Controllers" }
             );
         }
     }

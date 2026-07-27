@@ -124,16 +124,20 @@
 
                 </li>
 
-                <li class="@(currentController == "Customer" ? "active" : "")">
-
-                    <a href="/Admin/Customer">
-
+                <!-- Cập nhật lại biến currentController và href -->
+                <li class="@(currentController == "KhachHang" ? "active" : "")">
+                    <a href="/Admin/KhachHang">
                         <i class="fa-solid fa-users"></i>
-
                         <span>Customers</span>
-
                     </a>
+                </li>
 
+                <li class="@(currentController == "CuaHang" ? "active" : "")">
+                    <a href="/Admin/CuaHang">
+                        <!-- Sử dụng icon ngôi nhà/cửa hàng cho chuẩn UI -->
+                        <i class="fa-solid fa-store"></i>
+                        <span>Store</span>
+                    </a>
                 </li>
 
                 <li class="@(currentController == "Banner" ? "active" : "")">

@@ -1,0 +1,594 @@
+﻿@*@model IEnumerable<DoAnCK.Models.KHACHHANG>
+    @{
+        ViewBag.Title = "Quản lý Khách Hàng";
+        Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml"; // Đảm bảo đúng đường dẫn Layout Admin của bạn
+    }*@
+
+<!--<div class="container-fluid" style="padding: 20px 40px;">-->
+<!-- Tiêu đề & Nút thêm mới -->
+<!--<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 30px;">
+    <h2 style="font-weight: 900; text-transform: uppercase; margin: 0; color: #000; letter-spacing: 1px;">
+        Hồ sơ Khách Hàng
+    </h2>
+    <button class="btn-moderno-solid" onclick="alert('Tính năng đang phát triển')">
+        <i class="fa-solid fa-plus"></i> THÊM KHÁCH HÀNG MỚI
+    </button>
+</div>-->
+<!-- Khung Bảng Dữ Liệu -->
+<!--<div style="background: #fff; border-radius: 8px; border: 1px solid #EAE8E3; box-shadow: 0 4px 15px rgba(0,0,0,0.02); overflow: hidden;">
+    <table style="width: 100%; border-collapse: collapse; text-align: left;">
+        <thead>
+            <tr style="background: #F9F9F9; border-bottom: 2px solid #000; border-top: 1px solid #000;">
+                <th style="padding: 18px 20px; font-weight: bold; color: #000; text-transform: uppercase; font-size: 0.85em; width: 80px;">Mã KH</th>
+                <th style="padding: 18px 20px; font-weight: bold; color: #000; text-transform: uppercase; font-size: 0.85em;">Họ và Tên</th>
+                <th style="padding: 18px 20px; font-weight: bold; color: #000; text-transform: uppercase; font-size: 0.85em;">Điện thoại</th>
+                <th style="padding: 18px 20px; font-weight: bold; color: #000; text-transform: uppercase; font-size: 0.85em;">Địa chỉ</th>
+                <th style="padding: 18px 20px; font-weight: bold; color: #000; text-transform: uppercase; font-size: 0.85em; text-align: center;">Thao tác</th>
+            </tr>
+        </thead>
+        <tbody>-->
+@*@if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <tr class="table-row-moderno" style="border-bottom: 1px solid #EAE8E3; transition: background 0.2s;">
+                <td style="padding: 15px 20px; font-weight: 600; color: #555;">#@item.MaKH</td>
+                <td style="padding: 15px 20px; font-weight: bold; color: #000;">@item.HoTen</td>
+                <td style="padding: 15px 20px; color: #444;">@item.SDT</td>
+                <td style="padding: 15px 20px; color: #666; font-size: 0.9em;">@(string.IsNullOrEmpty(item.DiaChi) ? "Chưa cập nhật" : item.DiaChi)</td>
+                <td style="padding: 15px 20px; text-align: center;">
+                     Sử dụng Url.Action để tạo link động truyền Mã KH (ID)
+                    <a href="@Url.Action("Details", "AdminKhachHang", new { id = item.MaKH })" class="btn-moderno-outline btn-sm">Xem</a>
+
+                    <a href="@Url.Action("Edit", "AdminKhachHang", new { id = item.MaKH })" class="btn-moderno-outline btn-sm" style="margin-left: 5px;">Sửa</a>
+                </td>
+            </tr>
+        }
+    }*@
+<!--else
+                {
+                    <tr>
+                        <td colspan="5" style="padding: 40px; text-align: center; color: #888; font-style: italic;">
+                            Chưa có dữ liệu khách hàng.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>-->
+<!-- ĐOẠN CSS XUYÊN SUỐT CHO CÁC NÚT TONE MODERNO -->
+<!--<style>
+    .table-row-moderno:hover {
+        background-color: #F8F9FA;
+    }
+
+    .btn-moderno-solid {
+        background: #000;
+        color: #fff;
+        border: 2px solid #000;
+        padding: 10px 20px;
+        border-radius: 4px;
+        font-weight: bold;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        font-size: 0.85em;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .btn-moderno-solid:hover {
+            background: #333;
+            color: #fff;
+            border-color: #333;
+        }
+
+    .btn-moderno-outline {
+        display: inline-block;
+        background: #fff;
+        color: #000;
+        border: 1px solid #ccc;
+        padding: 6px 15px;
+        border-radius: 4px;
+        text-decoration: none;
+        font-weight: 600;
+        font-size: 0.85em;
+        transition: all 0.2s ease;
+    }
+
+        .btn-moderno-outline:hover {
+            border-color: #000;
+            color: #000;
+            background: #f4f4f4;
+        }
+</style>-->
+
+
+@model IEnumerable<DoAnCK.Models.KHACHHANG>
+@{
+    ViewBag.Title = "Quản lý khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    // Xử lý code động tính toán số lượng cho 4 thẻ thống kê
+    int tongKhachHang = Model != null ? Model.Count() : 0;
+
+    // Giả lập thêm các con số dựa trên dữ liệu thật (Bạn có thể tùy chỉnh logic sau)
+    int khachMoi = Model != null ? Model.Count(k => k.MaKH > 0) : 0; // Tạm đếm tất cả là khách mới
+    int hoatDong = tongKhachHang;
+    int biKhoa = 0;
+}
+
+<style>
+    /* Ép font chữ Inter 100% giống giao diện mẫu */
+    body, h1, h2, h3, h4, h5, h6, p, span, div, table, th, td {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .page-desc {
+        color: #8b9096;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    /* Nút thêm mới - Hiệu ứng hover mượt mà */
+    .btn-brown {
+        background-color: #A38262;
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 50rem;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(163, 130, 98, 0.2);
+    }
+
+        .btn-brown:hover {
+            background-color: #8b6b4c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(163, 130, 98, 0.3);
+        }
+
+    /* 4 Thẻ Thống Kê (Stat Cards) */
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        border: 1px solid #f1f3f5;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+    .stat-title {
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .stat-desc {
+        font-size: 13px;
+        color: #adb5bd;
+    }
+
+    .stat-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .bg-brown-light {
+        background-color: rgba(163, 130, 98, 0.1);
+        color: #A38262;
+    }
+
+    .bg-green-light {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+    .bg-orange-light {
+        background-color: rgba(253, 126, 20, 0.1);
+        color: #fd7e14;
+    }
+
+    .bg-red-light {
+        background-color: rgba(220, 53, 69, 0.1);
+        color: #dc3545;
+    }
+
+    /* Khung trắng chứa bảng chính */
+    .admin-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #f1f3f5;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        padding: 24px;
+        margin-top: 24px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .card-subtitle {
+        font-size: 13px;
+        color: #8b9096;
+    }
+
+    /* Nút Xuất Excel & Bộ lọc */
+    .btn-action-top {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 8px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-action-top:hover {
+            background: #f8f9fa;
+            color: #212529;
+            border-color: #c6cacc;
+        }
+
+    /* Thanh tìm kiếm & Select */
+    .form-control-moderno, .form-select-moderno {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #495057;
+        background-color: #f8f9fa;
+        transition: all 0.3s;
+    }
+
+        .form-control-moderno:focus, .form-select-moderno:focus {
+            background-color: #fff;
+            border-color: #A38262;
+            outline: none;
+            box-shadow: 0 0 0 0.25rem rgba(163, 130, 98, 0.15);
+        }
+
+    .search-icon-bg {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-right: none;
+        color: #adb5bd;
+    }
+
+    /* Bảng dữ liệu */
+    .table-moderno {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 10px;
+    }
+
+        .table-moderno thead th {
+            background-color: #f8f9fa;
+            color: #8b9096;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e9ecef;
+            border-top: 1px solid #e9ecef;
+        }
+
+            .table-moderno thead th:first-child {
+                border-top-left-radius: 8px;
+                border-bottom-left-radius: 8px;
+                border-left: 1px solid #e9ecef;
+            }
+
+            .table-moderno thead th:last-child {
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+                border-right: 1px solid #e9ecef;
+            }
+
+        .table-moderno tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f5;
+            color: #212529;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .table-moderno tbody tr:hover td {
+            background-color: #fcfcfc;
+        }
+
+    /* Badge Trạng thái */
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 50rem;
+        font-size: 12px;
+        font-weight: 600;
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+    /* Avatar Khách Hàng */
+    .avatar-circle {
+        width: 42px;
+        height: 42px;
+        background-color: rgba(163, 130, 98, 0.1);
+        border-radius: 50%;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #A38262;
+        font-weight: 700;
+        font-size: 16px;
+        margin-right: 12px;
+    }
+
+    /* Icon Thao tác */
+    .action-icon {
+        color: #adb5bd;
+        cursor: pointer;
+        margin: 0 8px;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .action-icon:hover {
+            transform: scale(1.1);
+        }
+
+            .action-icon:hover.fa-eye {
+                color: #0d6efd;
+            }
+
+            .action-icon:hover.fa-pen {
+                color: #A38262;
+            }
+
+            .action-icon:hover.fa-trash {
+                color: #dc3545;
+            }
+
+    /* Phân trang */
+    .pagination-moderno {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-top: 25px;
+    }
+
+    .page-item-moderno {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .page-item-moderno.active {
+            background: #A38262;
+            color: #fff;
+            border-color: #A38262;
+        }
+
+        .page-item-moderno:hover:not(.active) {
+            background: #f8f9fa;
+            border-color: #c6cacc;
+        }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">
+    <!-- Tiêu đề trang & Nút Thêm mới -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title">Quản lý khách hàng</h2>
+            <p class="page-desc">Quản lý thông tin tài khoản, địa chỉ và phân quyền khách hàng.</p>
+        </div>
+        <button class="btn-brown" onclick="alert('Tính năng đang phát triển')">
+            <i class="fa-solid fa-plus me-1"></i> Thêm khách hàng
+        </button>
+    </div>
+
+    <!-- 4 THẺ THỐNG KÊ (Giống trang Sản phẩm) -->
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Tổng khách hàng</div>
+                        <div class="stat-value">@tongKhachHang</div>
+                        <div class="stat-desc"><i class="fa-solid fa-arrow-up text-success me-1"></i> Tổng số tài khoản</div>
+                    </div>
+                    <div class="stat-icon-box bg-brown-light"><i class="fa-solid fa-users"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Khách hàng mới</div>
+                        <div class="stat-value">@khachMoi</div>
+                        <div class="stat-desc"><i class="fa-solid fa-check text-success me-1"></i> Đăng ký tháng này</div>
+                    </div>
+                    <div class="stat-icon-box bg-green-light"><i class="fa-solid fa-user-plus"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Đang hoạt động</div>
+                        <div class="stat-value">@hoatDong</div>
+                        <div class="stat-desc"><i class="fa-solid fa-bolt text-warning me-1"></i> Tài khoản hợp lệ</div>
+                    </div>
+                    <div class="stat-icon-box bg-orange-light"><i class="fa-solid fa-user-check"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Bị khóa</div>
+                        <div class="stat-value">@biKhoa</div>
+                        <div class="stat-desc"><i class="fa-solid fa-xmark text-danger me-1"></i> Tài khoản vi phạm</div>
+                    </div>
+                    <div class="stat-icon-box bg-red-light"><i class="fa-solid fa-user-lock"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN CARD: TÌM KIẾM & BẢNG DỮ LIỆU -->
+    <div class="admin-card mt-0">
+        <!-- Header Card -->
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h5 class="card-title">Danh sách khách hàng</h5>
+                <p class="card-subtitle">Tất cả khách hàng đang có trong hệ thống</p>
+            </div>
+            <div>
+                <button class="btn-action-top"><i class="fa-solid fa-file-export me-2"></i>Xuất Excel</button>
+                <button class="btn-action-top"><i class="fa-solid fa-filter me-2"></i>Bộ lọc</button>
+            </div>
+        </div>
+
+        <!-- Thanh tìm kiếm và bộ lọc -->
+        <div class="row gx-3 mb-4">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text search-icon-bg"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" class="form-control form-control-moderno border-start-0 ps-0" placeholder="Tìm kiếm khách hàng...">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select form-select-moderno">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="1">Đang hoạt động</option>
+                    <option value="0">Bị khóa</option>
+                </select>
+            </div>
+            <div class="col-md-3 ms-auto">
+                <select class="form-select form-select-moderno">
+                    <option value="newest">Mới nhất</option>
+                    <option value="oldest">Cũ nhất</option>
+                </select>
+            </div>
+        </div>
+
+        <!-- Bảng Dữ liệu -->
+        <div class="table-responsive">
+            <table class="table-moderno">
+                <thead>
+                    <tr>
+                        <th width="80">Mã KH</th>
+                        <th>Khách hàng</th>
+                        <th>Điện thoại</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center" width="150">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            // Lấy chữ cái đầu tiên làm Avatar
+                            string firstChar = string.IsNullOrEmpty(item.HoTen) ? "K" : item.HoTen.Substring(0, 1).ToUpper();
+
+                            <tr>
+                                <td class="text-muted fw-bold">#@item.MaKH</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-circle">@firstChar</div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold" style="color: #212529; font-size: 14px;">@item.HoTen</h6>
+                                            <small class="text-muted" style="font-size: 12px;">@(string.IsNullOrEmpty(item.DiaChi) ? "Chưa có địa chỉ" : item.DiaChi)</small>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span style="font-size: 14px; font-weight: 500;">@item.SDT</span>
+                                </td>
+                                <td>
+                                    <span class="badge-status">Đang hoạt động</span>
+                                </td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("Details", "KhachHang", new { id = item.MaKH })" class="action-icon fa-eye" title="Xem chi tiết"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="@Url.Action("Edit", "KhachHang", new { id = item.MaKH })" class="action-icon fa-pen" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></a>
+                                    <a href="@Url.Action("Delete", "KhachHang", new { id = item.MaKH })" onclick="return confirm('Bạn có chắc chắn muốn xóa khách hàng này không?');" class="action-icon fa-trash" title="Xóa"><i class="fa-solid fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="5" class="text-center py-5">
+                                <div style="color: #dee2e6; font-size: 48px; margin-bottom: 15px; transition: transform 0.3s;" onmouseover="this.style.transform='scale(1.1)'" onmouseout="this.style.transform='scale(1)'">
+                                    <i class="fa-regular fa-folder-open"></i>
+                                </div>
+                                <h6 class="text-muted mb-0">Hệ thống chưa có dữ liệu khách hàng.</h6>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Phân trang -->
+        <div class="pagination-moderno">
+            <a href="#" class="page-item-moderno"><i class="fa-solid fa-chevron-left"></i></a>
+            <a href="#" class="page-item-moderno active">1</a>
+            <a href="#" class="page-item-moderno">2</a>
+            <a href="#" class="page-item-moderno">3</a>
+            <a href="#" class="page-item-moderno"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+
+    </div>
+</div>

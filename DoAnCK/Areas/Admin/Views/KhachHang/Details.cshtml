@@ -1,0 +1,143 @@
+﻿@model DoAnCK.Models.KHACHHANG
+@{
+    ViewBag.Title = "Chi tiết Khách Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+    string firstChar = string.IsNullOrEmpty(Model.HoTen) ? "K" : Model.HoTen.Substring(0, 1).ToUpper();
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .admin-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 40px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        max-width: 800px;
+        margin-top: 24px;
+        border: 1px solid #f1f3f5;
+    }
+
+    .info-label {
+        font-size: 13px;
+        font-weight: 600;
+        color: #8b9096;
+        text-transform: uppercase;
+        margin-bottom: 6px;
+        letter-spacing: 0.5px;
+    }
+
+    .info-value {
+        font-size: 15px;
+        color: #212529;
+        font-weight: 500;
+        background: #f8f9fa;
+        padding: 12px 16px;
+        border-radius: 8px;
+        border: 1px solid #e9ecef;
+    }
+
+    .btn-brown {
+        background-color: #A38262;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 50rem;
+        font-weight: 500;
+        text-decoration: none;
+        display: inline-block;
+        transition: all 0.3s;
+    }
+
+        .btn-brown:hover {
+            background-color: #8b6b4c;
+            color: white;
+            transform: translateY(-2px);
+        }
+
+    .btn-light-mod {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 10px 24px;
+        border-radius: 50rem;
+        text-decoration: none;
+        font-weight: 500;
+        display: inline-block;
+        transition: all 0.2s;
+    }
+
+        .btn-light-mod:hover {
+            background: #f8f9fa;
+        }
+
+    .avatar-large {
+        width: 70px;
+        height: 70px;
+        background-color: rgba(163, 130, 98, 0.1);
+        border-radius: 50%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #A38262;
+        font-weight: 800;
+        font-size: 28px;
+        margin-right: 20px;
+    }
+
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 50rem;
+        font-size: 12px;
+        font-weight: 600;
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+        display: inline-block;
+    }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">
+    <div class="mb-4">
+        <h2 class="page-title">Hồ sơ khách hàng</h2>
+        <a href="@Url.Action("Index", "KhachHang")" style="color: #6c757d; text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    </div>
+
+    <div class="admin-card">
+        <div class="d-flex align-items-center border-bottom pb-4 mb-4">
+            <div class="avatar-large">@firstChar</div>
+            <div>
+                <h4 class="fw-bold mb-1" style="color: #212529;">@Model.HoTen</h4>
+                <div class="badge-status">Tài khoản hoạt động</div>
+            </div>
+        </div>
+
+        <div class="row g-4 mb-4">
+            <div class="col-md-6">
+                <div class="info-label">Mã khách hàng</div>
+                <div class="info-value fw-bold" style="color: #A38262;">#@Model.MaKH</div>
+            </div>
+            <div class="col-md-6">
+                <div class="info-label">Số điện thoại</div>
+                <div class="info-value">@Model.SDT</div>
+            </div>
+            <div class="col-md-12 mt-4">
+                <div class="info-label">Địa chỉ thường trú</div>
+                <div class="info-value">@(string.IsNullOrEmpty(Model.DiaChi) ? "Chưa có thông tin địa chỉ" : Model.DiaChi)</div>
+            </div>
+        </div>
+
+        <div style="text-align: right; border-top: 1px solid #e9ecef; padding-top: 24px; margin-top: 30px;">
+            <a href="@Url.Action("Index", "KhachHang")" class="btn-light-mod me-2">Đóng</a>
+            <a href="@Url.Action("Edit", "KhachHang", new { id = Model.MaKH })" class="btn-brown"><i class="fa-solid fa-pen me-1"></i> Sửa hồ sơ</a>
+        </div>
+    </div>
+</div>

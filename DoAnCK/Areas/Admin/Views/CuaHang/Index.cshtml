@@ -1,0 +1,651 @@
+﻿<!--@{
+    ViewBag.Title = "Thiết lập Cửa Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Ép font chữ Inter 100% giống hệ thống */
+    body, h1, h2, h3, h4, h5, h6, p, span, div, label, input, button {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .page-title { font-size: 24px; font-weight: 700; color: #212529; margin-bottom: 4px; }
+    .page-desc { color: #8b9096; font-size: 14px; margin-bottom: 0; }
+
+    /* Khung trắng chứa form */
+    .admin-card {
+        background: #fff; border-radius: 12px; border: 1px solid #f1f3f5;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03); padding: 32px 40px; margin-top: 24px;
+        max-width: 850px;
+    }
+
+    /* Tiêu đề từng phần của Form */
+    .section-title {
+        font-size: 16px; font-weight: 700; color: #212529;
+        margin-bottom: 24px; padding-bottom: 12px; border-bottom: 1px solid #e9ecef;
+        display: flex; align-items: center;
+    }
+    .section-title i { color: #A38262; margin-right: 10px; font-size: 18px; }
+
+    /* Thiết kế Form Controls */
+    .form-label-moderno {
+        font-size: 13px; font-weight: 600; color: #495057; margin-bottom: 8px; display: block;
+    }
+    .form-control-moderno {
+        width: 100%; border: 1px solid #e9ecef; border-radius: 8px; padding: 12px 16px;
+        font-size: 14px; color: #212529; background-color: #f8f9fa; transition: all 0.3s ease;
+        box-sizing: border-box;
+    }
+    .form-control-moderno:focus {
+        background-color: #fff; border-color: #A38262; outline: none;
+        box-shadow: 0 0 0 0.25rem rgba(163, 130, 98, 0.15);
+    }
+
+    /* Nút bấm Hover Animation */
+    .btn-brown {
+        background-color: #A38262; color: white; border: none; padding: 12px 30px;
+        border-radius: 50rem; font-weight: 500; font-size: 14px;
+        transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(163, 130, 98, 0.2); cursor: pointer;
+    }
+    .btn-brown:hover {
+        background-color: #8b6b4c; color: white; transform: translateY(-2px);
+        box-shadow: 0 6px 12px rgba(163, 130, 98, 0.3);
+    }
+
+    .btn-action-top {
+        background: #fff; border: 1px solid #dee2e6; color: #495057;
+        padding: 11px 24px; border-radius: 50rem; font-size: 14px;
+        font-weight: 500; margin-right: 12px; transition: all 0.2s ease; cursor: pointer;
+    }
+    .btn-action-top:hover { background: #f8f9fa; color: #212529; border-color: #c6cacc; }
+
+    /* Alert Thông báo thành công trượt từ trên xuống */
+    .alert-moderno {
+        background-color: rgba(25, 135, 84, 0.1); border-left: 4px solid #198754;
+        color: #198754; padding: 16px 20px; border-radius: 8px; font-weight: 500;
+        display: flex; align-items: center; margin-bottom: 24px; max-width: 850px;
+        animation: slideInDown 0.4s ease forwards;
+        font-size: 14.5px;
+    }
+    @@keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">-->
+<!-- Tiêu đề trang -->
+<!--<div class="mb-4">
+    <h2 class="page-title">Cấu hình hệ thống</h2>
+    <p class="page-desc">Quản lý thông tin liên hệ, địa chỉ và tài khoản thanh toán của thương hiệu.</p>
+</div>-->
+<!-- Thông báo Lưu thành công -->
+<!--@if (ViewBag.SuccessMsg != null)
+{
+    <div class="alert-moderno">
+        <i class="fa-solid fa-circle-check" style="font-size: 18px; margin-right: 10px;"></i>
+        @ViewBag.SuccessMsg
+    </div>
+}-->
+<!-- Khung Form Cấu Hình -->
+<!--<div class="admin-card">
+
+    <form action="@Url.Action("Index", "CuaHang")" method="POST">-->
+<!-- Phần 1: Nhận diện thương hiệu -->
+<!--<div class="section-title">
+    <i class="fa-solid fa-store"></i> Thông tin chung
+</div>
+
+<div class="row g-4 mb-4">
+    <div class="col-md-6">
+        <label class="form-label-moderno">Tên thương hiệu</label>
+        <input type="text" class="form-control-moderno" value="@ViewBag.TenCuaHang" name="TenCuaHang" placeholder="Nhập tên cửa hàng..." />
+    </div>
+    <div class="col-md-6">
+        <label class="form-label-moderno">Hotline CSKH</label>
+        <input type="text" class="form-control-moderno" value="@ViewBag.Hotline" name="Hotline" placeholder="VD: 1900 xxxx" />
+    </div>
+    <div class="col-md-12 mt-4">
+        <label class="form-label-moderno">Địa chỉ trụ sở chính</label>
+        <input type="text" class="form-control-moderno" value="@ViewBag.DiaChi" name="DiaChi" placeholder="Nhập địa chỉ đầy đủ..." />
+    </div>
+</div>-->
+<!-- Phần 2: Thanh toán -->
+<!--<div class="section-title" style="margin-top: 40px;">
+    <i class="fa-solid fa-building-columns"></i> Tài khoản nhận thanh toán
+</div>
+
+<div class="row g-4 mb-5">
+    <div class="col-md-4">
+        <label class="form-label-moderno">Ngân hàng</label>
+        <input type="text" class="form-control-moderno" value="@ViewBag.NganHang" name="NganHang" placeholder="VD: Vietcombank" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label-moderno">Chủ tài khoản</label>
+        <input type="text" class="form-control-moderno" value="@ViewBag.ChuTaiKhoan" name="ChuTaiKhoan" placeholder="VD: NGUYEN VAN A" />
+    </div>
+    <div class="col-md-4">
+        <label class="form-label-moderno">Số tài khoản</label>
+        <input type="text" class="form-control-moderno" value="@ViewBag.SoTaiKhoan" name="SoTaiKhoan" placeholder="Nhập số tài khoản..." />
+    </div>
+</div>-->
+<!-- Nút Lưu -->
+<!--<div style="text-align: right; border-top: 1px solid #f1f3f5; padding-top: 24px; margin-top: 10px;">
+                <button type="reset" class="btn-action-top">Khôi phục</button>
+                <button type="submit" class="btn-brown">
+                    <i class="fa-solid fa-floppy-disk me-1"></i> Lưu thay đổi
+                </button>
+            </div>
+
+        </form>
+
+    </div>
+</div>-->
+
+
+
+@model IEnumerable<DoAnCK.Models.CUAHANG>
+@{
+    ViewBag.Title = "Quản lý cửa hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* Ép font chữ Inter 100% và mã màu xám nhạt giống video mẫu */
+    body, h1, h2, h3, h4, h5, h6, p, span, div, table, th, td {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .page-desc {
+        color: #8b9096;
+        font-size: 14px;
+        margin-bottom: 0;
+    }
+
+    /* Nút thêm mới màu nâu đặc trưng bo tròn viên thuốc có chuyển động nổi */
+    .btn-brown {
+        background-color: #A38262;
+        color: white;
+        border: none;
+        padding: 10px 22px;
+        border-radius: 50rem;
+        font-weight: 500;
+        font-size: 14px;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 6px rgba(163, 130, 98, 0.2);
+    }
+
+        .btn-brown:hover {
+            background-color: #8b6b4c;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(163, 130, 98, 0.3);
+        }
+
+    /* Hiệu ứng zoom nhẹ và bóng đổ khi hover vào 4 thẻ Thống kê */
+    .stat-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 24px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        border: 1px solid #f1f3f5;
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        height: 100%;
+    }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+        }
+
+    .stat-title {
+        font-size: 14px;
+        color: #6c757d;
+        font-weight: 600;
+        margin-bottom: 8px;
+    }
+
+    .stat-value {
+        font-size: 28px;
+        font-weight: 800;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .stat-desc {
+        font-size: 13px;
+        color: #adb5bd;
+    }
+
+    .stat-icon-box {
+        width: 48px;
+        height: 48px;
+        border-radius: 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+    }
+
+    .bg-brown-light {
+        background-color: rgba(163, 130, 98, 0.1);
+        color: #A38262;
+    }
+
+    .bg-green-light {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+    .bg-orange-light {
+        background-color: rgba(253, 126, 20, 0.1);
+        color: #fd7e14;
+    }
+
+    .bg-gray-light {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+    /* Khung trắng chứa bảng chính */
+    .admin-card {
+        background: #fff;
+        border-radius: 12px;
+        border: 1px solid #f1f3f5;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        padding: 24px;
+        margin-top: 24px;
+    }
+
+    .card-title {
+        font-size: 18px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .card-subtitle {
+        font-size: 13px;
+        color: #8b9096;
+    }
+
+    .btn-action-top {
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 8px 16px;
+        border-radius: 8px;
+        font-size: 14px;
+        font-weight: 500;
+        margin-left: 8px;
+        transition: all 0.2s ease;
+    }
+
+        .btn-action-top:hover {
+            background: #f8f9fa;
+            color: #212529;
+            border-color: #c6cacc;
+        }
+
+    .form-control-moderno, .form-select-moderno {
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 10px 15px;
+        font-size: 14px;
+        color: #495057;
+        background-color: #f8f9fa;
+        transition: all 0.3s;
+    }
+
+        .form-control-moderno:focus, .form-select-moderno:focus {
+            background-color: #fff;
+            border-color: #A38262;
+            outline: none;
+            box-shadow: 0 0 0 0.25rem rgba(163, 130, 98, 0.15);
+        }
+
+    .search-icon-bg {
+        background-color: #f8f9fa;
+        border: 1px solid #e9ecef;
+        border-right: none;
+        color: #adb5bd;
+    }
+
+    /* Thiết kế Table và Hiệu ứng hàng trượt sáng nhẹ */
+    .table-moderno {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 10px;
+    }
+
+        .table-moderno thead th {
+            background-color: #f8f9fa;
+            color: #8b9096;
+            font-weight: 600;
+            font-size: 13px;
+            padding: 14px 16px;
+            border-bottom: 1px solid #e9ecef;
+            border-top: 1px solid #e9ecef;
+        }
+
+            .table-moderno thead th:first-child {
+                border-top-left-radius: 8px;
+                border-bottom-left-radius: 8px;
+                border-left: 1px solid #e9ecef;
+            }
+
+            .table-moderno thead th:last-child {
+                border-top-right-radius: 8px;
+                border-bottom-right-radius: 8px;
+                border-right: 1px solid #e9ecef;
+            }
+
+        .table-moderno tbody td {
+            padding: 16px;
+            vertical-align: middle;
+            border-bottom: 1px solid #f1f3f5;
+            color: #212529;
+            font-size: 14px;
+            transition: background-color 0.2s ease;
+        }
+
+        .table-moderno tbody tr:hover td {
+            background-color: #fcfcfc;
+        }
+
+    /* Badge Trạng thái mượt mà */
+    .badge-status {
+        padding: 6px 12px;
+        border-radius: 50rem;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .badge-active {
+        background-color: rgba(25, 135, 84, 0.1);
+        color: #198754;
+    }
+
+    .badge-warning-light {
+        background-color: rgba(253, 126, 20, 0.1);
+        color: #fd7e14;
+    }
+
+    .badge-inactive {
+        background-color: rgba(108, 117, 125, 0.1);
+        color: #6c757d;
+    }
+
+    .avatar-store {
+        width: 42px;
+        height: 42px;
+        background-color: rgba(163, 130, 98, 0.1);
+        border-radius: 8px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        color: #A38262;
+        font-weight: 700;
+        font-size: 16px;
+        margin-right: 12px;
+    }
+
+    /* Hiệu ứng phóng to nhẹ các icon khi di chuột */
+    .action-icon {
+        color: #adb5bd;
+        cursor: pointer;
+        margin: 0 8px;
+        font-size: 16px;
+        transition: all 0.2s ease;
+        text-decoration: none;
+        display: inline-block;
+    }
+
+        .action-icon:hover {
+            transform: scale(1.15);
+        }
+
+            .action-icon:hover.fa-eye {
+                color: #0d6efd;
+            }
+
+            .action-icon:hover.fa-pen {
+                color: #A38262;
+            }
+
+            .action-icon:hover.fa-trash {
+                color: #dc3545;
+            }
+
+    .pagination-moderno {
+        display: flex;
+        justify-content: flex-end;
+        gap: 6px;
+        margin-top: 25px;
+    }
+
+    .page-item-moderno {
+        width: 36px;
+        height: 36px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 8px;
+        background: #fff;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        font-size: 14px;
+        cursor: pointer;
+        text-decoration: none;
+        font-weight: 500;
+        transition: all 0.2s;
+    }
+
+        .page-item-moderno.active {
+            background: #A38262;
+            color: #fff;
+            border-color: #A38262;
+        }
+
+        .page-item-moderno:hover:not(.active) {
+            background: #f8f9fa;
+            border-color: #c6cacc;
+        }
+
+    /* Khử trùng lặp ký hiệu Razor bằng @@ */
+    @@keyframes slideInDown {
+        from {
+            opacity: 0;
+            transform: translateY(-10px);
+        }
+
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 class="page-title">Quản lý cửa hàng</h2>
+            <p class="page-desc">Quản lý danh sách, khu vực địa lý và trạng thái hoạt động của các chi nhánh.</p>
+        </div>
+        <button class="btn-brown" onclick="alert('Tính năng đang phát triển!')">
+            <i class="fa-solid fa-plus me-1"></i> Thêm cửa hàng
+        </button>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Tổng chi nhánh</div>
+                        <div class="stat-value">@ViewBag.TongCuaHang</div>
+                        <div class="stat-desc"><i class="fa-solid fa-store text-success me-1"></i> Trên toàn hệ thống</div>
+                    </div>
+                    <div class="stat-icon-box bg-brown-light"><i class="fa-solid fa-building"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Đang hoạt động</div>
+                        <div class="stat-value">@ViewBag.DangHoatDong</div>
+                        <div class="stat-desc"><i class="fa-solid fa-circle-check text-success me-1"></i> Sẵn sàng đón khách</div>
+                    </div>
+                    <div class="stat-icon-box bg-green-light"><i class="fa-solid fa-door-open"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Sắp khai trương</div>
+                        <div class="stat-value">@ViewBag.SapKhaiTruong</div>
+                        <div class="stat-desc"><i class="fa-solid fa-hammer text-warning me-1"></i> Đang chuẩn bị setup</div>
+                    </div>
+                    <div class="stat-icon-box bg-orange-light"><i class="fa-solid fa-clock"></i></div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="stat-card">
+                <div class="d-flex justify-content-between align-items-start">
+                    <div>
+                        <div class="stat-title">Tạm đóng cửa</div>
+                        <div class="stat-value">@ViewBag.TamDong</div>
+                        <div class="stat-desc"><i class="fa-solid fa-circle-xmark text-danger me-1"></i> Đang bảo trì hệ thống</div>
+                    </div>
+                    <div class="stat-icon-box bg-gray-light"><i class="fa-solid fa-door-closed"></i></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="admin-card mt-0">
+        <div class="d-flex justify-content-between align-items-start mb-4">
+            <div>
+                <h5 class="card-title">Danh sách cửa hàng</h5>
+                <p class="card-subtitle">Thông tin chi tiết các cơ sở dữ liệu thật</p>
+            </div>
+            <div>
+                <button class="btn-action-top"><i class="fa-solid fa-file-export me-2"></i>Xuất Excel</button>
+                <button class="btn-action-top"><i class="fa-solid fa-filter me-2"></i>Bộ lọc</button>
+            </div>
+        </div>
+
+        @using (Html.BeginForm("Index", "CuaHang", FormMethod.Get, new { @class = "row gx-3 mb-4" }))
+        {
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text search-icon-bg"><i class="fa-solid fa-magnifying-glass"></i></span>
+                    <input type="text" name="searchString" class="form-control form-control-moderno border-start-0 ps-0" placeholder="Tìm tên hoặc địa chỉ..." value="@ViewBag.CurrentSearch">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select name="statusFilter" class="form-select form-select-moderno" onchange="this.form.submit()">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="1" @(ViewBag.CurrentStatus == 1 ? "selected" : "")>Đang hoạt động</option>
+                    <option value="2" @(ViewBag.CurrentStatus == 2 ? "selected" : "")>Sắp khai trương</option>
+                    <option value="0" @(ViewBag.CurrentStatus == 0 ? "selected" : "")>Tạm đóng</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn-action-top m-0" style="padding: 10px 20px;">Tìm kiếm</button>
+            </div>
+        }
+
+        <div class="table-responsive">
+            <table class="table-moderno">
+                <thead>
+                    <tr>
+                        <th width="90">Mã CH</th>
+                        <th>Chi nhánh cửa hàng</th>
+                        <th>Số điện thoại</th>
+                        <th>Địa chỉ kinh doanh</th>
+                        <th>Trạng thái</th>
+                        <th class="text-center" width="150">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td class="text-muted fw-bold">#@item.MaCH</td>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        <div class="avatar-store"><i class="fa-solid fa-store"></i></div>
+                                        <div>
+                                            <h6 class="mb-0 fw-bold" style="color: #212529; font-size: 14px;">@item.TenCH</h6>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td><span style="font-size: 14px; font-weight: 500;">@item.DienThoai</span></td>
+                                <td class="text-muted" style="max-width: 300px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;" title="@item.DiaChi">
+                                    @item.DiaChi
+                                </td>
+                                <td>
+                                    @if (item.TrangThai == 1)
+                                    {
+                                        <span class="badge-status badge-active">Hoạt động</span>
+                                    }
+                                    else if (item.TrangThai == 2)
+                                    {
+                                        <span class="badge-status badge-warning-light">Sắp mở</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="badge-status badge-inactive">Tạm đóng</span>
+                                    }
+                                </td>
+                                <td class="text-center">
+                                    <a href="@Url.Action("Details", "CuaHang", new { id = item.MaCH })" class="action-icon fa-eye" title="Xem chi tiết"><i class="fa-solid fa-eye"></i></a>
+                                    <a href="@Url.Action("Edit", "CuaHang", new { id = item.MaCH })" class="action-icon fa-pen" title="Chỉnh sửa"><i class="fa-solid fa-pen"></i></a>
+                                    <a href="@Url.Action("Delete", "CuaHang", new { id = item.MaCH })" onclick="return confirm('Bạn có chắc chắn muốn xóa cửa hàng này vĩnh viễn không?');" class="action-icon fa-trash" title="Xóa"><i class="fa-solid fa-trash"></i></a>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="6" class="text-center py-5">
+                                <div style="color: #dee2e6; font-size: 48px; margin-bottom: 15px;"><i class="fa-regular fa-folder-open"></i></div>
+                                <h6 class="text-muted mb-0">Không tìm thấy chi nhánh cửa hàng nào trùng khớp.</h6>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        <div class="pagination-moderno">
+            <a href="#" class="page-item-moderno"><i class="fa-solid fa-chevron-left"></i></a>
+            <a href="#" class="page-item-moderno active">1</a>
+            <a href="#" class="page-item-moderno"><i class="fa-solid fa-chevron-right"></i></a>
+        </div>
+    </div>
+</div>

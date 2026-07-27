@@ -1,0 +1,118 @@
+﻿@model DoAnCK.Models.CUAHANG
+@{
+    ViewBag.Title = "Chỉnh sửa Cửa Hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    body {
+        font-family: 'Inter', sans-serif !important;
+    }
+
+    .page-title {
+        font-size: 24px;
+        font-weight: 700;
+        color: #212529;
+        margin-bottom: 4px;
+    }
+
+    .admin-card {
+        background: #fff;
+        border-radius: 12px;
+        padding: 32px 40px;
+        box-shadow: 0 2px 12px rgba(0,0,0,0.03);
+        max-width: 800px;
+        margin-top: 24px;
+    }
+
+    .form-label-moderno {
+        font-size: 13px;
+        font-weight: 600;
+        color: #495057;
+        margin-bottom: 8px;
+        display: block;
+    }
+
+    .form-control-moderno {
+        width: 100%;
+        border: 1px solid #e9ecef;
+        border-radius: 8px;
+        padding: 12px 16px;
+        font-size: 14px;
+        background-color: #f8f9fa;
+    }
+
+        .form-control-moderno:focus {
+            background-color: #fff;
+            border-color: #A38262;
+            outline: none;
+            box-shadow: 0 0 0 0.25rem rgba(163, 130, 98, 0.15);
+        }
+
+    .btn-brown {
+        background-color: #A38262;
+        color: white;
+        border: none;
+        padding: 10px 24px;
+        border-radius: 50rem;
+        font-weight: 500;
+    }
+
+        .btn-brown:hover {
+            background-color: #8b6b4c;
+            color: white;
+        }
+
+    .btn-light-mod {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        color: #495057;
+        padding: 10px 24px;
+        border-radius: 50rem;
+        text-decoration: none;
+        font-weight: 500;
+    }
+</style>
+
+<div class="container-fluid" style="padding: 20px 30px;">
+    <div class="mb-4">
+        <h2 class="page-title">Chỉnh sửa chi nhánh</h2>
+        <a href="@Url.Action("Index", "CuaHang")" style="color: #6c757d; text-decoration: none; font-size: 14px;"><i class="fa-solid fa-arrow-left me-1"></i> Quay lại danh sách</a>
+    </div>
+
+    <div class="admin-card">
+        @using (Html.BeginForm())
+        {
+            @Html.AntiForgeryToken()
+            @Html.HiddenFor(m => m.MaCH) <!-- Bắt buộc phải có thẻ ẩn này để lưu đúng ID -->
+
+            <div class="row g-4 mb-4">
+                <div class="col-md-6">
+                    <label class="form-label-moderno">Tên chi nhánh</label>
+                    @Html.TextBoxFor(m => m.TenCH, new { @class = "form-control-moderno", required = "required" })
+                </div>
+                <div class="col-md-6">
+                    <label class="form-label-moderno">Số điện thoại</label>
+                    @Html.TextBoxFor(m => m.DienThoai, new { @class = "form-control-moderno" })
+                </div>
+                <div class="col-md-12 mt-4">
+                    <label class="form-label-moderno">Địa chỉ kinh doanh</label>
+                    @Html.TextBoxFor(m => m.DiaChi, new { @class = "form-control-moderno" })
+                </div>
+                <div class="col-md-6 mt-4">
+                    <label class="form-label-moderno">Trạng thái hoạt động</label>
+                    <select name="TrangThai" class="form-control-moderno">
+                        <option value="1" @(Model.TrangThai == 1 ? "selected" : "")>Đang hoạt động</option>
+                        <option value="2" @(Model.TrangThai == 2 ? "selected" : "")>Sắp khai trương</option>
+                        <option value="0" @(Model.TrangThai == 0 ? "selected" : "")>Tạm đóng</option>
+                    </select>
+                </div>
+            </div>
+
+            <div style="text-align: right; border-top: 1px solid #e9ecef; padding-top: 24px; margin-top: 20px;">
+                <a href="@Url.Action("Index", "CuaHang")" class="btn-light-mod me-2">Hủy bỏ</a>
+                <button type="submit" class="btn-brown"><i class="fa-solid fa-floppy-disk me-1"></i> Lưu cập nhật</button>
+            </div>
+        }
+    </div>
+</div>

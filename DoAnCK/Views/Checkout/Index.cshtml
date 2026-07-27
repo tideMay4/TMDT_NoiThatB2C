@@ -658,6 +658,7 @@
                     });
 
                 } else {
+                    // TRƯỜNG HỢP 3: THANH TOÁN TIỀN MẶT (COD)
                     $.ajax({
                         url: '/Checkout/ProcessCOD',
                         type: 'POST',
@@ -666,9 +667,14 @@
                             if (res.success) {
                                 window.location.href = '/Checkout/OrderSuccess?orderCode=' + res.orderCode;
                             } else {
-                                alert("Đã xảy ra lỗi khi lưu đơn hàng.");
+                                // ĐOẠN NÀY ĐÃ ĐƯỢC ĐỔI ĐỂ HIỂN THỊ CHI TIẾT LỖI TỪ C#
+                                alert("CHI TIẾT LỖI TỪ DATABASE:\n" + res.message);
                                 $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
                             }
+                        },
+                        error: function (xhr, status, error) {
+                            alert("Lỗi hệ thống hoặc Server ngừng hoạt động: " + error);
+                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
                         }
                     });
                 }
