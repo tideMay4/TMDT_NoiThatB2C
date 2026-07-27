@@ -1,0 +1,35 @@
+﻿@model List<DoAnCK.Areas.Admin.Models.CategorySalesViewModel>
+
+<div class="card-box">
+
+    <div class="card-header">
+        <div>
+            <div class="card-title">Danh mục bán chạy</div>
+            <small class="text-muted">Nhóm sản phẩm có hiệu suất tốt</small>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any())
+    {
+        foreach (var item in Model)
+        {
+            <div class="progress-item">
+                <div class="progress-title">
+                    <span>@item.TenDanhMuc</span>
+                    <span>@item.TyLePhanTram%</span>
+                </div>
+                <div class="progress">
+                    <!-- class màu nền bg-*** và width% được xử lý động hoàn toàn -->
+                    <div class="progress-bar @item.ColorClass" style="width:@item.TyLePhanTram%"></div>
+                </div>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="p-3 text-center text-muted">
+            Chưa có dữ liệu bán hàng tháng này.
+        </div>
+    }
+
+</div>
