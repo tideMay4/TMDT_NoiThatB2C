@@ -1,5 +1,4 @@
 ﻿@using DoAnCK.Models
-
 @model DoAnCK.Models.ProductDetailViewModel
 
 @{
@@ -14,6 +13,8 @@
 
     int fullStars = (int)Math.Floor(Model.DiemTrungBinh);
     bool hasHalfStar = Model.DiemTrungBinh - fullStars >= 0.5;
+
+    string priceValue = product.GiaHienTai.ToString(System.Globalization.CultureInfo.InvariantCulture);
 }
 
 <style>
@@ -145,8 +146,16 @@
 
     .detail-actions {
         display: flex;
+        flex-wrap: wrap;
         gap: 14px;
         margin-top: 10px;
+        align-items: center;
+    }
+
+    .cart-action-form {
+        display: flex;
+        gap: 14px;
+        align-items: center;
     }
 
     .quantity-box {
@@ -173,6 +182,8 @@
         display: inline-flex;
         align-items: center;
         justify-content: center;
+        cursor: pointer;
+        white-space: nowrap;
     }
 
     .btn-cart {
@@ -343,6 +354,7 @@
         overflow: hidden;
         background: #fffdf8;
         transition: 0.25s;
+        text-decoration: none;
     }
 
         .related-card:hover {
@@ -386,6 +398,23 @@
         margin: 0 auto 20px;
     }
 
+    .review-note {
+        background: #f8f2ea;
+        border: 1px dashed #d8c5ad;
+    }
+
+        .review-note h4 {
+            color: #8b6040;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .review-note p {
+            color: #7b6e64;
+            margin: 0;
+            line-height: 1.7;
+        }
+
     @@media (max-width: 992px) {
         .detail-main {
             grid-template-columns: 1fr;
@@ -418,8 +447,11 @@
             grid-template-columns: 1fr;
         }
 
-        .detail-actions {
+        .detail-actions,
+        .cart-action-form {
             flex-direction: column;
+            align-items: stretch;
+            width: 100%;
         }
 
         .quantity-box,
@@ -432,25 +464,7 @@
             grid-template-columns: 1fr;
         }
     }
-
-    .review-note {
-        background: #f8f2ea;
-        border: 1px dashed #d8c5ad;
-    }
-
-        .review-note h4 {
-            color: #8b6040;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .review-note p {
-            color: #7b6e64;
-            margin: 0;
-            line-height: 1.7;
-        }
 </style>
-
 
 <section class="detail-page">
 
@@ -559,20 +573,40 @@
 
                 <div class="detail-actions">
 
-                    <input type="number"
-                           class="quantity-box"
-                           value="1"
-                           min="1"
-                           max="@product.SoLuongTon" />
+                    @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "cart-action-form" }))
+                    {
+                        <input type="hidden" name="productId" value="@product.MaSP" />
+                        <input type="hidden" name="productName" value="@product.TenSP" />
+                        <input type="hidden" name="price" value="@priceValue" />
+                        <input type="hidden" name="isBulky" value="false" />
+                        <input type="hidden" name="hinhAnh" value="@Url.Content(imageUrl)" />
 
-                    <a href="#" class="btn-cart">
-                        <i class="fa-solid fa-cart-plus me-2"></i>
-                        Thêm vào giỏ
-                    </a>
+                        <input type="number"
+                               name="quantity"
+                               class="quantity-box"
+                               value="1"
+                               min="1"
+                               max="@product.SoLuongTon" />
 
-                    <a href="#" class="btn-buy">
-                        Mua ngay
-                    </a>
+                        <button type="submit" class="btn-cart">
+                            <i class="fa-solid fa-cart-plus me-2"></i>
+                            Thêm vào giỏ
+                        </button>
+                    }
+
+                    @using (Html.BeginForm("BuyNow", "Cart", FormMethod.Post, new { @class = "cart-action-form" }))
+                    {
+                        <input type="hidden" name="productId" value="@product.MaSP" />
+                        <input type="hidden" name="productName" value="@product.TenSP" />
+                        <input type="hidden" name="price" value="@priceValue" />
+                        <input type="hidden" name="isBulky" value="false" />
+                        <input type="hidden" name="hinhAnh" value="@Url.Content(imageUrl)" />
+                        <input type="hidden" name="quantity" value="1" />
+
+                        <button type="submit" class="btn-buy">
+                            Mua ngay
+                        </button>
+                    }
 
                 </div>
 
@@ -581,7 +615,6 @@
         </div>
 
     </div>
-
 
     <div class="detail-section">
 
@@ -602,7 +635,6 @@
         </div>
 
     </div>
-
 
     <div class="detail-section">
 
@@ -630,7 +662,6 @@
             </div>
 
         </div>
-
 
         @if (Model.DaDangNhap && Model.DaMuaSanPham && !Model.DaDanhGia)
         {
@@ -708,8 +739,7 @@
             </div>
         }
 
-
-        @if (Model.Reviews.Any())
+        @if (Model.Reviews != null && Model.Reviews.Count > 0)
         {
             foreach (var item in Model.Reviews)
             {
@@ -759,8 +789,7 @@
 
     </div>
 
-
-    @if (Model.RelatedProducts.Any())
+    @if (Model.RelatedProducts != null && Model.RelatedProducts.Count > 0)
     {
         <div class="detail-section">
 

@@ -2,7 +2,7 @@
 using System.Text;
 using System.Security.Cryptography;
 
-namespace TMDT_NoiThatB2C.Others // Đổi namespace cho khớp project của bạn
+namespace DoAnCK.Others // Đổi namespace cho khớp project của bạn
 {
     public class MoMoSecurity
     {

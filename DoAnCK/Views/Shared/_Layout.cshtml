@@ -11,22 +11,22 @@
     <title>@ViewBag.Title - Moderno</title>
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
-          rel="stylesheet">
+          rel="stylesheet" />
 
     <link rel="stylesheet"
           href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css" />
 
     <link rel="preconnect"
-          href="https://fonts.googleapis.com">
+          href="https://fonts.googleapis.com" />
 
     <link rel="preconnect"
           href="https://fonts.gstatic.com"
-          crossorigin>
+          crossorigin />
 
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
-          rel="stylesheet">
+          rel="stylesheet" />
 
-    <link href="~/Content/css/style.css"
+    <link href="@Url.Content("~/Content/css/style.css")"
           rel="stylesheet" />
 
     <style>
@@ -41,8 +41,6 @@
             text-decoration: none;
         }
 
-        /* HEADER GIỐNG TRANG CHỦ */
-
         .site-header {
             width: 100%;
             background: #fffdf8;
@@ -54,12 +52,13 @@
 
         .site-header-inner {
             max-width: 1180px;
-            height: 86px;
+            min-height: 86px;
             margin: 0 auto;
             padding: 0 24px;
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 28px;
         }
 
         .site-logo {
@@ -68,6 +67,7 @@
             letter-spacing: 5px;
             color: #6f4e37;
             text-transform: uppercase;
+            white-space: nowrap;
         }
 
             .site-logo:hover {
@@ -78,6 +78,7 @@
             display: flex;
             align-items: center;
             gap: 34px;
+            white-space: nowrap;
         }
 
             .site-nav a {
@@ -95,14 +96,74 @@
         .site-icons {
             display: flex;
             align-items: center;
-            gap: 18px;
+            gap: 16px;
         }
 
             .site-icons a {
                 color: #6f4e37;
                 font-size: 18px;
                 position: relative;
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
             }
+
+                .site-icons a:hover {
+                    color: #b08a63;
+                }
+
+        .header-ai-search {
+            height: 40px;
+            display: flex;
+            align-items: center;
+            background: #fff;
+            border: 1px solid #eadfd2;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+
+        .header-search-form {
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+            .header-search-form input {
+                width: 230px;
+                height: 100%;
+                border: none;
+                outline: none;
+                padding: 0 12px 0 16px;
+                font-size: 13px;
+                color: #2b241f;
+                background: transparent;
+            }
+
+            .header-search-form button,
+            .header-image-form button {
+                width: 42px;
+                height: 100%;
+                border: none;
+                background: transparent;
+                color: #6f4e37;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                cursor: pointer;
+                transition: 0.25s;
+            }
+
+                .header-search-form button:hover,
+                .header-image-form button:hover {
+                    color: #b08a63;
+                }
+
+        .header-image-form {
+            height: 100%;
+            display: flex;
+            align-items: center;
+            border-left: 1px solid #eadfd2;
+        }
 
         .cart-count {
             position: absolute;
@@ -119,8 +180,6 @@
             justify-content: center;
             font-weight: 700;
         }
-
-        /* FOOTER GIỐNG TRANG CHỦ */
 
         .site-footer {
             background: #1f1f1f;
@@ -206,18 +265,25 @@
             font-size: 13px;
         }
 
-        @@media (max-width: 992px) {
+        @@media (max-width: 1100px) {
             .site-header-inner {
-                height: auto;
-                padding: 22px 24px;
-                flex-direction: column;
-                gap: 18px;
+                flex-wrap: wrap;
+                justify-content: center;
+                padding: 18px 24px;
             }
 
             .site-nav {
-                flex-wrap: wrap;
+                order: 3;
+                width: 100%;
                 justify-content: center;
+                flex-wrap: wrap;
                 gap: 22px;
+            }
+        }
+
+        @@media (max-width: 992px) {
+            .header-search-form input {
+                width: 180px;
             }
 
             .footer-inner {
@@ -226,6 +292,28 @@
         }
 
         @@media (max-width: 576px) {
+            .site-header-inner {
+                flex-direction: column;
+            }
+
+            .site-icons {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+            }
+
+            .header-ai-search {
+                width: 100%;
+            }
+
+            .header-search-form {
+                flex: 1;
+            }
+
+                .header-search-form input {
+                    width: 100%;
+                }
+
             .footer-inner {
                 grid-template-columns: 1fr;
             }
@@ -246,9 +334,19 @@
         string currentAction = ViewContext.RouteData.Values["action"] != null
             ? ViewContext.RouteData.Values["action"].ToString()
             : "";
-    }
 
-    <!-- HEADER -->
+        int cartCount = 0;
+
+        var cartSession = Session["ShoppingCartSession"] as System.Collections.Generic.List<DoAnCK.Models.CartItemViewModel>;
+
+        if (cartSession != null)
+        {
+            foreach (var item in cartSession)
+            {
+                cartCount += item.Quantity;
+            }
+        }
+    }
 
     <header class="site-header">
 
@@ -288,17 +386,52 @@
 
             <div class="site-icons">
 
-                <a href="#">
-                    <i class="fa-solid fa-magnifying-glass"></i>
-                </a>
+                <div class="header-ai-search">
 
-                <a href="#">
+                    <form action="@Url.Action("Search", "Home")"
+                          method="get"
+                          class="header-search-form">
+
+                        <input type="text"
+                               name="keyword"
+                               placeholder="Mô tả sản phẩm bạn cần tìm..."
+                               autocomplete="off" />
+
+                        <button type="submit" title="Tìm kiếm">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+
+                    </form>
+
+                    <form action="@Url.Action("ImageSearch", "Home")"
+                          method="post"
+                          enctype="multipart/form-data"
+                          id="imageSearchForm"
+                          class="header-image-form">
+
+                        <input type="file"
+                               name="imageUpload"
+                               id="imageUpload"
+                               accept="image/*"
+                               style="display: none;" />
+
+                        <button type="button"
+                                id="btnImageSearch"
+                                title="Tìm kiếm bằng hình ảnh">
+                            <i class="fa-regular fa-image"></i>
+                        </button>
+
+                    </form>
+
+                </div>
+
+                <a href="#" title="Tài khoản">
                     <i class="fa-regular fa-user"></i>
                 </a>
 
-                <a href="@Url.Action("Index", "Cart")">
+                <a href="@Url.Action("Index", "Cart")" title="Giỏ hàng">
                     <i class="fa-solid fa-bag-shopping"></i>
-                    <span class="cart-count">0</span>
+                    <span class="cart-count" id="cart-badge">@cartCount</span>
                 </a>
 
             </div>
@@ -307,11 +440,7 @@
 
     </header>
 
-
     @RenderBody()
-
-
-    <!-- FOOTER -->
 
     <footer class="site-footer">
 
@@ -366,7 +495,7 @@
 
                 <a href="#">Bảo hành</a>
                 <a href="#">Đổi trả</a>
-                <a href="#">Thanh toán</a>
+                <a href="@Url.Action("Index", "Checkout")">Thanh toán</a>
                 <a href="#">Vận chuyển</a>
 
             </div>
@@ -411,8 +540,27 @@
 
     </footer>
 
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var btnImageSearch = document.getElementById("btnImageSearch");
+            var imageUpload = document.getElementById("imageUpload");
+            var imageSearchForm = document.getElementById("imageSearchForm");
+
+            if (btnImageSearch && imageUpload && imageSearchForm) {
+                btnImageSearch.addEventListener("click", function () {
+                    imageUpload.click();
+                });
+
+                imageUpload.addEventListener("change", function () {
+                    if (imageUpload.files.length > 0) {
+                        imageSearchForm.submit();
+                    }
+                });
+            }
+        });
+    </script>
 
     @RenderSection("scripts", required: false)
 

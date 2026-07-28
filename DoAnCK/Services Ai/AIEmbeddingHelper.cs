@@ -12,7 +12,8 @@ namespace DoAnCK.Services_Ai
 {
     public class AIEmbeddingHelper
     {
-        private static readonly string GeminiApiKey = "AQ.Ab8RN6KyAHFH6Il-2-Ki2oaN55y67CLrOWxev3HBP7yevU9kDg";
+        
+        private static readonly string GeminiApiKey = "";
         // Sử dụng mô hình gemini-embedding-2 mới nhất của Google
         private static readonly string GeminiUrl = $"https://generativelanguage.googleapis.com/v1beta/models/gemini-embedding-2:embedContent?key={GeminiApiKey}";
         // Bộ nhớ đệm tĩnh lưu trữ cấu trúc: MaSP -> Bộ Vector tương ứng

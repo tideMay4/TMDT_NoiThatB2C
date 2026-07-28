@@ -1,70 +1,138 @@
-﻿using System;
-using System.Net.Http;
+﻿using Newtonsoft.Json.Linq;
+using System;
+using System.IO;
+using System.Net;
 using System.Text;
 using System.Threading.Tasks;
-using Newtonsoft.Json;
-using Newtonsoft.Json.Linq;
 
 namespace DoAnCK.Services_Ai
 {
-    public class VisualSearchHelper
+    public static class VisualSearchHelper
     {
-        private static readonly string GeminiApiKey = "AQ.Ab8RN6KyAHFH6Il-2-Ki2oaN55y67CLrOWxev3HBP7yevU9kDg";
+        // Dán API KEY Gemini của nhóm bạn vào đây
+        // Lấy từ Google AI Studio
+        private const string GeminiApiKey = "";
 
         public static async Task<string> DescribeImageWithGeminiAsync(byte[] imageBytes)
         {
-            if (imageBytes == null || imageBytes.Length == 0)
-                return "ERROR: Dữ liệu ảnh rỗng.";
+            return await DescribeImageWithGeminiAsync(imageBytes, "image/jpeg");
+        }
 
+        public static async Task<string> DescribeImageWithGeminiAsync(byte[] imageBytes, string mimeType)
+        {
             try
             {
-                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
+                if (imageBytes == null || imageBytes.Length == 0)
+                {
+                    return "ERROR: Không nhận được dữ liệu ảnh.";
+                }
+
+                if (string.IsNullOrWhiteSpace(GeminiApiKey) ||
+                    GeminiApiKey == "DAN_API_KEY_GEMINI_CUA_BAN_VAO_DAY")
+                {
+                    return "ERROR: Chưa cấu hình Gemini API Key trong VisualSearchHelper.cs.";
+                }
+
+                if (string.IsNullOrWhiteSpace(mimeType))
+                {
+                    mimeType = "image/jpeg";
+                }
+
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+
                 string base64Image = Convert.ToBase64String(imageBytes);
 
-                var requestObject = new
+                string endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
+
+                JObject requestBody = new JObject
                 {
-                    contents = new[] {
-                        new {
-                            parts = new object[] {
-                                new { text = "Mô tả ngắn gọn đồ nội thất trong ảnh bằng tiếng Việt (loại đồ, màu sắc). Trả về 1 câu." },
-                                new { inlineData = new { mimeType = "image/jpeg", data = base64Image } }
+                    ["contents"] = new JArray
+                    {
+                        new JObject
+                        {
+                            ["parts"] = new JArray
+                            {
+                                new JObject
+                                {
+                                    ["text"] =
+                                        "Bạn là AI hỗ trợ tìm kiếm sản phẩm nội thất. " +
+                                        "Hãy mô tả ngắn gọn ảnh này bằng tiếng Việt, tập trung vào loại sản phẩm, màu sắc, chất liệu, kiểu dáng và không gian sử dụng. " +
+                                        "Chỉ trả về một câu mô tả, không giải thích dài."
+                                },
+                                new JObject
+                                {
+                                    ["inline_data"] = new JObject
+                                    {
+                                        ["mime_type"] = mimeType,
+                                        ["data"] = base64Image
+                                    }
+                                }
                             }
                         }
                     }
                 };
 
-                string jsonPayload = JsonConvert.SerializeObject(requestObject);
+                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
+                request.Method = "POST";
+                request.ContentType = "application/json";
 
-                string[] candidateModels = { "gemini-2.0-flash", "gemini-flash-latest" };
-                string errorLogs = "";
+                // Quan trọng: Gemini dùng x-goog-api-key, không dùng Authorization Bearer
+                request.Headers.Add("x-goog-api-key", GeminiApiKey);
 
-                using (var client = new HttpClient())
+                byte[] requestBytes = Encoding.UTF8.GetBytes(requestBody.ToString());
+                request.ContentLength = requestBytes.Length;
+
+                using (Stream requestStream = await request.GetRequestStreamAsync())
                 {
-                    foreach (var model in candidateModels)
-                    {
-                        string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GeminiApiKey}";
-                        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
-                        var response = await client.PostAsync(url, content);
-                        string resStr = await response.Content.ReadAsStringAsync();
+                    await requestStream.WriteAsync(requestBytes, 0, requestBytes.Length);
+                }
 
-                        if (response.IsSuccessStatusCode)
+                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
+                {
+                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    {
+                        string responseText = await reader.ReadToEndAsync();
+
+                        JObject json = JObject.Parse(responseText);
+
+                        string result = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
+
+                        if (string.IsNullOrWhiteSpace(result))
                         {
-                            JObject json = JObject.Parse(resStr);
-                            string text = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
-                            if (!string.IsNullOrWhiteSpace(text)) return text.Trim();
+                            return "ERROR: Gemini không trả về mô tả ảnh.";
                         }
-                        else
+
+                        return result.Trim();
+                    }
+                }
+            }
+            catch (WebException wex)
+            {
+                if (wex.Response != null)
+                {
+                    using (HttpWebResponse errorResponse = (HttpWebResponse)wex.Response)
+                    {
+                        using (StreamReader reader = new StreamReader(errorResponse.GetResponseStream()))
                         {
-                            // Đã cập nhật dòng này để Google báo cáo chính xác lý do
-                            errorLogs += $"[{model} lỗi {response.StatusCode}: {resStr}] ";
+                            string errorText = await reader.ReadToEndAsync();
+
+                            if (errorText.Contains("API_KEY_INVALID") ||
+                                errorText.Contains("UNAUTHENTICATED") ||
+                                errorText.Contains("invalid authentication"))
+                            {
+                                return "ERROR: Gemini API Key không hợp lệ hoặc chưa có quyền truy cập. Hãy kiểm tra lại API key trong VisualSearchHelper.cs.";
+                            }
+
+                            return "ERROR: Gemini API lỗi: " + errorText;
                         }
                     }
                 }
-                return $"ERROR: {errorLogs}";
+
+                return "ERROR: Không kết nối được Gemini API: " + wex.Message;
             }
             catch (Exception ex)
             {
-                return $"ERROR: Lỗi C# - {ex.Message}";
+                return "ERROR: Lỗi xử lý tìm kiếm hình ảnh: " + ex.Message;
             }
         }
     }

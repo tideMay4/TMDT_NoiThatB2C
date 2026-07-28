@@ -1,0 +1,153 @@
+﻿@{
+    ViewBag.Title = "Đặt hàng thành công";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+    string orderCode = ViewBag.OrderCode != null
+        ? ViewBag.OrderCode.ToString()
+        : Request.QueryString["orderCode"];
+}
+
+<style>
+    .success-page {
+        background: #f8f4ed;
+        padding: 80px 7%;
+        min-height: 520px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .success-card {
+        max-width: 720px;
+        width: 100%;
+        background: #fffdf8;
+        border: 1px solid #eadfd2;
+        border-radius: 24px;
+        padding: 50px 38px;
+        text-align: center;
+        box-shadow: 0 18px 48px rgba(111, 78, 55, 0.08);
+    }
+
+    .success-icon {
+        width: 88px;
+        height: 88px;
+        border-radius: 50%;
+        background: #e8f5e9;
+        color: #2e7d32;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 42px;
+        margin: 0 auto 24px;
+    }
+
+    .success-card h1 {
+        font-size: 34px;
+        font-weight: 800;
+        color: #2b2623;
+        margin-bottom: 14px;
+    }
+
+    .success-card p {
+        color: #6f6258;
+        font-size: 16px;
+        line-height: 1.8;
+        margin-bottom: 10px;
+    }
+
+    .order-code-box {
+        margin: 24px auto;
+        padding: 16px 22px;
+        border-radius: 14px;
+        background: #f8f2ea;
+        border: 1px solid #eadfd2;
+        display: inline-block;
+        color: #8b6040;
+        font-weight: 800;
+        font-size: 18px;
+    }
+
+    .success-actions {
+        margin-top: 30px;
+        display: flex;
+        justify-content: center;
+        gap: 14px;
+        flex-wrap: wrap;
+    }
+
+    .btn-success-home,
+    .btn-success-product {
+        height: 48px;
+        padding: 0 26px;
+        border-radius: 12px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        text-decoration: none;
+        font-weight: 700;
+        transition: 0.25s;
+    }
+
+    .btn-success-home {
+        background: #2b2623;
+        color: #fff;
+    }
+
+        .btn-success-home:hover {
+            background: #000;
+            color: #fff;
+        }
+
+    .btn-success-product {
+        background: #f8f2ea;
+        color: #8b6040;
+        border: 1px solid #eadfd2;
+    }
+
+        .btn-success-product:hover {
+            background: #eadfd2;
+            color: #6f4e37;
+        }
+</style>
+
+<section class="success-page">
+
+    <div class="success-card">
+
+        <div class="success-icon">
+            <i class="fa-solid fa-check"></i>
+        </div>
+
+        <h1>Đặt hàng thành công!</h1>
+
+        <p>
+            Cảm ơn bạn đã mua hàng tại MODERNO.
+            Đơn hàng của bạn đã được ghi nhận và đang chờ xử lý.
+        </p>
+
+        @if (!string.IsNullOrWhiteSpace(orderCode))
+        {
+            <div class="order-code-box">
+                Mã đơn hàng: @orderCode
+            </div>
+        }
+
+        <p>
+            Nhân viên cửa hàng sẽ liên hệ với bạn để xác nhận thông tin giao hàng trong thời gian sớm nhất.
+        </p>
+
+        <div class="success-actions">
+
+            <a href="@Url.Action("Index", "Home")" class="btn-success-home">
+                Về trang chủ
+            </a>
+
+            <a href="@Url.Content("~/Product")" class="btn-success-product">
+                Tiếp tục mua sắm
+            </a>
+
+        </div>
+
+    </div>
+
+</section>

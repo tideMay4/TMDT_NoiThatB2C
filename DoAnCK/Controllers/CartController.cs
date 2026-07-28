@@ -1,100 +1,24 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using TMDT_NoiThatB2C.Models;
+using DoAnCK.Models;
 
-namespace TMDT_NoiThatB2C.Controllers
+namespace DoAnCK.Controllers
 {
     public class CartController : Controller
     {
-        //private const string CartSessionKey = "ShoppingCartSession";
-
-        //// Hàm hỗ trợ: Lấy giỏ hàng từ Session
-        //private List<CartItemViewModel> GetCartFromSession()
-        //{
-        //    var cart = Session[CartSessionKey] as List<CartItemViewModel>;
-        //    if (cart == null)
-        //    {
-        //        cart = new List<CartItemViewModel>();
-        //        Session[CartSessionKey] = cart;
-        //    }
-        //    return cart;
-        //}
-
-        //// 1. Hiển thị trang Giỏ hàng động
-        //public ActionResult Index()
-        //{
-        //    var cart = GetCartFromSession();
-        //    return View(cart); // Truyền dữ liệu thực tế từ Session ra View
-        //}
-
-        //// 2. Nút "Thêm vào giỏ hàng" sẽ gọi hàm này qua AJAX
-        //[HttpPost]
-        //public ActionResult AddToCart(int productId, string productName, decimal price, bool isBulky)
-        //{
-        //    var cart = GetCartFromSession();
-        //    var existingItem = cart.FirstOrDefault(m => m.ProductId == productId);
-
-        //    if (existingItem != null)
-        //    {
-        //        // Nếu đã có trong giỏ thì tăng số lượng
-        //        existingItem.Quantity++;
-        //    }
-        //    else
-        //    {
-        //        // Nếu chưa có thì thêm mới
-        //        cart.Add(new CartItemViewModel
-        //        {
-        //            ProductId = productId,
-        //            ProductName = productName,
-        //            Price = price,
-        //            Quantity = 1,
-        //            IsBulky = isBulky
-        //        });
-        //    }
-
-        //    // Lưu lại vào Session
-        //    Session[CartSessionKey] = cart;
-
-        //    // Trả về tổng số lượng để update cái icon trên góc phải
-        //    int totalQty = cart.Sum(item => item.Quantity);
-        //    return Json(new { success = true, totalItems = totalQty });
-        //}
-
-        //// 3. Hàm lấy số lượng giỏ hàng (để load lúc mới mở web)
-        //[HttpGet]
-        //public ActionResult GetCartCount()
-        //{
-        //    var cart = Session[CartSessionKey] as List<CartItemViewModel>;
-        //    int count = cart != null ? cart.Sum(c => c.Quantity) : 0;
-        //    return Json(new { count = count }, JsonRequestBehavior.AllowGet);
-        //}
-
-        //// 4. Xóa sản phẩm khỏi giỏ
-        //[HttpPost]
-        //public ActionResult RemoveItem(int productId)
-        //{
-        //    var cart = GetCartFromSession();
-        //    var item = cart.FirstOrDefault(m => m.ProductId == productId);
-        //    if (item != null)
-        //    {
-        //        cart.Remove(item);
-        //        Session[CartSessionKey] = cart;
-        //    }
-        //    int totalQty = cart.Sum(c => c.Quantity);
-        //    return Json(new { success = true, totalItems = totalQty });
-        //}
-
         private const string CartSessionKey = "ShoppingCartSession";
 
         private List<CartItemViewModel> GetCartFromSession()
         {
             var cart = Session[CartSessionKey] as List<CartItemViewModel>;
+
             if (cart == null)
             {
                 cart = new List<CartItemViewModel>();
                 Session[CartSessionKey] = cart;
             }
+
             return cart;
         }
 
@@ -104,16 +28,26 @@ namespace TMDT_NoiThatB2C.Controllers
             return View(cart);
         }
 
-        // Cập nhật tham số nhận thêm 'hinhAnh'
-        [HttpPost]
-        public ActionResult AddToCart(int productId, string productName, decimal price, bool isBulky, string hinhAnh)
+        private int AddItemToCart(
+            int productId,
+            string productName,
+            decimal price,
+            bool isBulky,
+            string hinhAnh,
+            int quantity)
         {
+            if (quantity <= 0)
+            {
+                quantity = 1;
+            }
+
             var cart = GetCartFromSession();
+
             var existingItem = cart.FirstOrDefault(m => m.ProductId == productId);
 
             if (existingItem != null)
             {
-                existingItem.Quantity++;
+                existingItem.Quantity += quantity;
             }
             else
             {
@@ -122,53 +56,182 @@ namespace TMDT_NoiThatB2C.Controllers
                     ProductId = productId,
                     ProductName = productName,
                     Price = price,
-                    Quantity = 1,
+                    Quantity = quantity,
                     IsBulky = isBulky,
-                    HinhAnh = hinhAnh // Lưu ảnh vào giỏ
+                    HinhAnh = hinhAnh
                 });
             }
 
             Session[CartSessionKey] = cart;
+
             int totalQty = cart.Sum(item => item.Quantity);
-            return Json(new { success = true, totalItems = totalQty });
+
+            return totalQty;
         }
 
-        // VIẾT CODE LƯU SỐ LƯỢNG KHI BẤM DẤU CỘNG TRỪ
+        [HttpPost]
+        public ActionResult AddToCart(
+    int? productId,
+    string productName,
+    decimal? price,
+    bool isBulky = false,
+    string hinhAnh = "",
+    int quantity = 1)
+        {
+            if (productId == null || price == null)
+            {
+                TempData["Error"] = "Không lấy được thông tin sản phẩm để thêm vào giỏ hàng.";
+
+                if (Request.UrlReferrer != null)
+                {
+                    return Redirect(Request.UrlReferrer.ToString());
+                }
+
+                return RedirectToAction("Index", "Product");
+            }
+
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                productName = "Sản phẩm";
+            }
+
+            int totalQty = AddItemToCart(
+                productId.Value,
+                productName,
+                price.Value,
+                isBulky,
+                hinhAnh,
+                quantity
+            );
+
+            if (Request.IsAjaxRequest())
+            {
+                return Json(new
+                {
+                    success = true,
+                    totalItems = totalQty,
+                    message = "Đã thêm sản phẩm vào giỏ hàng."
+                });
+            }
+
+            TempData["Success"] = "Đã thêm sản phẩm vào giỏ hàng.";
+
+            if (Request.UrlReferrer != null)
+            {
+                return Redirect(Request.UrlReferrer.ToString());
+            }
+
+            return RedirectToAction("Index", "Product");
+        }
+
+        [HttpPost]
+        public ActionResult BuyNow(
+            int? productId,
+            string productName,
+            decimal? price,
+            bool isBulky = false,
+            string hinhAnh = "",
+            int quantity = 1)
+        {
+            if (productId == null || price == null)
+            {
+                TempData["Error"] = "Không lấy được thông tin sản phẩm để mua ngay.";
+                return RedirectToAction("Index", "Product");
+            }
+
+            if (string.IsNullOrWhiteSpace(productName))
+            {
+                productName = "Sản phẩm";
+            }
+
+            AddItemToCart(
+                productId.Value,
+                productName,
+                price.Value,
+                isBulky,
+                hinhAnh,
+                quantity
+            );
+
+            return RedirectToAction("Index", "Checkout");
+        }
+
         [HttpPost]
         public ActionResult UpdateQuantity(int productId, int quantity)
         {
             var cart = GetCartFromSession();
+
             var item = cart.FirstOrDefault(m => m.ProductId == productId);
 
             if (item != null)
             {
-                item.Quantity = quantity; // Cập nhật số lượng mới
-                Session[CartSessionKey] = cart; // Lưu lại vào Session
+                if (quantity <= 0)
+                {
+                    cart.Remove(item);
+                }
+                else
+                {
+                    item.Quantity = quantity;
+                }
+
+                Session[CartSessionKey] = cart;
             }
 
-            return Json(new { success = true });
+            int totalQty = cart.Sum(c => c.Quantity);
+            decimal totalAmount = cart.Sum(c => c.Price * c.Quantity);
+
+            return Json(new
+            {
+                success = true,
+                totalItems = totalQty,
+                totalAmount = totalAmount
+            });
         }
 
         [HttpPost]
         public ActionResult RemoveItem(int productId)
         {
             var cart = GetCartFromSession();
+
             var item = cart.FirstOrDefault(m => m.ProductId == productId);
+
             if (item != null)
             {
                 cart.Remove(item);
                 Session[CartSessionKey] = cart;
             }
+
             int totalQty = cart.Sum(c => c.Quantity);
-            return Json(new { success = true, totalItems = totalQty });
+            decimal totalAmount = cart.Sum(c => c.Price * c.Quantity);
+
+            return Json(new
+            {
+                success = true,
+                totalItems = totalQty,
+                totalAmount = totalAmount
+            });
         }
 
         [HttpGet]
         public ActionResult GetCartCount()
         {
             var cart = Session[CartSessionKey] as List<CartItemViewModel>;
+
             int count = cart != null ? cart.Sum(c => c.Quantity) : 0;
-            return Json(new { count = count }, JsonRequestBehavior.AllowGet);
+
+            return Json(new
+            {
+                count = count
+            }, JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult Clear()
+        {
+            Session[CartSessionKey] = new List<CartItemViewModel>();
+
+            TempData["Success"] = "Đã xóa toàn bộ giỏ hàng.";
+
+            return RedirectToAction("Index");
         }
     }
 }
