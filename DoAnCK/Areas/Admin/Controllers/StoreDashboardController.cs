@@ -395,35 +395,37 @@ namespace DoAnCK.Areas.Admin.Controllers
         [ChildActionOnly]
         public ActionResult _StoreRecentOrders()
         {
-            // Lấy ID cửa hàng đang đăng nhập từ Session
-            int? maCH = Session["MaCH"] as int?;
-            if (maCH == null)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null || !identity.IsAuthenticated)
             {
                 return PartialView("_StoreRecentOrders", new List<RecentTransactionViewModel>());
             }
 
-            // Lấy 5 đơn hàng gần nhất CÓ CHỨA sản phẩm của Shop này
+            var maTkClaim = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(maTkClaim) || !int.TryParse(maTkClaim, out int maTK))
+            {
+                return PartialView("_StoreRecentOrders", new List<RecentTransactionViewModel>());
+            }
+
+            // Lấy 5 đơn hàng gần nhất CÓ CHỨA sản phẩm của Shop này (lọc theo maTK từ Claim)
             var recentOrders = db.DONHANGs
-                .Where(d => d.CHITIET_DONHANG.Any(ct => ct.SANPHAM.MaTK_Store == maCH))
+                .Where(d => d.CHITIET_DONHANG.Any(ct => ct.SANPHAM.MaTK_Store == maTK))
                 .OrderByDescending(d => d.NgayDat)
                 .Take(5)
                 .ToList();
 
             // Map dữ liệu sang RecentTransactionViewModel
             var model = recentOrders.Select(d => {
-                // Tính tổng tiền các sản phẩm thuộc về Shop này trong đơn
                 decimal tongTienShop = d.CHITIET_DONHANG
-                    .Where(ct => ct.SANPHAM.MaTK_Store == maCH)
+                    .Where(ct => ct.SANPHAM.MaTK_Store == maTK)
                     .Sum(ct => (decimal?)(ct.SoLuong * ct.GiaBan)) ?? 0;
 
-                // Lấy tên các sản phẩm đại diện của shop trong đơn
                 var listTenSP = d.CHITIET_DONHANG
-                    .Where(ct => ct.SANPHAM.MaTK_Store == maCH)
+                    .Where(ct => ct.SANPHAM.MaTK_Store == maTK)
                     .Select(ct => ct.SANPHAM.TenSP)
                     .ToList();
                 string tenSanPhamText = string.Join(", ", listTenSP);
 
-                // Xử lý Badge trang trí trạng thái
                 string badgeClass = "bg-secondary";
                 string trangThaiText = d.TrangThai ?? "Đang xử lý";
 
@@ -449,16 +451,12 @@ namespace DoAnCK.Areas.Admin.Controllers
                 return new RecentTransactionViewModel
                 {
                     MaDonHang = "DH" + d.MaDH.ToString("D5"),
-
-                    // Lấy HoTen & Email qua Navigation Property: KHACHHANG -> TAIKHOAN
                     TenKhachHang = (d.KHACHHANG != null && d.KHACHHANG.TAIKHOAN != null)
-                    ? d.KHACHHANG.TAIKHOAN.HoTen
-                    : "Khách vãng lai",
-
+                        ? d.KHACHHANG.TAIKHOAN.HoTen
+                        : "Khách vãng lai",
                     EmailKhachHang = (d.KHACHHANG != null && d.KHACHHANG.TAIKHOAN != null)
-                     ? d.KHACHHANG.TAIKHOAN.Email
-                     : "N/A",
-
+                        ? d.KHACHHANG.TAIKHOAN.Email
+                        : "N/A",
                     TenCuaHang = "",
                     TenSanPham = tenSanPhamText,
                     NgayDat = d.NgayDat,
@@ -474,23 +472,28 @@ namespace DoAnCK.Areas.Admin.Controllers
         [ChildActionOnly]
         public ActionResult _StoreOrderStatusShare()
         {
-            // 1. Lấy mã cửa hàng từ Session
-            int? maCH = Session["MaCH"] as int?;
-            if (maCH == null)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null || !identity.IsAuthenticated)
             {
-                // Nếu chưa đăng nhập shop, gửi danh sách rỗng sang View
                 ViewBag.StatusLabels = JsonConvert.SerializeObject(new string[] { });
                 ViewBag.StatusCounts = JsonConvert.SerializeObject(new int[] { });
                 return PartialView("_StoreOrderStatusShare");
             }
 
-            // 2. Lấy danh sách trạng thái của tất cả đơn hàng CÓ chứa sản phẩm của Shop này
+            var maTkClaim = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(maTkClaim) || !int.TryParse(maTkClaim, out int maTK))
+            {
+                ViewBag.StatusLabels = JsonConvert.SerializeObject(new string[] { });
+                ViewBag.StatusCounts = JsonConvert.SerializeObject(new int[] { });
+                return PartialView("_StoreOrderStatusShare");
+            }
+
+            // Lấy danh sách trạng thái đơn hàng của Shop này (Lọc qua SANPHAM.MaTK_Store)
             var rawData = db.DONHANGs
-                .Where(d => d.CHITIET_DONHANG.Any(ct => ct.SANPHAM.MaTK_Store == maCH))
+                .Where(d => d.CHITIET_DONHANG.Any(ct => ct.SANPHAM.MaTK_Store == maTK))
                 .Select(d => d.TrangThai)
                 .ToList();
 
-            // 3. Gom nhóm theo trạng thái và đếm số lượng
             var groupedData = rawData
                 .GroupBy(t => string.IsNullOrWhiteSpace(t) ? "Chờ xử lý" : t.Trim())
                 .Select(g => new
@@ -500,14 +503,12 @@ namespace DoAnCK.Areas.Admin.Controllers
                 })
                 .ToList();
 
-            // 4. Chuẩn bị mảng Nhãn (Labels) và Số lượng (Counts)
             var labels = groupedData.Select(x => x.TrangThai).ToArray();
             var counts = groupedData.Select(x => x.SoLuong).ToArray();
 
-            // 5. Chuyển thành dạng JSON string để gán vào Chart.js
             ViewBag.StatusLabels = JsonConvert.SerializeObject(labels);
             ViewBag.StatusCounts = JsonConvert.SerializeObject(counts);
-            ViewBag.TotalOrders = rawData.Count; // Tổng số đơn hàng của shop
+            ViewBag.TotalOrders = rawData.Count;
 
             return PartialView("_StoreOrderStatusShare");
         }
@@ -515,32 +516,37 @@ namespace DoAnCK.Areas.Admin.Controllers
         [ChildActionOnly]
         public ActionResult _StoreTopSellingItems()
         {
-            int? maCH = Session["MaCH"] as int?;
-            if (maCH == null)
+            var identity = User.Identity as ClaimsIdentity;
+            if (identity == null || !identity.IsAuthenticated)
             {
                 return PartialView("_StoreTopSellingItems", new List<StoreTopProductViewModel>());
             }
 
-            // Lấy Top 5 sản phẩm bán chạy nhất của Shop dựa trên CHITIETDONHANG
+            var maTkClaim = identity.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (string.IsNullOrEmpty(maTkClaim) || !int.TryParse(maTkClaim, out int maTK))
+            {
+                return PartialView("_StoreTopSellingItems", new List<StoreTopProductViewModel>());
+            }
+
+            // Lấy Top 5 sản phẩm bán chạy nhất của Shop dựa trên CHITIETDONHANG và MaTK_Store
             var topProducts = db.CHITIET_DONHANG
-                .Where(ct => ct.SANPHAM.MaTK_Store == maCH && ct.DONHANG.TrangThai != "Đã hủy")
+                .Where(ct => ct.SANPHAM.MaTK_Store == maTK && ct.DONHANG.TrangThai != "Đã hủy" && ct.DONHANG.TrangThai != "DaHuy")
                 .GroupBy(ct => new {
                     ct.MaSP,
                     ct.SANPHAM.TenSP,
-                    ct.SANPHAM.HinhAnh, // Điều chỉnh tên cột hình ảnh theo đúng DB của bạn
                     ct.SANPHAM.GiaHienTai
                 })
                 .Select(g => new StoreTopProductViewModel
                 {
                     MaSP = g.Key.MaSP,
                     TenSP = g.Key.TenSP,
-                    HinhAnh = g.Key.HinhAnh ?? "default-product.png",
-                    GiaBan = g.Key.GiaHienTai, // Gán cột GiaHienTai từ DB vào ViewModel
+                    HinhAnh = "default-product.png",
+                    GiaBan = g.Key.GiaHienTai,
                     SoLuongDaBan = g.Sum(x => x.SoLuong),
                     TongDoanhThu = g.Sum(x => (decimal)x.SoLuong * g.Key.GiaHienTai)
                 })
                 .OrderByDescending(x => x.SoLuongDaBan)
-                .Take(5) // Lấy Top 5
+                .Take(5)
                 .ToList();
 
             return PartialView("_StoreTopSellingItems", topProducts);

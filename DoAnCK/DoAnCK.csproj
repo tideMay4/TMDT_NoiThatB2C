@@ -147,6 +147,7 @@
     <Compile Include="Areas\Admin\Models\CustomerViewModel.cs" />
     <Compile Include="Areas\Admin\Models\OrderViewModel.cs" />
     <Compile Include="Areas\Admin\Models\PendingOrdersViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\ProductCompareViewsViewModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductPriceViewModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductSalesViewModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductViewModel.cs" />

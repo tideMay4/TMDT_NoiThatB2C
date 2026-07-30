@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using static DoAnCK.Areas.Admin.Models.ProductCompareViewItem;
 
 namespace DoAnCK.Areas.Admin.Controllers
 {
@@ -185,20 +186,19 @@ namespace DoAnCK.Areas.Admin.Controllers
         {
             var labels = new List<string> { "T2", "T3", "T4", "T5", "T6", "T7", "CN" };
 
-            // 1. Sửa lỗi int??: Dùng Sum(s => (int?)s.LuotXem) để ép kiểu nullable an toàn khi DB trống
+            // 1. Tính tổng lượt xem
             int totalViews = db.SANPHAMs.Sum(s => (int?)s.LuotXem) ?? 0;
 
-            // 2. Sửa lỗi ViewModel không tồn tại: Dùng Anonymous Type (new { ... })
-            // Sửa lỗi ?? ở LuotXem bằng cách loại bỏ ?? 0 nếu LuotXem là int
+            // 2. SỬA LỖI: Dùng ViewModel chuẩn thay vì Anonymous Type (new { ... })
             var compareViews = db.SANPHAMs
                 .GroupBy(s => s.TenSP)
                 .Where(g => g.Count() > 1)
-                .Select(g => new
+                .Select(g => new ProductCompareViewItem
                 {
                     TenSanPham = g.Key,
-                    DanhSachCuaHang = g.Select(s => new
+                    DanhSachCuaHang = g.Select(s => new StoreCompareItem
                     {
-                        TenCuaHang = s.CUAHANG.TenCH,
+                        TenCuaHang = s.CUAHANG != null ? s.CUAHANG.TenCH : "Cửa hàng ẩn",
                         LuotXem = s.LuotXem 
                     })
                     .OrderByDescending(x => x.LuotXem)
@@ -212,16 +212,16 @@ namespace DoAnCK.Areas.Admin.Controllers
             double baseView = totalViews > 0 ? (double)totalViews / 20 : 0;
 
             var viewsThisWeek = new List<int>
-            {
-                (int)(baseView * 0.8), (int)(baseView * 1.1), (int)(baseView * 1.5),
-                (int)(baseView * 1.2), (int)(baseView * 2.0), (int)(baseView * 1.8), (int)(baseView * 2.3)
-            };
+    {
+        (int)(baseView * 0.8), (int)(baseView * 1.1), (int)(baseView * 1.5),
+        (int)(baseView * 1.2), (int)(baseView * 2.0), (int)(baseView * 1.8), (int)(baseView * 2.3)
+    };
 
             var viewsLastWeek = new List<int>
-            {
-                (int)(baseView * 0.6), (int)(baseView * 0.9), (int)(baseView * 1.1),
-                (int)(baseView * 0.9), (int)(baseView * 1.5), (int)(baseView * 1.4), (int)(baseView * 1.9)
-            };
+    {
+        (int)(baseView * 0.6), (int)(baseView * 0.9), (int)(baseView * 1.1),
+        (int)(baseView * 0.9), (int)(baseView * 1.5), (int)(baseView * 1.4), (int)(baseView * 1.9)
+    };
 
             var model = new ProductViewsChartViewModel
             {

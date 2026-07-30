@@ -1,32 +1,35 @@
 ﻿@model List<DoAnCK.Areas.Admin.Models.TopSoldCompareViewModel>
 
 <div class="card-box">
-    <div class="card-header d-flex justify-content-between align-items-center">
+    <div class="card-header d-flex justify-content-between align-items-center mb-3">
         <div>
-            <div class="card-title">Sản phẩm bán chạy</div>
-            <small class="text-muted">Top sản phẩm bán ra theo từng cửa hàng</small>
+            <div class="card-title fw-bold" style="font-size: 1rem; color: #332C28;">Sản phẩm bán chạy</div>
+            <small class="text-muted" style="font-size: 0.8rem;">Top sản phẩm bán ra theo từng cửa hàng</small>
         </div>
-        <!-- Chú thích nằm ngang chuẩn không rớt dòng -->
+        <!-- Chú thích nằm ngang không rớt dòng -->
         <div class="chart-legend d-flex align-items-center gap-3" style="font-size: 11px; white-space: nowrap;">
             <span style="color: #7A5C43; font-weight: 600;"><i class="fa-solid fa-circle me-1" style="font-size: 7px;"></i>Shop A</span>
             <span style="color: #D99B6A; font-weight: 600;"><i class="fa-solid fa-circle me-1" style="font-size: 7px;"></i>Shop B</span>
         </div>
     </div>
 
-    <div class="chart-box" style="position: relative; height: 300px; overflow-y: auto;">
+    <!-- Ép container xếp dọc (flex-direction: column) và thêm max-height để hiển thị scrollbar gọn gàng -->
+    <div class="sold-products-list d-flex flex-column gap-3" style="max-height: 280px; overflow-y: auto; padding-right: 4px;">
         @if (Model != null && Model.Any())
         {
             foreach (var item in Model)
             {
-                <div class="sold-item mb-3">
+                <div class="sold-item w-100 p-2 rounded" style="background-color: #FAF8F5; border: 1px solid #EBE3DB;">
+                    <!-- Dòng 1: Tên sản phẩm & Phần trăm Shop A -->
                     <div class="d-flex justify-content-between align-items-center mb-1">
-                        <span class="fw-semibold text-truncate" style="color: #332C28; font-size: 13px; max-width: 75%;" title="@item.TenSanPham">
+                        <span class="fw-semibold text-truncate" style="color: #332C28; font-size: 13px; max-width: 80%;" title="@item.TenSanPham">
                             @item.TenSanPham
                         </span>
-                        <span class="fw-bold" style="color: #7A5C43; font-size: 13px;">@item.TiLeShopA%</span>
+                        <span class="fw-bold" style="color: #7A5C43; font-size: 12px;">@item.TiLeShopA%</span>
                     </div>
 
-                    <div class="progress" style="height: 8px; background-color: #EBE3DB; border-radius: 6px; display: flex; overflow: hidden;">
+                    <!-- Dòng 2: Thanh Progress Bar thể hiện tỷ lệ -->
+                    <div class="progress" style="height: 7px; background-color: #EBE3DB; border-radius: 6px; display: flex; overflow: hidden;">
                         <div class="progress-bar" title="@item.TenCuaHangA: @item.SoLuongShopA sp"
                              style="width: @item.TiLeShopA%; background-color: #7A5C43; border-radius: 6px;" aria-valuenow="@item.TiLeShopA"></div>
                         @if (item.SoLuongShopB > 0)
@@ -36,11 +39,20 @@
                         }
                     </div>
 
+                    <!-- Dòng 3: Chi tiết Tên Cửa Hàng A và B -->
                     <div class="d-flex justify-content-between align-items-center mt-1" style="font-size: 11px; color: #786C66;">
-                        <span><i class="fa-solid fa-store me-1" style="color: #7A5C43;"></i>@item.TenCuaHangA (@item.SoLuongShopA sp)</span>
+                        <span class="text-truncate me-2" style="max-width: 48%;">
+                            <i class="fa-solid fa-store me-1" style="color: #7A5C43;"></i>
+                            @(string.IsNullOrEmpty(item.TenCuaHangA) || item.TenCuaHangA == "#" ? "Cửa hàng A" : item.TenCuaHangA)
+                            (@item.SoLuongShopA sp)
+                        </span>
                         @if (item.SoLuongShopB > 0)
                         {
-                            <span><i class="fa-solid fa-store me-1" style="color: #D99B6A;"></i>@item.TenCuaHangB (@item.SoLuongShopB sp)</span>
+                            <span class="text-truncate text-end" style="max-width: 48%;">
+                                <i class="fa-solid fa-store me-1" style="color: #D99B6A;"></i>
+                                @(string.IsNullOrEmpty(item.TenCuaHangB) || item.TenCuaHangB == "#" ? "Cửa hàng B" : item.TenCuaHangB)
+                                (@item.SoLuongShopB sp)
+                            </span>
                         }
                     </div>
                 </div>
@@ -48,8 +60,8 @@
         }
         else
         {
-            <div class="d-flex align-items-center justify-content-center h-100">
-                <p class="text-muted text-center my-auto">Chưa có dữ liệu sản phẩm.</p>
+            <div class="d-flex align-items-center justify-content-center" style="height: 150px;">
+                <p class="text-muted text-center my-auto" style="font-size: 0.85rem;">Chưa có dữ liệu sản phẩm.</p>
             </div>
         }
     </div>
