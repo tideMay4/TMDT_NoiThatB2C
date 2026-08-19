@@ -9,6 +9,8 @@
 @{
     ViewBag.Title = "Quản lý sản phẩm";
 
+
+
     var products = Model != null ? Model.ToList() : new List<ProductViewModel>();
 
     var categories = ViewBag.Categories as List<CategoryViewModel> ?? new List<CategoryViewModel>();
@@ -19,6 +21,505 @@
 
     var today = DateTime.Now.ToString("yyyy-MM-dd");
 }
+
+<style>
+    /* ===== FIX PRODUCT PAGE ONLY ===== */
+
+    .table-box {
+        overflow: hidden !important;
+    }
+
+    .product-table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        table-layout: fixed !important;
+    }
+
+        .product-table th,
+        .product-table td {
+            vertical-align: middle !important;
+            padding: 16px !important;
+            font-size: 13px !important;
+            border-bottom: 1px solid #f0e7de !important;
+        }
+
+        .product-table thead th {
+            background: #faf4ee !important;
+            color: #7f7368 !important;
+            font-weight: 750 !important;
+        }
+
+        .product-table th:nth-child(1),
+        .product-table td:nth-child(1) {
+            width: 70px !important;
+        }
+
+        .product-table th:nth-child(2),
+        .product-table td:nth-child(2) {
+            width: 290px !important;
+        }
+
+        .product-table th:nth-child(3),
+        .product-table td:nth-child(3) {
+            width: 130px !important;
+        }
+
+        .product-table th:nth-child(4),
+        .product-table td:nth-child(4) {
+            width: 130px !important;
+        }
+
+        .product-table th:nth-child(5),
+        .product-table td:nth-child(5) {
+            width: 90px !important;
+        }
+
+        .product-table th:nth-child(6),
+        .product-table td:nth-child(6) {
+            width: 170px !important;
+        }
+
+        .product-table th:nth-child(7),
+        .product-table td:nth-child(7),
+        .product-table th:nth-child(8),
+        .product-table td:nth-child(8) {
+            width: 120px !important;
+            text-align: center !important;
+        }
+
+        .product-table th:nth-child(9),
+        .product-table td:nth-child(9) {
+            width: 130px !important;
+        }
+
+    .product-info {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        min-width: 0 !important;
+    }
+
+        .product-info img,
+        .admin-product-img,
+        .product-thumb {
+            width: 58px !important;
+            height: 58px !important;
+            min-width: 58px !important;
+            max-width: 58px !important;
+            max-height: 58px !important;
+            object-fit: cover !important;
+            border-radius: 14px !important;
+            display: block !important;
+            border: 1px solid #eadfd2 !important;
+            background: #faf7f2 !important;
+        }
+
+        .product-info h6 {
+            margin: 0 0 4px 0 !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            color: #2f241c !important;
+        }
+
+        .product-info span {
+            display: block !important;
+            font-size: 12px !important;
+            color: #7f7368 !important;
+        }
+
+    .slug-text {
+        display: block !important;
+        max-width: 150px !important;
+        color: #7b5738 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .action-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        border-radius: 9px !important;
+        padding: 0 !important;
+        margin-left: 4px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .filter-bar {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 18px !important;
+        flex-wrap: wrap !important;
+        margin-bottom: 22px !important;
+    }
+
+    .filter-left,
+    .filter-right {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .filter-bar .form-control,
+    .filter-bar .form-select {
+        height: 42px !important;
+        border: 1px solid #eadfd2 !important;
+        border-radius: 13px !important;
+        background: #faf7f2 !important;
+        font-size: 13px !important;
+        box-shadow: none !important;
+    }
+
+    .pagination {
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        margin-top: 24px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .page-link {
+        border: none !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+        background: #faf7f2 !important;
+        color: #7b5738 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: 700 !important;
+    }
+
+    .page-item.active .page-link {
+        background: #b08a63 !important;
+        color: #fff !important;
+    }
+
+    <style >
+    /* =====================================================
+       FIX PRICE SECTION THEO HTML HIỆN TẠI CỦA BẠN
+       Dán cuối thẻ style trong Areas/Admin/Views/Product/Index.cshtml
+    ===================================================== */
+    .price-page {
+        padding: 26px !important;
+        border-radius: 24px !important;
+        background: #fffdfa !important;
+        border: 1px solid #eadfd2 !important;
+        box-shadow: 0 14px 35px rgba(92, 65, 42, 0.06) !important;
+    }
+
+    .price-page .price-title {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: flex-start !important;
+        gap: 24px !important;
+        margin-bottom: 24px !important;
+    }
+
+        .price-page .price-title .card-title {
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            color: #2f241c !important;
+            margin-bottom: 6px !important;
+        }
+
+        .price-page .price-title small {
+            font-size: 14px !important;
+            color: #7f7368 !important;
+        }
+
+    .price-page .price-management-box {
+        width: 100% !important;
+    }
+
+    /* Hàng trên: Tìm sản phẩm - Chọn sản phẩm - Loại cập nhật */
+    .price-page .price-filter-row {
+        display: grid !important;
+        grid-template-columns: minmax(0, 1.2fr) minmax(260px, .9fr) minmax(220px, .7fr) !important;
+        gap: 18px !important;
+        align-items: end !important;
+        margin-bottom: 24px !important;
+    }
+
+    .price-page .price-field {
+        width: 100% !important;
+        min-width: 0 !important;
+    }
+
+        .price-page .price-field label,
+        .price-page .form-label {
+            display: block !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            color: #2f241c !important;
+            margin-bottom: 8px !important;
+        }
+
+    .price-page .price-search-box {
+        height: 46px !important;
+        width: 100% !important;
+        display: flex !important;
+        align-items: center !important;
+        gap: 10px !important;
+        padding: 0 14px !important;
+        border: 1px solid #eadfd2 !important;
+        border-radius: 14px !important;
+        background: #fffdfa !important;
+    }
+
+        .price-page .price-search-box i {
+            color: #7f7368 !important;
+            font-size: 14px !important;
+        }
+
+        .price-page .price-search-box input {
+            width: 100% !important;
+            border: none !important;
+            outline: none !important;
+            background: transparent !important;
+            color: #2f241c !important;
+            font-size: 14px !important;
+        }
+
+    .price-page .form-control,
+    .price-page .form-select {
+        width: 100% !important;
+        min-height: 46px !important;
+        border: 1px solid #eadfd2 !important;
+        border-radius: 14px !important;
+        background-color: #fffdfa !important;
+        color: #2f241c !important;
+        font-size: 14px !important;
+        box-shadow: none !important;
+    }
+
+        .price-page .form-control:focus,
+        .price-page .form-select:focus,
+        .price-page textarea:focus {
+            border-color: #b08a63 !important;
+            box-shadow: 0 0 0 3px rgba(176, 138, 99, .12) !important;
+        }
+
+    /* 3 ô: Giá hiện tại - Tỷ lệ - Giá mới */
+    .price-page .price-edit-row {
+        display: grid !important;
+        grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        gap: 20px !important;
+        margin-bottom: 26px !important;
+    }
+
+    .price-page .price-card-mini {
+        min-height: 130px !important;
+        padding: 22px !important;
+        border-radius: 22px !important;
+        background: #faf7f2 !important;
+        border: 1px solid #eadfd2 !important;
+        display: flex !important;
+        flex-direction: column !important;
+        justify-content: center !important;
+    }
+
+        .price-page .price-card-mini.highlight {
+            background: #f2e8dc !important;
+        }
+
+        .price-page .price-card-mini span {
+            display: block !important;
+            color: #7f7368 !important;
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            margin-bottom: 8px !important;
+        }
+
+        .price-page .price-card-mini h4 {
+            margin: 0 0 6px 0 !important;
+            color: #2f241c !important;
+            font-size: 28px !important;
+            font-weight: 850 !important;
+            line-height: 1.15 !important;
+        }
+
+        .price-page .price-card-mini p {
+            margin: 0 !important;
+            color: #7f7368 !important;
+            font-size: 12px !important;
+        }
+
+    .price-page .percent-control {
+        display: flex !important;
+        align-items: center !important;
+        gap: 8px !important;
+        margin: 4px 0 8px !important;
+    }
+
+        .price-page .percent-control button {
+            width: 36px !important;
+            height: 36px !important;
+            border-radius: 11px !important;
+            border: 1px solid #eadfd2 !important;
+            background: #fffdfa !important;
+            color: #7b5738 !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            font-size: 13px !important;
+        }
+
+        .price-page .percent-control input {
+            width: 80px !important;
+            height: 36px !important;
+            border-radius: 11px !important;
+            border: 1px solid #eadfd2 !important;
+            text-align: center !important;
+            background: #fffdfa !important;
+        }
+
+        .price-page .percent-control > span {
+            margin: 0 !important;
+            color: #2f241c !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+        }
+
+    /* Form Giá mới - Ngày bắt đầu - Ngày kết thúc - Trạng thái */
+    .price-page .row.g-4.mt-1 {
+        display: grid !important;
+        grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+        gap: 18px !important;
+        margin: 0 !important;
+    }
+
+        .price-page .row.g-4.mt-1 > [class*="col-"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            padding: 0 !important;
+            margin: 0 !important;
+        }
+
+        .price-page .row.g-4.mt-1 > .col-md-12 {
+            grid-column: 1 / -1 !important;
+        }
+
+    .price-page textarea.form-control {
+        min-height: 92px !important;
+        resize: vertical !important;
+    }
+
+    .price-page .row.g-4.mt-1 > .col-md-12.d-flex.justify-content-end {
+        display: flex !important;
+        justify-content: flex-end !important;
+        margin-top: 4px !important;
+    }
+
+    .price-page .row.g-4.mt-1 .btn-admin {
+        min-height: 48px !important;
+        padding: 0 24px !important;
+        border-radius: 14px !important;
+        background: #b08a63 !important;
+        color: #fff !important;
+        font-weight: 750 !important;
+        box-shadow: 0 14px 30px rgba(176, 138, 99, .22) !important;
+    }
+
+    /* Lịch sử giá */
+    .price-page .price-history-section {
+        margin-top: 34px !important;
+    }
+
+    .price-page .price-history-title {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 18px !important;
+        margin-bottom: 18px !important;
+    }
+
+        .price-page .price-history-title h5 {
+            margin: 0 0 6px 0 !important;
+            font-size: 22px !important;
+            font-weight: 800 !important;
+            color: #2f241c !important;
+        }
+
+        .price-page .price-history-title p {
+            margin: 0 !important;
+            color: #7f7368 !important;
+            font-size: 14px !important;
+        }
+
+    .price-page .price-table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+    }
+
+        .price-page .price-table thead th {
+            background: #faf4ee !important;
+            color: #7f7368 !important;
+            font-size: 13px !important;
+            font-weight: 750 !important;
+            padding: 16px !important;
+            border-bottom: 1px solid #eadfd2 !important;
+        }
+
+        .price-page .price-table tbody td {
+            padding: 16px !important;
+            font-size: 13px !important;
+            vertical-align: middle !important;
+            border-bottom: 1px solid #f0e7de !important;
+        }
+
+        .price-page .price-table .product-info img {
+            width: 58px !important;
+            height: 58px !important;
+            min-width: 58px !important;
+            object-fit: cover !important;
+            border-radius: 14px !important;
+            border: 1px solid #eadfd2 !important;
+        }
+
+    .price-page .old-price {
+        color: #7f7368 !important;
+        text-decoration: line-through !important;
+    }
+
+    .price-page .new-price {
+        color: #4f8a56 !important;
+    }
+
+    @@media(max-width: 1200px) {
+        .price-page .price-filter-row {
+            grid-template-columns: 1fr !important;
+        }
+
+        .price-page .price-edit-row {
+            grid-template-columns: repeat(3, minmax(0, 1fr)) !important;
+        }
+
+        .price-page .row.g-4.mt-1 {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
+    }
+
+    @@media(max-width: 768px) {
+        .price-page .price-title,
+        .price-page .price-history-title {
+            flex-direction: column !important;
+            align-items: flex-start !important;
+        }
+
+        .price-page .price-edit-row,
+        .price-page .row.g-4.mt-1 {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 
 <div class="page-title fade-up">
 
@@ -248,7 +749,14 @@
                             <td>
                                 <div class="product-info">
 
-                                    <img src="@Url.Content(item.HinhAnh)" />
+                                    @if (!string.IsNullOrWhiteSpace(item.HinhAnh))
+                                    {
+                                        <img src="@Url.Content(item.HinhAnh)" class="admin-product-img" />
+                                    }
+                                    else
+                                    {
+                                        <img src="@Url.Content("~/Content/images/no-image.png")" class="admin-product-img" />
+                                    }
 
                                     <div>
                                         <h6>@item.TenSP</h6>
@@ -749,9 +1257,9 @@
 
 <!-- ===================== PRICE MANAGEMENT SECTION ===================== -->
 
-<div class="table-box fade-up mt-4">
+<div class="table-box fade-up mt-4 price-page" id="priceHistory">
 
-    <div class="card-header">
+    <div class="price-title fade-up">
 
         <div>
             <div class="card-title">Quản lý giá sản phẩm</div>
@@ -1394,6 +1902,7 @@
 
                             <input type="text"
                                    name="TenSP"
+                                   id="createTenSP"
                                    class="form-control"
                                    placeholder="Ví dụ: Sofa hiện đại..."
                                    required />
@@ -1404,7 +1913,10 @@
 
                             <label class="form-label">Danh mục</label>
 
-                            <select name="MaDM" class="form-select" required>
+                            <select name="MaDM"
+                                    id="createMaDM"
+                                    class="form-select"
+                                    required>
 
                                 <option value="">Chọn danh mục</option>
 
@@ -1462,6 +1974,7 @@
 
                             <input type="text"
                                    name="ThuongHieu"
+                                   id="createThuongHieu"
                                    class="form-control"
                                    placeholder="Ví dụ: Moderno, Furni..." />
 
@@ -1484,8 +1997,9 @@
 
                             <input type="text"
                                    name="Slug"
+                                   id="createSlug"
                                    class="form-control"
-                                   placeholder="sofa-hien-dai" />
+                                   placeholder="slug sẽ tự tạo theo tên sản phẩm" />
 
                         </div>
 
@@ -1505,6 +2019,7 @@
                             <label class="form-label">Mô tả sản phẩm</label>
 
                             <textarea name="MoTa"
+                                      id="createMoTa"
                                       class="form-control"
                                       rows="4"
                                       placeholder="Mô tả ngắn về sản phẩm..."></textarea>
@@ -1517,8 +2032,9 @@
 
                             <input type="text"
                                    name="MetaTitle"
+                                   id="createMetaTitle"
                                    class="form-control"
-                                   placeholder="Sofa hiện đại cho phòng khách" />
+                                   placeholder="Meta title sẽ tự tạo" />
 
                         </div>
 
@@ -1528,8 +2044,9 @@
 
                             <input type="text"
                                    name="MetaKeyword"
+                                   id="createMetaKeyword"
                                    class="form-control"
-                                   placeholder="sofa, nội thất phòng khách, sofa hiện đại" />
+                                   placeholder="Meta keyword sẽ tự tạo" />
 
                         </div>
 
@@ -1538,9 +2055,10 @@
                             <label class="form-label">Meta Description</label>
 
                             <textarea name="MetaDescription"
+                                      id="createMetaDescription"
                                       class="form-control"
                                       rows="3"
-                                      placeholder="Mô tả SEO cho sản phẩm..."></textarea>
+                                      placeholder="Meta description sẽ tự tạo"></textarea>
 
                         </div>
 
@@ -1604,10 +2122,206 @@
 </div>
 
 
-<!-- ===================== PRICE MANAGEMENT SCRIPT ===================== -->
+<!-- ===================== PRODUCT SEO + PRICE MANAGEMENT SCRIPT ===================== -->
 
 <script>
     document.addEventListener("DOMContentLoaded", function () {
+
+        /* =====================================================
+           1. TỰ ĐỘNG ĐIỀN SLUG SEO, META TITLE, META KEYWORD,
+              META DESCRIPTION KHI THÊM SẢN PHẨM
+        ===================================================== */
+
+        const createTenSP = document.getElementById("createTenSP");
+        const createMaDM = document.getElementById("createMaDM");
+        const createSlug = document.getElementById("createSlug");
+        const createMoTa = document.getElementById("createMoTa");
+        const createThuongHieu = document.getElementById("createThuongHieu");
+        const createMetaTitle = document.getElementById("createMetaTitle");
+        const createMetaKeyword = document.getElementById("createMetaKeyword");
+        const createMetaDescription = document.getElementById("createMetaDescription");
+
+        let daSuaSlug = false;
+        let daSuaMetaTitle = false;
+        let daSuaMetaKeyword = false;
+        let daSuaMetaDescription = false;
+
+        function removeVietnameseTones(str) {
+            if (!str) {
+                return "";
+            }
+
+            str = str.toLowerCase();
+
+            str = str.replace(/à|á|ạ|ả|ã|â|ầ|ấ|ậ|ẩ|ẫ|ă|ằ|ắ|ặ|ẳ|ẵ/g, "a");
+            str = str.replace(/è|é|ẹ|ẻ|ẽ|ê|ề|ế|ệ|ể|ễ/g, "e");
+            str = str.replace(/ì|í|ị|ỉ|ĩ/g, "i");
+            str = str.replace(/ò|ó|ọ|ỏ|õ|ô|ồ|ố|ộ|ổ|ỗ|ơ|ờ|ớ|ợ|ở|ỡ/g, "o");
+            str = str.replace(/ù|ú|ụ|ủ|ũ|ư|ừ|ứ|ự|ử|ữ/g, "u");
+            str = str.replace(/ỳ|ý|ỵ|ỷ|ỹ/g, "y");
+            str = str.replace(/đ/g, "d");
+
+            return str;
+        }
+
+        function taoSlug(text) {
+            text = removeVietnameseTones(text);
+
+            text = text.replace(/[^a-z0-9\s-]/g, "");
+            text = text.replace(/\s+/g, "-");
+            text = text.replace(/-+/g, "-");
+            text = text.replace(/^-+|-+$/g, "");
+
+            return text;
+        }
+
+        function layTenDanhMuc() {
+            if (!createMaDM || createMaDM.selectedIndex < 0) {
+                return "";
+            }
+
+            const text = createMaDM.options[createMaDM.selectedIndex].text.trim();
+
+            if (text === "Chọn danh mục") {
+                return "";
+            }
+
+            return text;
+        }
+
+        function catChuoi(text, maxLength) {
+            if (!text) {
+                return "";
+            }
+
+            text = text.trim();
+
+            if (text.length <= maxLength) {
+                return text;
+            }
+
+            return text.substring(0, maxLength - 3) + "...";
+        }
+
+        function taoSEOThemSanPham() {
+            if (!createTenSP) {
+                return;
+            }
+
+            const tenSanPham = createTenSP.value.trim();
+            const tenDanhMuc = layTenDanhMuc();
+            const moTa = createMoTa ? createMoTa.value.trim() : "";
+            const thuongHieu = createThuongHieu && createThuongHieu.value.trim()
+                ? createThuongHieu.value.trim()
+                : "MODERNO";
+
+            if (tenSanPham.length === 0) {
+                if (createSlug && !daSuaSlug) createSlug.value = "";
+                if (createMetaTitle && !daSuaMetaTitle) createMetaTitle.value = "";
+                if (createMetaKeyword && !daSuaMetaKeyword) createMetaKeyword.value = "";
+                if (createMetaDescription && !daSuaMetaDescription) createMetaDescription.value = "";
+                return;
+            }
+
+            if (createSlug && !daSuaSlug) {
+                createSlug.value = taoSlug(tenSanPham);
+            }
+
+            if (createMetaTitle && !daSuaMetaTitle) {
+                if (tenDanhMuc.length > 0) {
+                    createMetaTitle.value = catChuoi(tenSanPham + " - " + tenDanhMuc + " hiện đại | " + thuongHieu, 255);
+                }
+                else {
+                    createMetaTitle.value = catChuoi(tenSanPham + " | " + thuongHieu, 255);
+                }
+            }
+
+            if (createMetaKeyword && !daSuaMetaKeyword) {
+                let keywords = [];
+
+                keywords.push(tenSanPham.toLowerCase());
+
+                if (tenDanhMuc.length > 0) {
+                    keywords.push(tenDanhMuc.toLowerCase());
+                }
+
+                keywords.push("nội thất");
+                keywords.push("nội thất hiện đại");
+                keywords.push("moderno");
+
+                createMetaKeyword.value = catChuoi(keywords.join(", "), 255);
+            }
+
+            if (createMetaDescription && !daSuaMetaDescription) {
+                let description = "";
+
+                if (moTa.length > 0) {
+                    description = moTa;
+                }
+                else if (tenDanhMuc.length > 0) {
+                    description = "Khám phá " + tenSanPham + " thuộc danh mục " + tenDanhMuc + " tại MODERNO, phù hợp cho không gian sống hiện đại, tiện nghi và sang trọng.";
+                }
+                else {
+                    description = "Khám phá " + tenSanPham + " tại MODERNO, sản phẩm nội thất hiện đại, phù hợp cho không gian sống tiện nghi và sang trọng.";
+                }
+
+                createMetaDescription.value = catChuoi(description, 500);
+            }
+        }
+
+        if (createSlug) {
+            createSlug.addEventListener("input", function () {
+                daSuaSlug = true;
+            });
+        }
+
+        if (createMetaTitle) {
+            createMetaTitle.addEventListener("input", function () {
+                daSuaMetaTitle = true;
+            });
+        }
+
+        if (createMetaKeyword) {
+            createMetaKeyword.addEventListener("input", function () {
+                daSuaMetaKeyword = true;
+            });
+        }
+
+        if (createMetaDescription) {
+            createMetaDescription.addEventListener("input", function () {
+                daSuaMetaDescription = true;
+            });
+        }
+
+        if (createTenSP) {
+            createTenSP.addEventListener("input", taoSEOThemSanPham);
+            createTenSP.addEventListener("blur", taoSEOThemSanPham);
+        }
+
+        if (createMaDM) {
+            createMaDM.addEventListener("change", taoSEOThemSanPham);
+        }
+
+        if (createMoTa) {
+            createMoTa.addEventListener("input", function () {
+                if (!daSuaMetaDescription) {
+                    taoSEOThemSanPham();
+                }
+            });
+        }
+
+        if (createThuongHieu) {
+            createThuongHieu.addEventListener("input", function () {
+                if (!daSuaMetaTitle) {
+                    taoSEOThemSanPham();
+                }
+            });
+        }
+
+
+        /* =====================================================
+           2. SCRIPT QUẢN LÝ GIÁ SẢN PHẨM
+        ===================================================== */
 
         const productSelect = document.getElementById("priceProductSelect");
         const priceProductSearch = document.getElementById("priceProductSearch");
@@ -1668,7 +2382,7 @@
 
         function calculateNewPrice() {
             const currentPrice = getCurrentPrice();
-            const percent = Number(percentInput.value) || 0;
+            const percent = Number(percentInput && percentInput.value) || 0;
             const type = updateType ? updateType.value : "increase";
 
             let newPrice = currentPrice;

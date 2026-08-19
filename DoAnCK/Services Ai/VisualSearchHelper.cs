@@ -1,7 +1,7 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
-using System.IO;
-using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 
@@ -9,8 +9,7 @@ namespace DoAnCK.Services_Ai
 {
     public static class VisualSearchHelper
     {
-        // Dán API KEY Gemini của nhóm bạn vào đây
-        // Lấy từ Google AI Studio
+        // Sử dụng API Key mới đang hoạt động trơn tru
         private const string GeminiApiKey = "";
 
         public static async Task<string> DescribeImageWithGeminiAsync(byte[] imageBytes)
@@ -20,115 +19,68 @@ namespace DoAnCK.Services_Ai
 
         public static async Task<string> DescribeImageWithGeminiAsync(byte[] imageBytes, string mimeType)
         {
+            if (imageBytes == null || imageBytes.Length == 0)
+            {
+                return "ERROR: Không nhận được dữ liệu ảnh.";
+            }
+
+            if (string.IsNullOrWhiteSpace(mimeType))
+            {
+                mimeType = "image/jpeg";
+            }
+
             try
             {
-                if (imageBytes == null || imageBytes.Length == 0)
-                {
-                    return "ERROR: Không nhận được dữ liệu ảnh.";
-                }
-
-                if (string.IsNullOrWhiteSpace(GeminiApiKey) ||
-                    GeminiApiKey == "DAN_API_KEY_GEMINI_CUA_BAN_VAO_DAY")
-                {
-                    return "ERROR: Chưa cấu hình Gemini API Key trong VisualSearchHelper.cs.";
-                }
-
-                if (string.IsNullOrWhiteSpace(mimeType))
-                {
-                    mimeType = "image/jpeg";
-                }
-
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-
+                System.Net.ServicePointManager.SecurityProtocol = System.Net.SecurityProtocolType.Tls12;
                 string base64Image = Convert.ToBase64String(imageBytes);
 
-                string endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-3.6-flash:generateContent";
-
-                JObject requestBody = new JObject
+                // CÂU LỆNH ĐÃ ĐƯỢC CHỈNH SỬA: Ép AI trả về đúng 1 cụm từ, cấm miêu tả phòng khách hay đồ vật phụ
+                var requestObject = new
                 {
-                    ["contents"] = new JArray
-                    {
-                        new JObject
-                        {
-                            ["parts"] = new JArray
-                            {
-                                new JObject
-                                {
-                                    ["text"] =
-                                        "Bạn là AI hỗ trợ tìm kiếm sản phẩm nội thất. " +
-                                        "Hãy mô tả ngắn gọn ảnh này bằng tiếng Việt, tập trung vào loại sản phẩm, màu sắc, chất liệu, kiểu dáng và không gian sử dụng. " +
-                                        "Chỉ trả về một câu mô tả, không giải thích dài."
-                                },
-                                new JObject
-                                {
-                                    ["inline_data"] = new JObject
-                                    {
-                                        ["mime_type"] = mimeType,
-                                        ["data"] = base64Image
-                                    }
-                                }
+                    contents = new[] {
+                        new {
+                            parts = new object[] {
+                                new { text = "Bạn là chuyên gia nhận diện sản phẩm nội thất. Hãy nhìn vào món đồ vật LỚN NHẤT, CHÍNH YẾU NHẤT trong ảnh và trả về ĐÚNG 1 CỤM TỪ KHÓA, không được viết thành câu. Cú pháp bắt buộc: [Loại sản phẩm] + [Màu sắc hoặc Chất liệu]. Ví dụ: 'Sofa màu xanh lam', 'Bàn trà gỗ'. TUYỆT ĐỐI KHÔNG miêu tả cảnh vật, KHÔNG nhắc đến không gian phòng khách, KHÔNG nhắc đến các vật dụng đi kèm." },
+                                new { inlineData = new { mimeType = mimeType, data = base64Image } }
                             }
                         }
                     }
                 };
 
-                HttpWebRequest request = (HttpWebRequest)WebRequest.Create(endpoint);
-                request.Method = "POST";
-                request.ContentType = "application/json";
+                string jsonPayload = JsonConvert.SerializeObject(requestObject);
 
-                // Quan trọng: Gemini dùng x-goog-api-key, không dùng Authorization Bearer
-                request.Headers.Add("x-goog-api-key", GeminiApiKey);
+                // Áp dụng cơ chế vòng lặp fallback thông minh
+                string[] candidateModels = { "gemini-2.0-flash", "gemini-flash-latest", "gemini-1.5-flash" };
+                string errorLogs = "";
 
-                byte[] requestBytes = Encoding.UTF8.GetBytes(requestBody.ToString());
-                request.ContentLength = requestBytes.Length;
-
-                using (Stream requestStream = await request.GetRequestStreamAsync())
+                using (var client = new HttpClient())
                 {
-                    await requestStream.WriteAsync(requestBytes, 0, requestBytes.Length);
-                }
-
-                using (HttpWebResponse response = (HttpWebResponse)await request.GetResponseAsync())
-                {
-                    using (StreamReader reader = new StreamReader(response.GetResponseStream()))
+                    foreach (var model in candidateModels)
                     {
-                        string responseText = await reader.ReadToEndAsync();
+                        string url = $"https://generativelanguage.googleapis.com/v1beta/models/{model}:generateContent?key={GeminiApiKey}";
+                        var content = new StringContent(jsonPayload, Encoding.UTF8, "application/json");
 
-                        JObject json = JObject.Parse(responseText);
+                        var response = await client.PostAsync(url, content);
+                        string resStr = await response.Content.ReadAsStringAsync();
 
-                        string result = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
-
-                        if (string.IsNullOrWhiteSpace(result))
+                        if (response.IsSuccessStatusCode)
                         {
-                            return "ERROR: Gemini không trả về mô tả ảnh.";
-                        }
+                            JObject json = JObject.Parse(resStr);
+                            string result = json["candidates"]?[0]?["content"]?["parts"]?[0]?["text"]?.ToString();
 
-                        return result.Trim();
-                    }
-                }
-            }
-            catch (WebException wex)
-            {
-                if (wex.Response != null)
-                {
-                    using (HttpWebResponse errorResponse = (HttpWebResponse)wex.Response)
-                    {
-                        using (StreamReader reader = new StreamReader(errorResponse.GetResponseStream()))
-                        {
-                            string errorText = await reader.ReadToEndAsync();
-
-                            if (errorText.Contains("API_KEY_INVALID") ||
-                                errorText.Contains("UNAUTHENTICATED") ||
-                                errorText.Contains("invalid authentication"))
+                            if (!string.IsNullOrWhiteSpace(result))
                             {
-                                return "ERROR: Gemini API Key không hợp lệ hoặc chưa có quyền truy cập. Hãy kiểm tra lại API key trong VisualSearchHelper.cs.";
+                                return result.Trim();
                             }
-
-                            return "ERROR: Gemini API lỗi: " + errorText;
+                        }
+                        else
+                        {
+                            errorLogs += $"[{model} lỗi {response.StatusCode}: {resStr}] ";
                         }
                     }
                 }
 
-                return "ERROR: Không kết nối được Gemini API: " + wex.Message;
+                return $"ERROR: {errorLogs}";
             }
             catch (Exception ex)
             {

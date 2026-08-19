@@ -20,8 +20,11 @@ namespace DoAnCK.Models
         public int SoLuong { get; set; }
         public decimal GiaBan { get; set; }
         public decimal ThanhTien { get; set; }
+        public bool CoLapRap { get; set; }
+        public Nullable<int> MaTK_Store { get; set; }
     
         public virtual DONHANG DONHANG { get; set; }
         public virtual SANPHAM SANPHAM { get; set; }
+        public virtual CUAHANG CUAHANG { get; set; }
     }
 }

@@ -1,0 +1,154 @@
+﻿@using System.Linq
+@model IEnumerable<DoAnCK.Models.ViewModel.FavoriteProductViewModel>
+
+@{
+    ViewBag.Title = "Sản phẩm yêu thích";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .favorite-page {
+        max-width: 1180px;
+        margin: 50px auto;
+        padding: 0 20px;
+    }
+
+    .favorite-title {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+        .favorite-title h2 {
+            color: #2B2623;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .favorite-title p {
+            color: #7f7368;
+        }
+
+    .favorite-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+    }
+
+    .favorite-card {
+        background: #fff;
+        border: 1px solid #eadfd2;
+        border-radius: 18px;
+        overflow: hidden;
+        box-shadow: 0 10px 28px rgba(92, 65, 42, 0.07);
+        transition: 0.25s;
+    }
+
+        .favorite-card:hover {
+            transform: translateY(-6px);
+        }
+
+        .favorite-card img {
+            width: 100%;
+            height: 210px;
+            object-fit: cover;
+            background: #faf7f2;
+        }
+
+    .favorite-info {
+        padding: 16px;
+        text-align: center;
+    }
+
+        .favorite-info h4 {
+            font-size: 16px;
+            font-weight: 800;
+            color: #2B2623;
+            margin-bottom: 6px;
+        }
+
+        .favorite-info span {
+            display: block;
+            color: #7f7368;
+            font-size: 13px;
+            margin-bottom: 8px;
+        }
+
+        .favorite-info strong {
+            color: #8b6040;
+            font-size: 17px;
+        }
+
+    .favorite-view-btn {
+        display: block;
+        margin-top: 14px;
+        padding: 10px;
+        background: #2B2623;
+        color: #fff;
+        border-radius: 9px;
+        text-decoration: none;
+        font-weight: 700;
+    }
+
+        .favorite-view-btn:hover {
+            background: #000;
+            color: #fff;
+        }
+
+    @@media(max-width: 992px) {
+        .favorite-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media(max-width: 576px) {
+        .favorite-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="favorite-page">
+
+    <div class="favorite-title">
+        <h2>Sản phẩm yêu thích</h2>
+        <p>Những sản phẩm bạn đã lưu vào danh sách yêu thích.</p>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div style="text-align:center; color:#7f7368; padding:40px;">
+            Bạn chưa có sản phẩm yêu thích nào.
+        </div>
+    }
+    else
+    {
+        <div class="favorite-grid">
+
+            @foreach (var item in Model)
+            {
+                var img = string.IsNullOrWhiteSpace(item.HinhAnh)
+                    ? "~/Content/images/no-image.jpg"
+                    : item.HinhAnh;
+
+                <div class="favorite-card">
+
+                    <img src="@Url.Content(img)" alt="@item.TenSP" />
+
+                    <div class="favorite-info">
+                        <h4>@item.TenSP</h4>
+                        <span>@item.TenDM</span>
+                        <strong>@item.GiaHienTai.ToString("N0") ₫</strong>
+
+                        <a href="@Url.RouteUrl("ProductDetail", new { slug = item.Slug })"
+                           class="favorite-view-btn">
+                            Xem chi tiết
+                        </a>
+                    </div>
+
+                </div>
+            }
+
+        </div>
+    }
+
+</div>

@@ -15,12 +15,17 @@ namespace DoAnCK.Areas.Customer
         public override void RegisterArea(AreaRegistrationContext context)
         {
             context.MapRoute(
-                "Customer_default",
-                "Customer/{controller}/{action}/{id}",
-                new
+                name: "Customer_default",
+                url: "Customer/{controller}/{action}/{id}",
+                defaults: new
                 {
+                    controller = "Home",
                     action = "Index",
                     id = UrlParameter.Optional
+                },
+                namespaces: new[]
+                {
+                    "DoAnCK.Areas.Customer.Controllers"
                 }
             );
         }

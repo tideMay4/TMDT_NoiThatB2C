@@ -1,0 +1,66 @@
+﻿<div class="card-box">
+    <div class="card-header">
+        <div>
+            <h5 class="card-title">
+                <i class="fa-solid fa-chart-pie"></i>
+                Tỉ lệ trạng thái đơn hàng
+            </h5>
+            <p class="text-muted mb-0">Phân bố đơn hàng theo trạng thái hiện tại</p>
+        </div>
+
+        <div>
+            <span class="badge-soft">Tổng: @(ViewBag.TotalOrders ?? 0) đơn</span>
+        </div>
+    </div>
+
+    <div class="chart-box">
+        <canvas id="storeOrderStatusChart"></canvas>
+    </div>
+</div>
+
+<script>
+    (function () {
+        var canvas = document.getElementById('storeOrderStatusChart');
+
+        if (!canvas) {
+            return;
+        }
+
+        var labels = @Html.Raw(ViewBag.StatusLabels ?? "[]");
+        var counts = @Html.Raw(ViewBag.StatusCounts ?? "[]");
+
+        if (!labels || labels.length === 0) {
+            labels = ['Chưa có dữ liệu'];
+            counts = [1];
+        }
+
+        new Chart(canvas, {
+            type: 'doughnut',
+            data: {
+                labels: labels,
+                datasets: [{
+                    data: counts,
+                    backgroundColor: [
+                        '#2f9e44',
+                        '#c49a5a',
+                        '#8b9aa5',
+                        '#b76e6e',
+                        '#7b5738'
+                    ],
+                    borderWidth: 2,
+                    borderColor: '#fffdfa'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                cutout: '62%',
+                plugins: {
+                    legend: {
+                        position: 'bottom'
+                    }
+                }
+            }
+        });
+    })();
+</script>

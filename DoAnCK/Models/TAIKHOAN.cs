@@ -29,10 +29,13 @@ namespace DoAnCK.Models
         public string VaiTro { get; set; }
         public bool TrangThai { get; set; }
         public System.DateTime NgayTao { get; set; }
+        public string RefreshToken { get; set; }
+        public Nullable<System.DateTime> RefreshTokenExpiryTime { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<KHACHHANG> KHACHHANGs { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<TIN_TUC> TIN_TUC { get; set; }
+        public virtual CUAHANG CUAHANG { get; set; }
     }
 }

@@ -23,7 +23,10 @@ namespace DoAnCK.Areas.Admin
                     action = "Index",
                     id = UrlParameter.Optional
                 },
-                namespaces: new[] { "DoAnCK.Areas.Admin.Controllers" }
+                namespaces: new[]
+                {
+                    "DoAnCK.Areas.Admin.Controllers"
+                }
             );
         }
     }

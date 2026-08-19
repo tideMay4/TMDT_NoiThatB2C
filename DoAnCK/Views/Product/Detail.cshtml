@@ -1,4 +1,7 @@
-﻿@using DoAnCK.Models
+﻿@using System.Globalization
+@using System.Linq
+@using DoAnCK.Models
+@using DoAnCK.Controllers
 @model DoAnCK.Models.ProductDetailViewModel
 
 @{
@@ -11,10 +14,16 @@
         ? "~/Content/images/no-image.jpg"
         : product.HinhAnh;
 
-    int fullStars = (int)Math.Floor(Model.DiemTrungBinh);
-    bool hasHalfStar = Model.DiemTrungBinh - fullStars >= 0.5;
+    var storeOptions = ViewBag.StoreOptions as List<StoreProductOptionViewModel>;
 
-    string priceValue = product.GiaHienTai.ToString(System.Globalization.CultureInfo.InvariantCulture);
+    decimal displayPrice = product.GiaHienTai;
+
+    if (storeOptions != null && storeOptions.Count > 0)
+    {
+        displayPrice = storeOptions.First().GiaBan;
+    }
+
+    string priceValue = displayPrice.ToString(CultureInfo.InvariantCulture);
 }
 
 <style>
@@ -152,14 +161,8 @@
         align-items: center;
     }
 
-    .cart-action-form {
-        display: flex;
-        gap: 14px;
-        align-items: center;
-    }
-
-    .quantity-box {
-        width: 110px;
+    .quantity-box,
+    .store-select-detail {
         height: 48px;
         border: 1px solid #eadfd2;
         border-radius: 14px;
@@ -168,6 +171,14 @@
         outline: none;
         color: #3d332b;
         font-weight: 700;
+    }
+
+    .quantity-box {
+        width: 110px;
+    }
+
+    .store-select-detail {
+        width: 330px;
     }
 
     .btn-cart,
@@ -205,6 +216,27 @@
         .btn-buy:hover {
             background: #eadfd2;
             color: #6f4e37;
+        }
+
+    .btn-favorite-detail {
+        width: 48px;
+        height: 48px;
+        border-radius: 50%;
+        border: 1px solid #eadfd2;
+        background: #fffdf8;
+        color: #a9825a;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 20px;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+        .btn-favorite-detail:hover,
+        .btn-favorite-detail.active {
+            background: #a9825a;
+            color: #fff;
         }
 
     .detail-section {
@@ -310,6 +342,23 @@
         font-weight: 700;
     }
 
+    .review-note {
+        background: #f8f2ea;
+        border: 1px dashed #d8c5ad;
+    }
+
+        .review-note h4 {
+            color: #8b6040;
+            font-weight: 800;
+            margin-bottom: 8px;
+        }
+
+        .review-note p {
+            color: #7b6e64;
+            margin: 0;
+            line-height: 1.7;
+        }
+
     .review-item {
         border-bottom: 1px solid #eadfd2;
         padding: 20px 0;
@@ -341,6 +390,18 @@
         line-height: 1.7;
         margin: 8px 0 0;
     }
+
+    .empty-product {
+        text-align: center;
+        color: #7b6e64;
+        padding: 26px;
+    }
+
+        .empty-product i {
+            font-size: 28px;
+            color: #a9825a;
+            margin-bottom: 10px;
+        }
 
     .related-grid {
         display: grid;
@@ -398,23 +459,6 @@
         margin: 0 auto 20px;
     }
 
-    .review-note {
-        background: #f8f2ea;
-        border: 1px dashed #d8c5ad;
-    }
-
-        .review-note h4 {
-            color: #8b6040;
-            font-weight: 800;
-            margin-bottom: 8px;
-        }
-
-        .review-note p {
-            color: #7b6e64;
-            margin: 0;
-            line-height: 1.7;
-        }
-
     @@media (max-width: 992px) {
         .detail-main {
             grid-template-columns: 1fr;
@@ -447,17 +491,22 @@
             grid-template-columns: 1fr;
         }
 
-        .detail-actions,
-        .cart-action-form {
+        .detail-actions {
             flex-direction: column;
             align-items: stretch;
             width: 100%;
         }
 
         .quantity-box,
+        .store-select-detail,
         .btn-cart,
-        .btn-buy {
+        .btn-buy,
+        .btn-favorite-detail {
             width: 100%;
+        }
+
+        .btn-favorite-detail {
+            border-radius: 14px;
         }
 
         .related-grid {
@@ -532,8 +581,8 @@
 
                 </div>
 
-                <div class="detail-price">
-                    @product.GiaHienTai.ToString("N0")đ
+                <div class="detail-price" id="detailPriceText">
+                    @displayPrice.ToString("N0")đ
                 </div>
 
                 <div class="detail-short">
@@ -550,8 +599,13 @@
                 <div class="detail-stats">
 
                     <div class="stat-mini">
-                        <span>Tồn kho</span>
+                        <span>Tồn kho tổng</span>
                         <strong>@product.SoLuongTon sản phẩm</strong>
+                    </div>
+
+                    <div class="stat-mini">
+                        <span>Lượt xem</span>
+                        <strong>@product.LuotXem lượt</strong>
                     </div>
 
                     <div class="stat-mini">
@@ -573,35 +627,57 @@
 
                 <div class="detail-actions">
 
-                    @using (Html.BeginForm("AddToCart", "Cart", FormMethod.Post, new { @class = "cart-action-form" }))
+                    @if (storeOptions != null && storeOptions.Count > 0)
                     {
-                        <input type="hidden" name="productId" value="@product.MaSP" />
-                        <input type="hidden" name="productName" value="@product.TenSP" />
-                        <input type="hidden" name="price" value="@priceValue" />
-                        <input type="hidden" name="isBulky" value="false" />
-                        <input type="hidden" name="hinhAnh" value="@Url.Content(imageUrl)" />
-
-                        <input type="number"
-                               name="quantity"
-                               class="quantity-box"
-                               value="1"
-                               min="1"
-                               max="@product.SoLuongTon" />
-
-                        <button type="submit" class="btn-cart">
-                            <i class="fa-solid fa-cart-plus me-2"></i>
-                            Thêm vào giỏ
-                        </button>
+                        <select id="storeSelectDetail"
+                                class="store-select-detail"
+                                title="Chọn cửa hàng bán sản phẩm">
+                            @foreach (var store in storeOptions)
+                            {
+                                <option value="@store.MaTK_Store"
+                                        data-price="@store.GiaBan.ToString(CultureInfo.InvariantCulture)"
+                                        data-stock="@store.SoLuongTon">
+                                    @store.TenCuaHang - @store.GiaBan.ToString("N0")đ - Tồn @store.SoLuongTon
+                                </option>
+                            }
+                        </select>
                     }
 
-                    @using (Html.BeginForm("BuyNow", "Cart", FormMethod.Post, new { @class = "cart-action-form" }))
+                    <input type="number"
+                           id="quantityDetail"
+                           class="quantity-box"
+                           value="1"
+                           min="1"
+                           max="@(storeOptions != null && storeOptions.Count > 0 ? storeOptions.First().SoLuongTon : product.SoLuongTon)" />
+
+                    <button type="button"
+                            class="btn-cart"
+                            id="btnAddToCartDetail"
+                            data-id="@product.MaSP">
+                        <i class="fa-solid fa-cart-plus me-2"></i>
+                        Thêm vào giỏ
+                    </button>
+
+                    <button type="button"
+                            class="btn-favorite-detail @(Model.DaYeuThich ? "active" : "")"
+                            id="btnToggleFavorite"
+                            data-id="@product.MaSP"
+                            title="Yêu thích sản phẩm">
+                        <i class="@(Model.DaYeuThich ? "fa-solid" : "fa-regular") fa-heart"></i>
+                    </button>
+
+                    @using (Html.BeginForm("BuyNow", "Cart", FormMethod.Post, new { id = "buyNowForm" }))
                     {
                         <input type="hidden" name="productId" value="@product.MaSP" />
                         <input type="hidden" name="productName" value="@product.TenSP" />
                         <input type="hidden" name="price" value="@priceValue" />
                         <input type="hidden" name="isBulky" value="false" />
                         <input type="hidden" name="hinhAnh" value="@Url.Content(imageUrl)" />
-                        <input type="hidden" name="quantity" value="1" />
+                        <input type="hidden" name="quantity" id="buyNowQuantity" value="1" />
+                        <input type="hidden"
+                               name="storeId"
+                               id="buyNowStoreId"
+                               value="@(storeOptions != null && storeOptions.Count > 0 ? storeOptions.First().MaTK_Store.ToString() : "")" />
 
                         <button type="submit" class="btn-buy">
                             Mua ngay
@@ -824,3 +900,183 @@
     }
 
 </section>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+
+        var storeSelect = document.getElementById("storeSelectDetail");
+        var priceText = document.getElementById("detailPriceText");
+        var quantityDetail = document.getElementById("quantityDetail");
+        var buyNowStoreId = document.getElementById("buyNowStoreId");
+        var buyNowQuantity = document.getElementById("buyNowQuantity");
+
+        function formatMoney(value) {
+            value = Number(value || 0);
+            return value.toLocaleString("vi-VN") + "đ";
+        }
+
+        function syncBuyNowData() {
+            if (storeSelect && buyNowStoreId) {
+                buyNowStoreId.value = storeSelect.value;
+            }
+
+            if (quantityDetail && buyNowQuantity) {
+                buyNowQuantity.value = quantityDetail.value;
+            }
+        }
+
+        if (storeSelect) {
+            syncBuyNowData();
+
+            storeSelect.addEventListener("change", function () {
+                var selected = storeSelect.options[storeSelect.selectedIndex];
+
+                var price = selected.getAttribute("data-price");
+                var stock = selected.getAttribute("data-stock");
+
+                if (priceText) {
+                    priceText.innerText = formatMoney(price);
+                }
+
+                if (quantityDetail && stock) {
+                    quantityDetail.max = stock;
+
+                    if (Number(quantityDetail.value) > Number(stock)) {
+                        quantityDetail.value = stock;
+                    }
+                }
+
+                syncBuyNowData();
+            });
+        }
+
+        if (quantityDetail) {
+            quantityDetail.addEventListener("change", function () {
+                syncBuyNowData();
+            });
+
+            quantityDetail.addEventListener("keyup", function () {
+                syncBuyNowData();
+            });
+        }
+
+        var btnAddToCart = document.getElementById("btnAddToCartDetail");
+
+        if (btnAddToCart) {
+            btnAddToCart.addEventListener("click", function () {
+                var productId = this.getAttribute("data-id");
+                var quantity = quantityDetail ? quantityDetail.value : 1;
+                var storeId = storeSelect ? storeSelect.value : "";
+
+                var btn = this;
+                var oldHtml = btn.innerHTML;
+
+                btn.innerHTML = '<i class="fa-solid fa-spinner fa-spin me-2"></i>Đang thêm...';
+                btn.disabled = true;
+
+                fetch("@Url.Action("AddToCart", "Cart")", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: "productId=" + encodeURIComponent(productId) +
+                          "&quantity=" + encodeURIComponent(quantity) +
+                          "&storeId=" + encodeURIComponent(storeId)
+                })
+                .then(function (response) {
+                    return response.json();
+                })
+                .then(function (data) {
+                    if (data.success) {
+                        var cartBadge = document.getElementById("cart-badge");
+
+                        if (cartBadge) {
+                            cartBadge.innerText = data.totalItems;
+                            cartBadge.style.display = "flex";
+                        }
+
+                        btn.innerHTML = '<i class="fa-solid fa-check me-2"></i>Đã thêm';
+                        btn.style.background = "#8b6040";
+
+                        setTimeout(function () {
+                            btn.innerHTML = oldHtml;
+                            btn.style.background = "#a9825a";
+                            btn.disabled = false;
+                        }, 1500);
+                    }
+                    else {
+                        alert(data.message || "Không thể thêm sản phẩm vào giỏ hàng.");
+                        btn.innerHTML = oldHtml;
+                        btn.disabled = false;
+                    }
+                })
+                .catch(function () {
+                    alert("Không kết nối được server.");
+                    btn.innerHTML = oldHtml;
+                    btn.disabled = false;
+                });
+            });
+        }
+
+        var btnFavorite = document.getElementById("btnToggleFavorite");
+
+        if (btnFavorite) {
+            btnFavorite.addEventListener("click", function () {
+                var productId = this.getAttribute("data-id");
+                var btn = this;
+
+                fetch("@Url.Action("ToggleFavorite", "Product")", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                        "X-Requested-With": "XMLHttpRequest"
+                    },
+                    body: "productId=" + encodeURIComponent(productId)
+                })
+                .then(function (response) {
+                    return response.text();
+                })
+                .then(function (text) {
+                    var data;
+
+                    try {
+                        data = JSON.parse(text);
+                    } catch (e) {
+                        alert("Server trả về dữ liệu không hợp lệ. Kiểm tra RouteConfig hoặc ProductController.");
+                        console.log(text);
+                        return;
+                    }
+
+                    if (data.needLogin) {
+                        window.location.href = "@Url.Action("Login", "Account")";
+                        return;
+                    }
+
+                    if (data.success) {
+                        var icon = btn.querySelector("i");
+
+                        if (data.isFavorite) {
+                            btn.classList.add("active");
+                            icon.classList.remove("fa-regular");
+                            icon.classList.add("fa-solid");
+                        } else {
+                            btn.classList.remove("active");
+                            icon.classList.remove("fa-solid");
+                            icon.classList.add("fa-regular");
+                        }
+
+                        alert(data.message);
+                    } else {
+                        alert(data.message || "Không thể cập nhật yêu thích.");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(error);
+                    alert("Không kết nối được server.");
+                });
+            });
+        }
+
+    });
+</script>

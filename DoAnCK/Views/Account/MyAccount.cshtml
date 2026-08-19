@@ -1,0 +1,111 @@
+﻿@model DoAnCK.Models.ViewModel.CustomerAccountViewModel
+
+@{
+    ViewBag.Title = "Tài khoản của tôi";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .account-page {
+        max-width: 950px;
+        margin: 50px auto;
+        padding: 0 16px;
+    }
+
+    .account-card {
+        background: #fffdfa;
+        border: 1px solid #eadfd2;
+        border-radius: 22px;
+        padding: 30px;
+        box-shadow: 0 14px 35px rgba(92, 65, 42, 0.08);
+    }
+
+    .account-title {
+        margin-bottom: 24px;
+    }
+
+        .account-title h2 {
+            margin: 0 0 8px;
+            font-size: 28px;
+            font-weight: 800;
+            color: #2f241c;
+        }
+
+        .account-title p {
+            margin: 0;
+            color: #7f7368;
+        }
+
+    .account-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .account-info-item {
+        background: #faf7f2;
+        border: 1px solid #eadfd2;
+        border-radius: 16px;
+        padding: 18px;
+    }
+
+        .account-info-item span {
+            display: block;
+            color: #7f7368;
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .account-info-item strong {
+            color: #2f241c;
+            font-size: 15px;
+        }
+
+    @@media(max-width: 768px) {
+        .account-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="account-page">
+
+    <div class="account-card">
+
+        <div class="account-title">
+            <h2>Tài khoản của tôi</h2>
+            <p>Thông tin cá nhân và địa chỉ giao hàng của bạn.</p>
+        </div>
+
+        <div class="account-grid">
+
+            <div class="account-info-item">
+                <span>Họ tên</span>
+                <strong>@Model.HoTen</strong>
+            </div>
+
+            <div class="account-info-item">
+                <span>Email</span>
+                <strong>@Model.Email</strong>
+            </div>
+
+            <div class="account-info-item">
+                <span>Số điện thoại</span>
+                <strong>@Model.SDT</strong>
+            </div>
+
+            <div class="account-info-item">
+                <span>Ngày đăng ký</span>
+                <strong>@(Model.NgayDangKy.HasValue ? Model.NgayDangKy.Value.ToString("dd/MM/yyyy") : "")</strong>
+            </div>
+
+            <div class="account-info-item" style="grid-column: 1 / -1;">
+                <span>Địa chỉ</span>
+                <strong>@Model.DiaChi</strong>
+            </div>
+
+        </div>
+
+    </div>
+
+</div>

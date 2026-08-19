@@ -90,7 +90,6 @@ namespace DoAnCK.Controllers
             return View(products);
         }
 
-
         public ActionResult Detail(string slug)
         {
             if (string.IsNullOrWhiteSpace(slug))
@@ -106,6 +105,26 @@ namespace DoAnCK.Controllers
             {
                 return HttpNotFound();
             }
+
+            product.LuotXem = product.LuotXem + 1;
+            db.SaveChanges();
+
+            var storeOptions = db.Database.SqlQuery<StoreProductOptionViewModel>(
+                @"SELECT 
+                      CSP.MaTK_Store,
+                      CH.TenCH AS TenCuaHang,
+                      CSP.GiaBan,
+                      CSP.SoLuongTon
+                  FROM CUAHANG_SANPHAM CSP
+                  INNER JOIN CUAHANG CH ON CSP.MaTK_Store = CH.MaTK
+                  WHERE CSP.MaSP = @p0
+                    AND CSP.TrangThai = 1
+                    AND CSP.SoLuongTon > 0
+                  ORDER BY CSP.GiaBan ASC",
+                product.MaSP
+            ).ToList();
+
+            ViewBag.StoreOptions = storeOptions;
 
             int soLuotMua = 0;
 
@@ -125,6 +144,7 @@ namespace DoAnCK.Controllers
             bool daDangNhap = false;
             bool daMuaSanPham = false;
             bool daDanhGia = false;
+            bool daYeuThich = false;
 
             if (Session["MaKH"] != null)
             {
@@ -135,11 +155,11 @@ namespace DoAnCK.Controllers
                 {
                     daMuaSanPham = db.Database.SqlQuery<int>(
                         @"SELECT COUNT(*)
-                  FROM DONHANG DH
-                  INNER JOIN CHITIET_DONHANG CT ON DH.MaDH = CT.MaDH
-                  WHERE DH.MaKH = @p0
-                  AND CT.MaSP = @p1
-                  AND DH.TrangThai IN (N'Hoàn thành', N'Đã giao', N'Đã thanh toán')",
+                          FROM DONHANG DH
+                          INNER JOIN CHITIET_DONHANG CT ON DH.MaDH = CT.MaDH
+                          WHERE DH.MaKH = @p0
+                          AND CT.MaSP = @p1
+                          AND DH.TrangThai IN (N'Hoàn thành', N'Đã giao', N'Đã thanh toán')",
                         maKH,
                         product.MaSP
                     ).FirstOrDefault() > 0;
@@ -154,6 +174,14 @@ namespace DoAnCK.Controllers
                     x.MaSP == product.MaSP &&
                     x.TrangThai == true
                 );
+
+                daYeuThich = db.Database.SqlQuery<int>(
+                    @"SELECT COUNT(*) 
+                      FROM YEUTHICH 
+                      WHERE MaKH = @p0 AND MaSP = @p1",
+                    maKH,
+                    product.MaSP
+                ).FirstOrDefault() > 0;
             }
 
             var reviews = db.DANHGIAs
@@ -212,13 +240,13 @@ namespace DoAnCK.Controllers
                 DaDangNhap = daDangNhap,
                 DaMuaSanPham = daMuaSanPham,
                 DaDanhGia = daDanhGia,
+                DaYeuThich = daYeuThich,
                 Reviews = reviews,
                 RelatedProducts = relatedProducts
             };
 
             return View(model);
         }
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -246,11 +274,11 @@ namespace DoAnCK.Controllers
             {
                 daMuaSanPham = db.Database.SqlQuery<int>(
                     @"SELECT COUNT(*)
-              FROM DONHANG DH
-              INNER JOIN CHITIET_DONHANG CT ON DH.MaDH = CT.MaDH
-              WHERE DH.MaKH = @p0
-              AND CT.MaSP = @p1
-              AND DH.TrangThai IN (N'Hoàn thành', N'Đã giao', N'Đã thanh toán')",
+                      FROM DONHANG DH
+                      INNER JOIN CHITIET_DONHANG CT ON DH.MaDH = CT.MaDH
+                      WHERE DH.MaKH = @p0
+                      AND CT.MaSP = @p1
+                      AND DH.TrangThai IN (N'Hoàn thành', N'Đã giao', N'Đã thanh toán')",
                     maKH,
                     MaSP
                 ).FirstOrDefault() > 0;
@@ -308,6 +336,85 @@ namespace DoAnCK.Controllers
             return RedirectToAction("Detail", new { slug = product.Slug });
         }
 
+        [HttpPost]
+        public ActionResult ToggleFavorite(int productId)
+        {
+            try
+            {
+                if (Session["MaKH"] == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        needLogin = true,
+                        message = "Vui lòng đăng nhập để yêu thích sản phẩm."
+                    });
+                }
+
+                int maKH = Convert.ToInt32(Session["MaKH"]);
+
+                var product = db.SANPHAMs.Find(productId);
+
+                if (product == null)
+                {
+                    return Json(new
+                    {
+                        success = false,
+                        message = "Không tìm thấy sản phẩm."
+                    });
+                }
+
+                int existed = db.Database.SqlQuery<int>(
+                    @"SELECT COUNT(*) 
+                      FROM YEUTHICH 
+                      WHERE MaKH = @p0 AND MaSP = @p1",
+                    maKH,
+                    productId
+                ).FirstOrDefault();
+
+                bool isFavorite;
+
+                if (existed > 0)
+                {
+                    db.Database.ExecuteSqlCommand(
+                        @"DELETE FROM YEUTHICH 
+                          WHERE MaKH = @p0 AND MaSP = @p1",
+                        maKH,
+                        productId
+                    );
+
+                    isFavorite = false;
+                }
+                else
+                {
+                    db.Database.ExecuteSqlCommand(
+                        @"INSERT INTO YEUTHICH(MaKH, MaSP, NgayThem)
+                          VALUES(@p0, @p1, GETDATE())",
+                        maKH,
+                        productId
+                    );
+
+                    isFavorite = true;
+                }
+
+                return Json(new
+                {
+                    success = true,
+                    isFavorite = isFavorite,
+                    message = isFavorite
+                        ? "Đã thêm vào danh sách yêu thích."
+                        : "Đã bỏ khỏi danh sách yêu thích."
+                });
+            }
+            catch (Exception ex)
+            {
+                return Json(new
+                {
+                    success = false,
+                    message = "Lỗi khi cập nhật yêu thích: " + ex.Message
+                });
+            }
+        }
 
         protected override void Dispose(bool disposing)
         {
@@ -318,5 +425,16 @@ namespace DoAnCK.Controllers
 
             base.Dispose(disposing);
         }
+    }
+
+    public class StoreProductOptionViewModel
+    {
+        public int MaTK_Store { get; set; }
+
+        public string TenCuaHang { get; set; }
+
+        public decimal GiaBan { get; set; }
+
+        public int SoLuongTon { get; set; }
     }
 }

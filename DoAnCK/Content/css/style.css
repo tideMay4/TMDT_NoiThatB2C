@@ -432,3 +432,162 @@ FOOTER
         height: 140px;
     }
 }*/
+
+.combo-section {
+    max-width: 1180px;
+    margin: 70px auto;
+    padding: 0 24px;
+}
+
+.combo-title {
+    text-align: center;
+    margin-bottom: 35px;
+}
+
+    .combo-title span {
+        color: #b08a63;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        font-size: 13px;
+    }
+
+    .combo-title h2 {
+        color: #2f241c;
+        font-weight: 800;
+        margin: 10px 0;
+    }
+
+    .combo-title p {
+        color: #7f7368;
+        margin: 0;
+    }
+
+.combo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 26px;
+}
+
+.combo-card {
+    position: relative;
+    background: #fffdfa;
+    border: 1px solid #eadfd2;
+    border-radius: 22px;
+    padding: 24px;
+    box-shadow: 0 14px 35px rgba(92, 65, 42, 0.08);
+}
+
+.combo-badge {
+    position: absolute;
+    top: 18px;
+    right: 18px;
+    background: #b08a63;
+    color: #fff;
+    padding: 6px 12px;
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+.combo-card h3 {
+    color: #2f241c;
+    font-size: 20px;
+    font-weight: 800;
+    margin-bottom: 20px;
+    padding-right: 90px;
+}
+
+.combo-products {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    gap: 14px;
+}
+
+.combo-product {
+    background: #faf7f2;
+    border: 1px solid #eadfd2;
+    border-radius: 16px;
+    padding: 14px;
+    text-align: center;
+}
+
+    .combo-product img {
+        width: 100%;
+        height: 130px;
+        object-fit: cover;
+        border-radius: 12px;
+        margin-bottom: 10px;
+    }
+
+    .combo-product strong {
+        display: block;
+        color: #2f241c;
+        font-size: 14px;
+        margin-bottom: 5px;
+    }
+
+    .combo-product span {
+        color: #7f7368;
+        font-size: 13px;
+    }
+
+.combo-plus {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    background: #2f241c;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+}
+
+.combo-price {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin: 22px 0 18px;
+}
+
+    .combo-price del {
+        color: #9b9288;
+    }
+
+    .combo-price strong {
+        color: #4f8a56;
+        font-size: 20px;
+        font-weight: 800;
+    }
+
+.btn-add-combo {
+    width: 100%;
+    border: none;
+    background: #2f241c;
+    color: #fff;
+    border-radius: 12px;
+    padding: 13px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: 0.25s;
+}
+
+    .btn-add-combo:hover {
+        background: #7b5738;
+    }
+
+@media(max-width: 768px) {
+    .combo-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .combo-products {
+        grid-template-columns: 1fr;
+    }
+
+    .combo-plus {
+        margin: 0 auto;
+    }
+}

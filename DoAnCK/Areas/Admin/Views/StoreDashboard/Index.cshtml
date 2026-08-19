@@ -1,0 +1,315 @@
+﻿@{
+    ViewBag.Title = "Dashboard Cửa hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    /* =====================================================
+       STORE DASHBOARD FIX - CHỈ ÁP DỤNG CHO TRANG NÀY
+       Không dùng .dashboard / .content-grid cũ để tránh bị bể layout
+    ===================================================== */
+
+    .store-dashboard-page {
+        width: 100%;
+        max-width: none;
+    }
+
+    .store-page-title {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 24px;
+        margin-bottom: 30px;
+    }
+
+        .store-page-title h2 {
+            font-size: 30px;
+            font-weight: 700;
+            color: #2f241c;
+            margin: 0 0 6px;
+        }
+
+        .store-page-title p {
+            color: #7f7368;
+            margin: 0;
+            font-size: 14px;
+        }
+
+    .store-add-btn {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        height: 48px;
+        padding: 0 22px;
+        border-radius: 14px;
+        background: #b08a63;
+        color: #fff !important;
+        font-size: 14px;
+        font-weight: 700;
+        text-decoration: none;
+        box-shadow: 0 14px 30px rgba(176, 138, 99, .24);
+    }
+
+        .store-add-btn:hover {
+            background: #7b5738;
+            color: #fff !important;
+        }
+
+    /* 4 ô thống kê giống ảnh bạn bạn */
+    .store-stats-grid {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 24px;
+        width: 100%;
+        margin-bottom: 30px;
+        align-items: stretch;
+    }
+
+    .store-stat-cell {
+        width: 100%;
+        min-width: 0;
+    }
+
+        .store-stat-cell > *,
+        .store-stat-cell [class*="col-"] {
+            width: 100% !important;
+            max-width: 100% !important;
+            min-width: 0 !important;
+            flex: none !important;
+            padding-left: 0 !important;
+            padding-right: 0 !important;
+            margin-left: 0 !important;
+            margin-right: 0 !important;
+        }
+
+        .store-stat-cell .stat-card {
+            width: 100% !important;
+            height: 100% !important;
+            min-height: 175px !important;
+            margin: 0 !important;
+            padding: 25px !important;
+            border-radius: 24px !important;
+        }
+
+    /* 2 cột: doanh thu trái, lượt xem phải */
+    .store-two-col {
+        display: grid;
+        grid-template-columns: minmax(0, 1.75fr) minmax(360px, 0.95fr);
+        gap: 26px;
+        width: 100%;
+        margin-bottom: 30px;
+        align-items: stretch;
+    }
+
+    .store-col-left,
+    .store-col-right {
+        width: 100%;
+        min-width: 0;
+    }
+
+        .store-col-left > *,
+        .store-col-right > * {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+
+    .store-two-col .card-box,
+    .store-two-col .table-box {
+        width: 100% !important;
+        height: 100% !important;
+        margin: 0 !important;
+        border-radius: 24px !important;
+    }
+
+    .store-two-col .chart-box {
+        width: 100% !important;
+        height: 360px !important;
+        min-height: 360px !important;
+    }
+
+    .store-two-col canvas {
+        width: 100% !important;
+        height: 100% !important;
+    }
+
+    /* Đơn hàng gần đây full width */
+    .store-order-section {
+        width: 100%;
+        margin-bottom: 30px;
+    }
+
+        .store-order-section > * {
+            width: 100% !important;
+            max-width: 100% !important;
+            margin: 0 !important;
+        }
+
+        .store-order-section .card-box,
+        .store-order-section .table-box {
+            width: 100% !important;
+            border-radius: 24px !important;
+            margin: 0 !important;
+        }
+
+        /* Bảng cho gọn giống ảnh */
+        .store-order-section .table thead th,
+        .store-order-section table thead th {
+            background: #faf4ee !important;
+            color: #7f7368 !important;
+            font-size: 14px !important;
+            font-weight: 700 !important;
+            padding: 16px 18px !important;
+        }
+
+        .store-order-section .table tbody td,
+        .store-order-section table tbody td {
+            font-size: 14px !important;
+            padding: 16px 18px !important;
+            vertical-align: middle !important;
+        }
+
+    .store-footer {
+        margin-top: 30px;
+        padding: 18px 0 8px;
+        text-align: center;
+        color: #7f7368;
+        font-size: 13px;
+    }
+
+    @@media (max-width: 1200px) {
+        .store-stats-grid {
+            grid-template-columns: repeat(4, minmax(0, 1fr));
+            gap: 18px;
+        }
+
+        .store-two-col {
+            grid-template-columns: minmax(0, 1.55fr) minmax(320px, 0.9fr);
+            gap: 22px;
+        }
+
+        .store-stat-cell .stat-card {
+            min-height: 160px !important;
+            padding: 22px !important;
+        }
+    }
+
+    @@media (max-width: 992px) {
+        .store-stats-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+
+        .store-two-col {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media (max-width: 768px) {
+        .store-page-title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+
+        .store-stats-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+
+<div class="store-dashboard-page">
+
+    <!-- ===================== PAGE TITLE ===================== -->
+
+    <div class="store-page-title fade-up">
+
+        <div>
+            <h2>Dashboard Cửa Hàng</h2>
+            <p>
+                Chào mừng quay lại,
+                <strong>@ViewBag.TenCuaHang</strong>.
+                Đây là tổng quan tình hình kinh doanh của cửa hàng hôm nay.
+            </p>
+        </div>
+
+        <div>
+            <a href="@Url.Action("Create", "Product", new { area = "Admin" })" class="store-add-btn">
+                <i class="fa-solid fa-plus"></i>
+                Thêm sản phẩm mới
+            </a>
+        </div>
+
+    </div>
+
+
+    <!-- ===================== STATISTICS ===================== -->
+
+    <div class="store-stats-grid fade-up">
+
+        <div class="store-stat-cell">
+            @Html.Action("_StoreTotalRevenue", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+        <div class="store-stat-cell">
+            @Html.Action("_StoreTotalOrders", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+        <div class="store-stat-cell">
+            @Html.Action("_StoreTotalProducts", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+        <div class="store-stat-cell">
+            @Html.Action("_StorePendingOrders", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+    </div>
+
+
+    <!-- ===================== MAIN CONTENT ===================== -->
+
+    <div class="store-two-col fade-up">
+
+        <div class="store-col-left">
+            @Html.Action("_StoreRevenueChart", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+        <div class="store-col-right">
+            @Html.Action("_StoreTopViews", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+    </div>
+
+
+    <!-- ===================== ORDER SECTION ===================== -->
+
+    <div class="store-order-section fade-up">
+
+        @Html.Action("_StoreRecentOrders", "StoreDashboard", new { area = "Admin" })
+
+    </div>
+
+
+    <!-- ===================== PRODUCT + ACTIVITY ===================== -->
+
+    <div class="store-two-col fade-up">
+
+        <div class="store-col-left">
+            @Html.Action("_StoreOrderStatusShare", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+        <div class="store-col-right">
+            @Html.Action("_StoreTopSellingItems", "StoreDashboard", new { area = "Admin" })
+        </div>
+
+    </div>
+
+
+    <div class="store-footer">
+        © 2026 Furni Store Dashboard. Website bán nội thất B2C.
+    </div>
+
+</div>
+
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>

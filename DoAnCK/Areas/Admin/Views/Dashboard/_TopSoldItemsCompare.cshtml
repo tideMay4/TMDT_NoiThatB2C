@@ -1,0 +1,297 @@
+﻿@model List<DoAnCK.Areas.Admin.Controllers.DashboardStoreTopSoldGroupViewModel>
+
+<div class="dashboard-card top-sold-clean-card">
+
+    <div class="top-sold-header">
+        <div>
+            <h3>Sản phẩm bán chạy</h3>
+            <p>So sánh sản phẩm bán ra theo từng cửa hàng</p>
+        </div>
+    </div>
+
+    @if (Model != null && Model.Any(x => x.Products != null && x.Products.Count > 0))
+    {
+        <div class="store-compare-grid">
+
+            @foreach (var store in Model)
+            {
+                var maxQty = store.Products != null && store.Products.Any()
+                    ? store.Products.Max(x => x.SoLuongDaBan)
+                    : 0;
+
+                <div class="store-sold-box">
+
+                    <div class="store-sold-head">
+                        <div>
+                            <h4>@store.TenCuaHang</h4>
+                            <span>@store.TotalSold sản phẩm đã bán</span>
+                        </div>
+
+                        <strong>@store.TotalRevenue.ToString("N0")đ</strong>
+                    </div>
+
+                    @if (store.Products != null && store.Products.Count > 0)
+                    {
+                        <div class="top-product-list">
+
+                            @{
+                                int index = 1;
+                            }
+
+                            @foreach (var item in store.Products)
+                            {
+                                var percent = maxQty > 0
+                                    ? Math.Round((decimal)item.SoLuongDaBan * 100 / maxQty, 0)
+                                    : 0;
+
+                                <div class="top-product-item">
+
+                                    <div class="product-rank">
+                                        @index
+                                    </div>
+
+                                    <div class="product-sold-info">
+
+                                        <div class="product-name-row">
+                                            <span title="@item.TenSP">@item.TenSP</span>
+                                            <strong>@item.SoLuongDaBan sp</strong>
+                                        </div>
+
+                                        <div class="progress-line">
+                                            <div class="progress-fill" style="width:@percent%;"></div>
+                                        </div>
+
+                                        <div class="product-revenue">
+                                            Doanh thu: @item.DoanhThu.ToString("N0")đ
+                                        </div>
+
+                                    </div>
+
+                                </div>
+
+                                index++;
+                            }
+
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="empty-store-data">
+                            Chưa có sản phẩm bán ra.
+                        </div>
+                    }
+
+                </div>
+            }
+
+        </div>
+    }
+    else
+    {
+        <div class="empty-top-sold">
+            <i class="fa-solid fa-chart-simple"></i>
+            <h4>Chưa có dữ liệu bán chạy</h4>
+            <p>Khi có đơn hàng hoàn tất, dữ liệu sẽ được hiển thị tại đây.</p>
+        </div>
+    }
+
+</div>
+
+<style>
+    .top-sold-clean-card {
+        padding: 26px;
+        overflow: hidden;
+    }
+
+    .top-sold-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        margin-bottom: 22px;
+    }
+
+        .top-sold-header h3 {
+            margin: 0 0 6px;
+            font-size: 24px;
+            font-weight: 800;
+            color: #2f241c;
+        }
+
+        .top-sold-header p {
+            margin: 0;
+            color: #7f7368;
+            font-size: 14px;
+        }
+
+    .store-compare-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .store-sold-box {
+        background: #fffaf5;
+        border: 1px solid #eadfd2;
+        border-radius: 20px;
+        padding: 18px;
+        min-height: 300px;
+    }
+
+    .store-sold-head {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        padding-bottom: 14px;
+        border-bottom: 1px solid #eadfd2;
+        margin-bottom: 14px;
+    }
+
+        .store-sold-head h4 {
+            margin: 0 0 5px;
+            color: #2f241c;
+            font-size: 17px;
+            font-weight: 800;
+            line-height: 1.35;
+        }
+
+        .store-sold-head span {
+            color: #7f7368;
+            font-size: 13px;
+        }
+
+        .store-sold-head strong {
+            color: #4f8a56;
+            font-size: 15px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+    .top-product-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .top-product-item {
+        display: flex;
+        gap: 12px;
+        align-items: flex-start;
+    }
+
+    .product-rank {
+        width: 30px;
+        height: 30px;
+        border-radius: 10px;
+        background: #b08a63;
+        color: #fff;
+        font-size: 13px;
+        font-weight: 800;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+    }
+
+    .product-sold-info {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .product-name-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-bottom: 7px;
+    }
+
+        .product-name-row span {
+            color: #2f241c;
+            font-size: 14px;
+            font-weight: 700;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            max-width: 165px;
+        }
+
+        .product-name-row strong {
+            color: #7b5738;
+            font-size: 13px;
+            font-weight: 800;
+            white-space: nowrap;
+        }
+
+    .progress-line {
+        width: 100%;
+        height: 8px;
+        background: #f0e3d6;
+        border-radius: 999px;
+        overflow: hidden;
+    }
+
+    .progress-fill {
+        height: 100%;
+        background: linear-gradient(90deg, #7b5738, #d3a06f);
+        border-radius: 999px;
+    }
+
+    .product-revenue {
+        color: #7f7368;
+        font-size: 12px;
+        margin-top: 6px;
+    }
+
+    .empty-store-data {
+        height: 190px;
+        border: 1px dashed #d8c5ad;
+        border-radius: 16px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        color: #7f7368;
+        font-size: 14px;
+        background: #fffdfa;
+    }
+
+    .empty-top-sold {
+        min-height: 280px;
+        border: 1px dashed #d8c5ad;
+        border-radius: 18px;
+        background: #fffaf5;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        color: #7f7368;
+        text-align: center;
+    }
+
+        .empty-top-sold i {
+            color: #b08a63;
+            font-size: 30px;
+        }
+
+        .empty-top-sold h4 {
+            color: #2f241c;
+            margin: 6px 0 0;
+            font-weight: 800;
+        }
+
+        .empty-top-sold p {
+            margin: 0;
+            font-size: 14px;
+        }
+
+    @@media(max-width: 992px) {
+        .store-compare-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .product-name-row span {
+            max-width: 260px;
+        }
+    }
+</style>

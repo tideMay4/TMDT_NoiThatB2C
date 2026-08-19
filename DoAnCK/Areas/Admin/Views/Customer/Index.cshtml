@@ -1,0 +1,727 @@
+﻿@using System
+@using System.Linq
+@model List<DoAnCK.Areas.Admin.Models.AdminCustomerViewModel>
+
+@{
+    ViewBag.Title = "Quản lý khách hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    string keyword = ViewBag.Keyword as string;
+    string status = ViewBag.Status as string;
+    string sort = ViewBag.Sort as string;
+}
+
+<style>
+    .customer-page .page-title {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 26px;
+    }
+
+        .customer-page .page-title h2 {
+            font-size: 32px;
+            font-weight: 850;
+            color: #2f241c;
+            margin-bottom: 8px;
+        }
+
+        .customer-page .page-title p {
+            color: #7f7368;
+            margin: 0;
+        }
+
+    .customer-stats {
+        display: grid;
+        grid-template-columns: repeat(4, minmax(0, 1fr));
+        gap: 22px;
+        margin-bottom: 26px;
+    }
+
+    .customer-stat-card {
+        background: #fffdfa;
+        border: 1px solid #eadfd2;
+        border-radius: 24px;
+        padding: 24px;
+        box-shadow: 0 16px 40px rgba(92, 65, 42, 0.06);
+        position: relative;
+        overflow: hidden;
+    }
+
+        .customer-stat-card::after {
+            content: "";
+            position: absolute;
+            width: 95px;
+            height: 95px;
+            border-radius: 50%;
+            background: #f2e8dc;
+            right: -26px;
+            top: -24px;
+        }
+
+        .customer-stat-card span {
+            display: block;
+            color: #7f7368;
+            font-size: 14px;
+            font-weight: 700;
+            margin-bottom: 14px;
+        }
+
+        .customer-stat-card h3 {
+            color: #2f241c;
+            font-size: 34px;
+            font-weight: 850;
+            margin: 0 0 10px;
+        }
+
+        .customer-stat-card p {
+            margin: 0;
+            color: #7f7368;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+        .customer-stat-card i {
+            color: #b08a63;
+            margin-right: 6px;
+        }
+
+    .customer-table-box {
+        background: #fffdfa;
+        border: 1px solid #eadfd2;
+        border-radius: 26px;
+        padding: 26px;
+        box-shadow: 0 18px 45px rgba(92, 65, 42, 0.07);
+    }
+
+    .customer-card-header {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 18px;
+        margin-bottom: 24px;
+    }
+
+        .customer-card-header h3 {
+            margin: 0 0 6px;
+            color: #2f241c;
+            font-size: 24px;
+            font-weight: 850;
+        }
+
+        .customer-card-header small {
+            color: #7f7368;
+        }
+
+    .customer-filter {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 14px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .customer-filter-left,
+    .customer-filter-right {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .customer-filter .form-control,
+    .customer-filter .form-select {
+        height: 44px;
+        border: 1px solid #eadfd2;
+        border-radius: 14px;
+        background: #faf7f2;
+        color: #2f241c;
+        font-size: 14px;
+        box-shadow: none;
+    }
+
+    .btn-admin-customer {
+        height: 44px;
+        border-radius: 14px;
+        padding: 0 18px;
+        border: none;
+        background: #b08a63;
+        color: #fff;
+        font-weight: 750;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .btn-outline-customer {
+        height: 44px;
+        border-radius: 14px;
+        padding: 0 18px;
+        border: 1px solid #eadfd2;
+        background: #fffdfa;
+        color: #7b5738;
+        font-weight: 750;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        text-decoration: none;
+    }
+
+    .customer-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .customer-table thead th {
+            background: #faf4ee;
+            color: #7f7368;
+            font-size: 13px;
+            font-weight: 800;
+            padding: 16px;
+            border-bottom: 1px solid #eadfd2;
+            white-space: nowrap;
+        }
+
+        .customer-table tbody td {
+            padding: 16px;
+            border-bottom: 1px solid #f0e7de;
+            vertical-align: middle;
+            font-size: 13px;
+            color: #2f241c;
+        }
+
+    .customer-profile {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        min-width: 260px;
+    }
+
+    .customer-avatar {
+        width: 48px;
+        height: 48px;
+        border-radius: 15px;
+        background: #f2e8dc;
+        color: #7b5738;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 850;
+        flex-shrink: 0;
+        border: 1px solid #eadfd2;
+    }
+
+    .customer-profile h6 {
+        margin: 0 0 4px;
+        color: #2f241c;
+        font-size: 14px;
+        font-weight: 850;
+    }
+
+    .customer-profile span {
+        color: #7f7368;
+        font-size: 12px;
+    }
+
+    .customer-contact span {
+        display: block;
+        color: #7f7368;
+        margin-bottom: 4px;
+    }
+
+    .customer-contact i {
+        color: #b08a63;
+        width: 18px;
+    }
+
+    .money-text {
+        color: #4f8a56;
+        font-weight: 850;
+        white-space: nowrap;
+    }
+
+    .status-active,
+    .status-locked,
+    .status-soft {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 30px;
+        padding: 0 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 800;
+        white-space: nowrap;
+    }
+
+    .status-active {
+        background: #e7f1e4;
+        color: #4f8a56;
+    }
+
+    .status-locked {
+        background: #f7e4e4;
+        color: #b76e6e;
+    }
+
+    .status-soft {
+        background: #f2e8dc;
+        color: #7b5738;
+    }
+
+    .customer-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 34px;
+        height: 34px;
+        border-radius: 10px;
+        border: 1px solid #eadfd2;
+        background: #fffdfa;
+        color: #7b5738;
+        margin-left: 5px;
+    }
+
+        .customer-action.danger {
+            color: #b76e6e;
+        }
+
+    .admin-modal .modal-content,
+    .modal-content.admin-modal {
+        background: #fffdfa;
+        border: 1px solid #eadfd2;
+        border-radius: 24px;
+        overflow: hidden;
+    }
+
+    .customer-detail-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 16px;
+    }
+
+    .customer-detail-item {
+        background: #faf7f2;
+        border: 1px solid #eadfd2;
+        border-radius: 16px;
+        padding: 15px;
+    }
+
+        .customer-detail-item span {
+            display: block;
+            color: #7f7368;
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 6px;
+        }
+
+        .customer-detail-item strong {
+            color: #2f241c;
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+    @@media(max-width: 1200px) {
+        .customer-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media(max-width: 768px) {
+        .customer-stats,
+        .customer-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .customer-card-header,
+        .customer-filter {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+    }
+</style>
+
+<div class="customer-page">
+
+    <div class="page-title fade-up">
+        <div>
+            <h2>Quản lý khách hàng</h2>
+            <p>Theo dõi tài khoản khách hàng, đơn hàng, tổng chi tiêu và trạng thái hoạt động.</p>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success">
+            @TempData["Success"]
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger">
+            @TempData["Error"]
+        </div>
+    }
+
+    <div class="customer-stats fade-up">
+
+        <div class="customer-stat-card">
+            <span>Tổng khách hàng</span>
+            <h3>@ViewBag.TotalCustomers</h3>
+            <p><i class="fa-solid fa-users"></i> Tài khoản khách hàng</p>
+        </div>
+
+        <div class="customer-stat-card">
+            <span>Đang hoạt động</span>
+            <h3>@ViewBag.ActiveCustomers</h3>
+            <p><i class="fa-solid fa-user-check"></i> Có thể đăng nhập</p>
+        </div>
+
+        <div class="customer-stat-card">
+            <span>Bị khóa</span>
+            <h3>@ViewBag.LockedCustomers</h3>
+            <p><i class="fa-solid fa-user-lock"></i> Tạm ngưng sử dụng</p>
+        </div>
+
+        <div class="customer-stat-card">
+            <span>Đã mua hàng</span>
+            <h3>@ViewBag.HasOrderCustomers</h3>
+            <p><i class="fa-solid fa-bag-shopping"></i> Có phát sinh đơn hàng</p>
+        </div>
+
+    </div>
+
+    <div class="customer-table-box fade-up">
+
+        <div class="customer-card-header">
+            <div>
+                <h3>Danh sách khách hàng</h3>
+                <small>Tất cả khách hàng đã đăng ký hoặc phát sinh đơn hàng trên hệ thống</small>
+            </div>
+
+            <a href="@Url.Action("Index", "Customer", new { area = "Admin" })" class="btn-outline-customer">
+                <i class="fa-solid fa-rotate-right"></i>
+                Làm mới
+            </a>
+        </div>
+
+        @using (Html.BeginForm("Index", "Customer", new { area = "Admin" }, FormMethod.Get))
+        {
+            <div class="customer-filter">
+
+                <div class="customer-filter-left">
+
+                    <input type="text"
+                           name="keyword"
+                           class="form-control"
+                           style="width:320px;"
+                           value="@keyword"
+                           placeholder="Tìm tên, email, số điện thoại, địa chỉ..." />
+
+                    <select name="status" class="form-select" style="width:190px;">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="active" @(status == "active" ? "selected" : "")>Đang hoạt động</option>
+                        <option value="locked" @(status == "locked" ? "selected" : "")>Bị khóa</option>
+                        <option value="has-order" @(status == "has-order" ? "selected" : "")>Đã mua hàng</option>
+                        <option value="no-order" @(status == "no-order" ? "selected" : "")>Chưa mua hàng</option>
+                    </select>
+
+                    <select name="sort" class="form-select" style="width:180px;">
+                        <option value="">Mới nhất</option>
+                        <option value="oldest" @(sort == "oldest" ? "selected" : "")>Cũ nhất</option>
+                        <option value="spend-desc" @(sort == "spend-desc" ? "selected" : "")>Chi tiêu cao nhất</option>
+                        <option value="order-desc" @(sort == "order-desc" ? "selected" : "")>Nhiều đơn nhất</option>
+                        <option value="recent-buy" @(sort == "recent-buy" ? "selected" : "")>Mua gần đây</option>
+                    </select>
+
+                </div>
+
+                <div class="customer-filter-right">
+                    <button type="submit" class="btn-admin-customer">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                        Tìm kiếm
+                    </button>
+                </div>
+
+            </div>
+        }
+
+        <div class="table-responsive">
+
+            <table class="table customer-table">
+
+                <thead>
+                    <tr>
+                        <th>Mã KH</th>
+                        <th>Khách hàng</th>
+                        <th>Liên hệ</th>
+                        <th>Địa chỉ</th>
+                        <th>Đơn hàng</th>
+                        <th>Tổng chi tiêu</th>
+                        <th>Lần mua gần nhất</th>
+                        <th>Trạng thái</th>
+                        <th class="text-end">Thao tác</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var item in Model)
+                        {
+                            string firstLetter = !string.IsNullOrWhiteSpace(item.HoTen)
+                                ? item.HoTen.Trim().Substring(0, 1).ToUpper()
+                                : "K";
+
+                            <tr>
+                                <td>#KH@item.MaKH</td>
+
+                                <td>
+                                    <div class="customer-profile">
+                                        <div class="customer-avatar">
+                                            @firstLetter
+                                        </div>
+
+                                        <div>
+                                            <h6>@item.HoTen</h6>
+                                            <span>
+                                                Ngày đăng ký:
+                                                @(item.NgayDangKy.HasValue ? item.NgayDangKy.Value.ToString("dd/MM/yyyy") : "Chưa cập nhật")
+                                            </span>
+                                        </div>
+                                    </div>
+                                </td>
+
+                                <td>
+                                    <div class="customer-contact">
+                                        <span>
+                                            <i class="fa-solid fa-envelope"></i>
+                                            @item.Email
+                                        </span>
+
+                                        <span>
+                                            <i class="fa-solid fa-phone"></i>
+                                            @item.SDT
+                                        </span>
+                                    </div>
+                                </td>
+
+                                <td style="max-width:220px;">
+                                    @item.DiaChi
+                                </td>
+
+                                <td>
+                                    <span class="status-soft">
+                                        @item.SoDonHang đơn
+                                    </span>
+                                </td>
+
+                                <td>
+                                    <span class="money-text">
+                                        @item.TongChiTieu.ToString("N0")đ
+                                    </span>
+                                </td>
+
+                                <td>
+                                    @(item.LanMuaGanNhat.HasValue ? item.LanMuaGanNhat.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa mua")
+                                </td>
+
+                                <td>
+                                    @if (item.TrangThai)
+                                    {
+                                        <span class="status-active">Đang hoạt động</span>
+                                    }
+                                    else
+                                    {
+                                        <span class="status-locked">Bị khóa</span>
+                                    }
+                                </td>
+
+                                <td class="text-end">
+
+                                    <button type="button"
+                                            class="customer-action"
+                                            title="Xem chi tiết"
+                                            data-bs-toggle="modal"
+                                            data-bs-target="#customerDetailModal_@item.MaKH">
+                                        <i class="fa-solid fa-eye"></i>
+                                    </button>
+
+                                    @if (item.MaTK.HasValue)
+                                    {
+                                        if (item.TrangThai)
+                                        {
+                                            using (Html.BeginForm("UpdateStatus", "Customer", FormMethod.Post, new { area = "Admin", style = "display:inline;" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden" name="MaTK" value="@item.MaTK.Value" />
+                                                <input type="hidden" name="TrangThai" value="false" />
+                                                <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+
+                                                <button type="submit"
+                                                        class="customer-action danger"
+                                                        title="Khóa tài khoản"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn khóa tài khoản khách hàng này không?');">
+                                                    <i class="fa-solid fa-lock"></i>
+                                                </button>
+                                            }
+                                        }
+                                        else
+                                        {
+                                            using (Html.BeginForm("UpdateStatus", "Customer", FormMethod.Post, new { area = "Admin", style = "display:inline;" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+
+                                                <input type="hidden" name="MaTK" value="@item.MaTK.Value" />
+                                                <input type="hidden" name="TrangThai" value="true" />
+                                                <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+
+                                                <button type="submit"
+                                                        class="customer-action"
+                                                        title="Mở khóa tài khoản"
+                                                        onclick="return confirm('Bạn có chắc chắn muốn mở khóa tài khoản khách hàng này không?');">
+                                                    <i class="fa-solid fa-unlock"></i>
+                                                </button>
+                                            }
+                                        }
+                                    }
+
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="9" class="text-center text-muted">
+                                Chưa có khách hàng phù hợp.
+                            </td>
+                        </tr>
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>
+
+@if (Model != null)
+{
+    foreach (var item in Model)
+    {
+        <div class="modal fade" id="customerDetailModal_@item.MaKH" tabindex="-1">
+
+            <div class="modal-dialog modal-lg modal-dialog-centered">
+
+                <div class="modal-content admin-modal">
+
+                    <div class="modal-header">
+
+                        <div>
+                            <h5 class="modal-title">Chi tiết khách hàng</h5>
+                            <small class="text-muted">Thông tin tài khoản, liên hệ và lịch sử mua hàng</small>
+                        </div>
+
+                        <button type="button"
+                                class="btn-close"
+                                data-bs-dismiss="modal"></button>
+
+                    </div>
+
+                    <div class="modal-body">
+
+                        <div class="customer-detail-grid">
+
+                            <div class="customer-detail-item">
+                                <span>Mã khách hàng</span>
+                                <strong>#KH@item.MaKH</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Mã tài khoản</span>
+                                <strong>@(item.MaTK.HasValue ? "#TK" + item.MaTK.Value.ToString() : "Chưa có tài khoản")</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Họ tên</span>
+                                <strong>@item.HoTen</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Email</span>
+                                <strong>@item.Email</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Số điện thoại</span>
+                                <strong>@item.SDT</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Ngày đăng ký</span>
+                                <strong>@(item.NgayDangKy.HasValue ? item.NgayDangKy.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa cập nhật")</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Địa chỉ</span>
+                                <strong>@item.DiaChi</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Trạng thái</span>
+                                <strong>@(item.TrangThai ? "Đang hoạt động" : "Bị khóa")</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Số đơn hàng</span>
+                                <strong>@item.SoDonHang đơn</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Tổng chi tiêu</span>
+                                <strong>@item.TongChiTieu.ToString("N0")đ</strong>
+                            </div>
+
+                            <div class="customer-detail-item">
+                                <span>Lần mua gần nhất</span>
+                                <strong>@(item.LanMuaGanNhat.HasValue ? item.LanMuaGanNhat.Value.ToString("dd/MM/yyyy HH:mm") : "Chưa mua hàng")</strong>
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                    <div class="modal-footer">
+
+                        <a href="@Url.Action("Index", "Order", new { area = "Admin", keyword = item.HoTen })"
+                           class="btn-outline-customer">
+                            <i class="fa-solid fa-receipt"></i>
+                            Xem đơn hàng
+                        </a>
+
+                        <button type="button"
+                                class="btn-admin-customer"
+                                data-bs-dismiss="modal">
+                            Đóng
+                        </button>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </div>
+    }
+}

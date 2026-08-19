@@ -1,0 +1,79 @@
+﻿﻿@model DoAnCK.Areas.Admin.Models.YearlyRevenueChartViewModel
+
+<div class="chart-card">
+    <div class="chart-header" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+        <div>
+            <h3 class="chart-title" style="margin: 0; font-size: 1.1rem; font-weight: 600;">Doanh thu năm @Model.Nam</h3>
+            <span class="text-muted" style="font-size: 0.85rem;">
+                Tổng năm: <strong>@Model.TongDoanhThuCaNam.ToString("N0") VNĐ</strong>
+            </span>
+        </div>
+    </div>
+
+    <div class="chart-container" style="position: relative; height: 320px; width: 100%;">
+        <canvas id="storeRevenueCanvas"></canvas>
+    </div>
+</div>
+
+<!-- Thư viện Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctx = document.getElementById('storeRevenueCanvas').getContext('2d');
+
+        // Lấy danh sách doanh thu 12 tháng từ C# Model
+        const data12Thang = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.DoanhThu12Thang));
+        const labels = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+
+        new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Doanh thu (VNĐ)',
+                    data: data12Thang,
+                    borderColor: '#3b82f6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    fill: true,
+                    tension: 0.3,
+                    borderWidth: 2,
+                    pointRadius: 4,
+                    pointHoverRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        callbacks: {
+                            label: function (context) {
+                                let val = context.parsed.y || 0;
+                                return ' Doanh thu: ' + new Intl.NumberFormat('vi-VN', { style: 'currency', currency: 'VND' }).format(val);
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        ticks: {
+                            callback: function (value) {
+                                if (value >= 1000000) {
+                                    return (value / 1000000) + ' Tr';
+                                }
+                                return value.toLocaleString('vi-VN');
+                            }
+                        },
+                        grid: { color: 'rgba(0, 0, 0, 0.05)' }
+                    },
+                    x: {
+                        grid: { display: false }
+                    }
+                }
+            }
+        });
+    });
+</script>

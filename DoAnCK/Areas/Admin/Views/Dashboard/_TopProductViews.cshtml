@@ -1,0 +1,178 @@
+﻿@using System.Collections
+@using System.Collections.Generic
+@using System.Linq
+
+@functions {
+    public object GetValue(object item, params string[] names)
+    {
+        if (item == null)
+        {
+            return null;
+        }
+
+        var dictionary = item as IDictionary<string, object>;
+
+        if (dictionary != null)
+        {
+            foreach (var name in names)
+            {
+                if (dictionary.ContainsKey(name))
+                {
+                    return dictionary[name];
+                }
+            }
+        }
+
+        var type = item.GetType();
+
+        foreach (var name in names)
+        {
+            var property = type.GetProperty(name);
+
+            if (property != null)
+            {
+                return property.GetValue(item, null);
+            }
+        }
+
+        return null;
+    }
+
+    public string GetString(object item, string defaultValue, params string[] names)
+    {
+        var value = GetValue(item, names);
+
+        if (value == null)
+        {
+            return defaultValue;
+        }
+
+        return value.ToString();
+    }
+
+    public int GetInt(object item, params string[] names)
+    {
+        var value = GetValue(item, names);
+
+        if (value == null)
+        {
+            return 0;
+        }
+
+        int result = 0;
+
+        int.TryParse(value.ToString(), out result);
+
+        return result;
+    }
+}
+
+@{
+    var source = ViewBag.TopProductViews;
+
+    if (source == null)
+    {
+        source = ViewBag.TopProductCompare;
+    }
+
+    if (source == null)
+    {
+        source = ViewBag.CompareList;
+    }
+
+    IEnumerable<object> compareList = new List<object>();
+
+    if (source != null)
+    {
+        compareList = ((IEnumerable)source).Cast<object>().ToList();
+    }
+}
+
+<div class="compare-section">
+
+    <h6 style="font-weight: 600; color: #7A5C43; margin-bottom: 12px; font-size: 0.9rem;">
+        <i class="fa-solid fa-code-compare"></i>
+        So sánh lượt xem các shop cùng bán 1 sản phẩm
+    </h6>
+
+    <div class="table-responsive" style="max-height: 200px; overflow-y: auto;">
+
+        <table class="table table-sm table-borderless align-middle" style="font-size: 0.85rem;">
+
+            <thead>
+
+                <tr style="color: #7B6C66; border-bottom: 1px solid #EBE3DB;">
+                    <th>Sản phẩm</th>
+                    <th>Shop bán đầu</th>
+                    <th class="text-end">Lượt xem</th>
+                </tr>
+
+            </thead>
+
+            <tbody>
+
+                @if (compareList == null || !compareList.Any())
+                {
+                    <tr>
+                        <td colspan="3" style="color: #999; padding: 12px 0;">
+                            Chưa có dữ liệu lượt xem.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in compareList)
+                    {
+                        string tenSanPham = GetString(
+                            item,
+                            "Sản phẩm",
+                            "TenSanPham",
+                            "TenSP",
+                            "ProductName",
+                            "Name"
+                        );
+
+                        string tenCuaHang = GetString(
+                            item,
+                            "Chưa có cửa hàng",
+                            "TenCuaHang",
+                            "TenCH",
+                            "StoreName",
+                            "ShopName"
+                        );
+
+                        int luotXem = GetInt(
+                            item,
+                            "LuotXem",
+                            "ViewCount",
+                            "TotalViews",
+                            "SoLuotXem"
+                        );
+
+                        <tr>
+
+                            <td>
+                                <strong>@tenSanPham</strong>
+                            </td>
+
+                            <td>
+                                <span class="badge" style="background: #F8F0E5; color: #7A5C43;">
+                                    @tenCuaHang
+                                </span>
+                            </td>
+
+                            <td class="text-end" style="color: #7A5C43;">
+                                @luotXem
+                            </td>
+
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

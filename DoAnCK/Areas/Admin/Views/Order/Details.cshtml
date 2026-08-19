@@ -1,0 +1,346 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@model DoAnCK.Areas.Admin.Models.AdminOrderDetailViewModel
+
+@{
+    ViewBag.Title = "Chi tiết đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var statuses = ViewBag.Statuses as List<string> ?? new List<string>();
+    int currentIndex = statuses.IndexOf(Model.TrangThai);
+}
+
+@helper StatusBadge(string status)
+{
+    string cls = "badge-soft";
+
+    if (status == "Hoàn thành")
+    {
+        cls = "badge-success";
+    }
+    else if (status == "Chờ xác nhận" || status == "Đã xác nhận")
+    {
+        cls = "badge-warning";
+    }
+    else if (status == "Đã hủy")
+    {
+        cls = "badge-danger";
+    }
+
+    <span class="@cls">@status</span>
+}
+
+<style>
+    .order-detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.4fr) minmax(320px, .8fr);
+        gap: 26px;
+        margin-bottom: 30px;
+    }
+
+    .order-info-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+    }
+
+    .order-info-item {
+        background: var(--admin-bg-soft);
+        border: 1px solid var(--admin-border);
+        border-radius: 16px;
+        padding: 16px;
+    }
+
+        .order-info-item span {
+            display: block;
+            color: var(--admin-muted);
+            font-size: 13px;
+            margin-bottom: 6px;
+        }
+
+        .order-info-item strong {
+            color: var(--admin-text);
+            font-size: 15px;
+        }
+
+    .status-update-box {
+        background: var(--admin-bg-soft);
+        border: 1px solid var(--admin-border);
+        border-radius: 18px;
+        padding: 18px;
+    }
+
+        .status-update-box .form-select {
+            margin: 14px 0;
+        }
+
+    .order-timeline {
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+        margin-top: 18px;
+    }
+
+    .timeline-item {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        color: var(--admin-muted);
+        font-weight: 650;
+        font-size: 14px;
+    }
+
+    .timeline-dot {
+        width: 14px;
+        height: 14px;
+        border-radius: 50%;
+        background: #ddd2c5;
+    }
+
+    .timeline-item.done {
+        color: var(--admin-success);
+    }
+
+        .timeline-item.done .timeline-dot {
+            background: var(--admin-success);
+        }
+
+    .timeline-item.cancel {
+        color: var(--admin-danger);
+    }
+
+        .timeline-item.cancel .timeline-dot {
+            background: var(--admin-danger);
+        }
+
+    @@media(max-width: 992px) {
+        .order-detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .order-info-list {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-title fade-up">
+
+    <div>
+        <h2>Chi tiết đơn hàng #ORD-@Model.MaDH</h2>
+        <p>Thông tin khách hàng, sản phẩm và trạng thái xử lý đơn hàng.</p>
+    </div>
+
+    <div>
+        <a href="@Url.Action("Index", "Order", new { area = "Admin" })" class="btn-outline-admin">
+            <i class="fa-solid fa-arrow-left"></i>
+            Quay lại
+        </a>
+    </div>
+
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="order-detail-grid fade-up">
+
+    <div class="card-box">
+
+        <div class="card-header">
+            <div>
+                <div class="card-title">Thông tin đơn hàng</div>
+                <small class="text-muted">Mã đơn #ORD-@Model.MaDH</small>
+            </div>
+
+            <div>
+                @StatusBadge(Model.TrangThai)
+            </div>
+        </div>
+
+        <div class="order-info-list">
+
+            <div class="order-info-item">
+                <span>Khách hàng</span>
+                <strong>@Model.TenKhachHang</strong>
+            </div>
+
+            <div class="order-info-item">
+                <span>Email</span>
+                <strong>@Model.Email</strong>
+            </div>
+
+            <div class="order-info-item">
+                <span>Số điện thoại</span>
+                <strong>@Model.SDT</strong>
+            </div>
+
+            <div class="order-info-item">
+                <span>Ngày đặt</span>
+                <strong>@(Model.NgayDat.HasValue ? Model.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "")</strong>
+            </div>
+
+            <div class="order-info-item" style="grid-column: 1 / -1;">
+                <span>Địa chỉ giao hàng</span>
+                <strong>@Model.DiaChiGiaoHang</strong>
+            </div>
+
+            <div class="order-info-item" style="grid-column: 1 / -1;">
+                <span>Tổng tiền</span>
+                <strong style="color: #4f8a56; font-size: 20px;">
+                    @String.Format("{0:N0}đ", Model.TongTien ?? 0)
+                </strong>
+            </div>
+
+        </div>
+
+    </div>
+
+    <div class="card-box">
+
+        <div class="card-header">
+            <div>
+                <div class="card-title">Cập nhật trạng thái</div>
+                <small class="text-muted">Quản lý tiến trình xử lý đơn hàng</small>
+            </div>
+        </div>
+
+        <div class="status-update-box">
+
+            @using (Html.BeginForm("UpdateStatus", "Order", new { area = "Admin" }, FormMethod.Post))
+            {
+                @Html.AntiForgeryToken()
+
+                <input type="hidden" name="id" value="@Model.MaDH" />
+
+                <select name="status" class="form-select">
+                    @foreach (var st in statuses)
+                    {
+                        if (st == Model.TrangThai)
+                        {
+                            <option value="@st" selected="selected">@st</option>
+                        }
+                        else
+                        {
+                            <option value="@st">@st</option>
+                        }
+                    }
+                </select>
+
+                <button type="submit" class="btn-admin w-100">
+                    <i class="fa-solid fa-floppy-disk"></i>
+                    Lưu trạng thái
+                </button>
+            }
+
+            <div class="order-timeline">
+
+                @for (int i = 0; i < statuses.Count; i++)
+                {
+                    string st = statuses[i];
+
+                    string cls = "";
+
+                    if (Model.TrangThai == "Đã hủy" && st == "Đã hủy")
+                    {
+                        cls = "cancel";
+                    }
+                    else if (Model.TrangThai != "Đã hủy" && currentIndex >= i)
+                    {
+                        cls = "done";
+                    }
+
+                    <div class="timeline-item @cls">
+                        <span class="timeline-dot"></span>
+                        <span>@st</span>
+                    </div>
+                }
+
+            </div>
+
+        </div>
+
+    </div>
+
+</div>
+
+<div class="table-box fade-up">
+
+    <div class="card-header">
+
+        <div>
+            <div class="card-title">Sản phẩm trong đơn</div>
+            <small class="text-muted">Danh sách sản phẩm khách đã đặt</small>
+        </div>
+
+    </div>
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Sản phẩm</th>
+                    <th>Số lượng</th>
+                    <th>Giá bán</th>
+                    <th class="text-end">Thành tiền</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (Model.Items == null || !Model.Items.Any())
+                {
+                    <tr>
+                        <td colspan="4" class="text-center text-muted" style="padding: 28px;">
+                            Chưa có sản phẩm trong đơn hàng này.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model.Items)
+                    {
+                        <tr>
+                            <td>
+                                <strong>@item.TenSP</strong>
+                                <br />
+                                <span class="text-muted">Mã SP: @item.MaSP</span>
+                            </td>
+
+                            <td>
+                                @item.SoLuong
+                            </td>
+
+                            <td>
+                                @String.Format("{0:N0}đ", item.GiaBan ?? 0)
+                            </td>
+
+                            <td class="text-end">
+                                <strong style="color: #4f8a56;">
+                                    @String.Format("{0:N0}đ", item.ThanhTien ?? 0)
+                                </strong>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>

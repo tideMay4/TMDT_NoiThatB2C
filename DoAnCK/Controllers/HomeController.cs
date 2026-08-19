@@ -9,6 +9,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using DoAnCK.Helpers;
 
 namespace DoAnCK.Controllers
 {
@@ -18,15 +19,20 @@ namespace DoAnCK.Controllers
 
         public ActionResult Index()
         {
-            var sanPhamMoi = db.SANPHAMs
+            var sanPhamNoiBat = db.SANPHAMs
                 .Include(x => x.DANHMUC)
-                .Where(x => x.TrangThai == true)
+                .Where(x => x.TrangThai == true && x.NoiBat == true)
                 .OrderByDescending(x => x.NgayTao)
                 .ThenByDescending(x => x.MaSP)
-                .Take(6)
+                .Take(8)
                 .ToList();
 
-            return View(sanPhamMoi);
+            ViewBag.ComboSuggestions = ComboSuggestionHelper
+                .GetInventoryComboSuggestions(db)
+                .Take(4)
+                .ToList();
+
+            return View(sanPhamNoiBat);
         }
 
         // =========================================================
@@ -34,51 +40,128 @@ namespace DoAnCK.Controllers
         // Ví dụ: "tôi muốn mua sofa cho phòng khách"
         // Không phụ thuộc Gemini API, không bị lỗi quota
         // =========================================================
-        public ActionResult Search(string keyword)
+        // =========================================================
+        // TÌM KIẾM LAI (HYBRID SEARCH: AI VECTOR + KEYWORD)
+        // =========================================================
+        public async Task<ActionResult> Search(string keyword)
         {
             ViewBag.TuKhoa = keyword;
 
-            if (string.IsNullOrWhiteSpace(keyword))
+            var products = db.SANPHAMs.Include(x => x.DANHMUC).Where(x => x.TrangThai == true).ToList();
+
+            // 1. Xử lý khi người dùng không nhập gì hoặc nhập quá ngắn
+            if (string.IsNullOrWhiteSpace(keyword) || keyword.Trim().Length < 2)
             {
-                ViewBag.Message = "Vui lòng nhập từ khóa hoặc mô tả sản phẩm cần tìm.";
-                return View(new List<SANPHAM>());
+                ViewBag.Message = "Dưới đây là các sản phẩm nổi bật gợi ý cho bạn:";
+                // Lấy 12 sản phẩm mới nhất làm gợi ý
+                return View(products.OrderByDescending(x => x.NgayTao).Take(12).ToList());
             }
 
             keyword = keyword.Trim();
 
-            List<string> searchTerms = BuildSearchTerms(keyword);
+            // 2. Nạp dữ liệu Vector vào RAM
+            await AIEmbeddingHelper.InitCacheAsync(db);
+            float[] queryVector = await AIEmbeddingHelper.GetVectorFromTextAsync(keyword);
 
-            var products = db.SANPHAMs
-                .Include(x => x.DANHMUC)
-                .Where(x => x.TrangThai == true)
-                .ToList();
+            List<SANPHAM> ketQua = new List<SANPHAM>();
 
-            var ketQua = products
-                .Select(sp => new
+            if (queryVector != null)
+            {
+                // 3. THUẬT TOÁN HYBRID: Kết hợp điểm AI và điểm Từ Khóa
+                List<string> searchTerms = BuildSearchTerms(keyword);
+
+                var aiResults = products.Select(sp => new
                 {
                     Product = sp,
-                    Score = CalculateSearchScore(sp, searchTerms)
+                    // Điểm ngữ nghĩa AI (0.0 -> 1.0)
+                    AiScore = AIEmbeddingHelper.ProductVectorCache.ContainsKey(sp.MaSP)
+                        ? AIEmbeddingHelper.CosineSimilarity(queryVector, AIEmbeddingHelper.ProductVectorCache[sp.MaSP])
+                        : 0,
+                    // Điểm trùng khớp từ khóa cũ
+                    KeywordScore = CalculateSearchScore(sp, searchTerms)
                 })
-                .Where(x => x.Score > 0)
-                .OrderByDescending(x => x.Score)
-                .ThenByDescending(x => x.Product.NgayTao)
-                .ThenByDescending(x => x.Product.MaSP)
+                // ĐIỀU KIỆN MỞ RỘNG: AI thấy hơi giống (>= 0.3) HOẶC chứa từ khóa quan trọng (>= 15)
+                .Where(x => x.AiScore >= 0.3 || x.KeywordScore >= 15)
+                .OrderByDescending(x => x.AiScore) // Ưu tiên xếp theo độ thông minh của AI trước
+                .ThenByDescending(x => x.KeywordScore) // Sau đó mới xếp theo từ khóa
                 .Select(x => x.Product)
                 .Take(12)
                 .ToList();
 
+                ketQua = aiResults;
+            }
+            else
+            {
+                // 4. Nếu API Gemini quá tải, chỉ dùng từ khóa
+                List<string> searchTerms = BuildSearchTerms(keyword);
+                ketQua = products
+                    .Select(sp => new { Product = sp, Score = CalculateSearchScore(sp, searchTerms) })
+                    .Where(x => x.Score >= 15)
+                    .OrderByDescending(x => x.Score)
+                    .ThenByDescending(x => x.Product.NgayTao)
+                    .Select(x => x.Product)
+                    .Take(12)
+                    .ToList();
+
+                ViewBag.Message = "Hệ thống AI đang bận, tạm thời dùng tìm kiếm từ khóa.";
+            }
+
+            // 5. CHỐNG TRANG TRẮNG: Nếu tìm mỏi mắt vẫn không có kết quả
             if (ketQua.Count == 0)
             {
-                ViewBag.Message = "Không tìm thấy sản phẩm phù hợp với mô tả của bạn.";
+                ViewBag.Message = "Không tìm thấy sản phẩm sát với yêu cầu. Nhưng bạn có thể tham khảo các gợi ý hấp dẫn dưới đây:";
+                // Lấy 12 sản phẩm mới nhất bù vào
+                ketQua = products.OrderByDescending(x => x.NgayTao).Take(12).ToList();
             }
 
             return View(ketQua);
+        } // Thêm đoạn này vào bên trong class HomeController
+        [HttpPost]
+        public async Task<JsonResult> Chat(string message)
+        {
+            if (string.IsNullOrWhiteSpace(message))
+                return Json(new { reply = "Vui lòng nhập câu hỏi." });
+
+            // 1. Trích xuất từ khóa đơn giản để lấy thông tin sản phẩm liên quan từ DB
+            string searchKeyword = NormalizeText(message);
+            string contextInfo = "Không tìm thấy thông tin cụ thể.";
+
+            // Tìm thử 3 sản phẩm liên quan nhất dựa trên hàm tìm kiếm có sẵn
+            var searchTerms = BuildSearchTerms(searchKeyword);
+            if (searchTerms.Count > 0)
+            {
+                var products = db.SANPHAMs.Include(x => x.DANHMUC).Where(x => x.TrangThai == true).ToList();
+                var ketQua = products
+                    .Select(sp => new { Product = sp, Score = CalculateSearchScore(sp, searchTerms) })
+                    .Where(x => x.Score > 0)
+                    .OrderByDescending(x => x.Score)
+                    .Take(3)
+                    .ToList();
+
+                if (ketQua.Any())
+                {
+                    var sb = new StringBuilder();
+                    foreach (var item in ketQua)
+                    {
+                        sb.AppendLine($"- Tên SP: {item.Product.TenSP}, Giá: {item.Product.GiaHienTai:N0} VNĐ, Mô tả ngắn: {item.Product.MoTa}");
+                    }
+                    contextInfo = sb.ToString();
+                }
+            }
+
+            // 2. Gửi cho Gemini xử lý kèm ngữ cảnh
+            string aiReply = await ChatbotHelper.GetChatbotResponseAsync(message, contextInfo);
+
+            return Json(new { reply = aiReply });
         }
 
         // =========================================================
         // TÌM KIẾM BẰNG HÌNH ẢNH
         // Vẫn cần Gemini API Key còn quota
         // Nếu Gemini lỗi, chỉ hiện thông báo ngắn gọn
+        // =========================================================
+        // =========================================================
+        // TÌM KIẾM BẰNG HÌNH ẢNH (PHÂN LOẠI GIỐNG 100% VÀ TƯƠNG TỰ)
         // =========================================================
         [HttpPost]
         public async Task<ActionResult> ImageSearch(System.Web.HttpPostedFileBase imageUpload)
@@ -92,12 +175,11 @@ namespace DoAnCK.Controllers
             try
             {
                 byte[] uploadedBytes = new byte[imageUpload.ContentLength];
-
                 imageUpload.InputStream.Position = 0;
                 imageUpload.InputStream.Read(uploadedBytes, 0, imageUpload.ContentLength);
-
                 string mimeType = imageUpload.ContentType;
 
+                // 1. Nhờ Gemini nhìn và mô tả bức ảnh
                 string imageDescription = await VisualSearchHelper.DescribeImageWithGeminiAsync(uploadedBytes, mimeType);
 
                 if (string.IsNullOrWhiteSpace(imageDescription))
@@ -114,46 +196,74 @@ namespace DoAnCK.Controllers
                     return View("Search", new List<SANPHAM>());
                 }
 
-                // Sau khi Gemini mô tả ảnh, dùng lại chức năng tìm kiếm câu tự nhiên
+                ViewBag.TuKhoa = "AI nhận diện ảnh: \"" + imageDescription + "\"";
+
+                // 2. Lấy toàn bộ sản phẩm từ DB
+                var products = db.SANPHAMs.Include(x => x.DANHMUC).Where(x => x.TrangThai == true).ToList();
+
+                // 3. Kết hợp AI Semantic (Vector) và Từ khóa để chấm điểm mô tả hình ảnh
+                await AIEmbeddingHelper.InitCacheAsync(db);
+                float[] queryVector = await AIEmbeddingHelper.GetVectorFromTextAsync(imageDescription);
                 List<string> searchTerms = BuildSearchTerms(imageDescription);
 
-                var products = db.SANPHAMs
-                    .Include(x => x.DANHMUC)
-                    .Where(x => x.TrangThai == true)
-                    .ToList();
-
-                var ketQua = products
-                    .Select(sp => new
-                    {
-                        Product = sp,
-                        Score = CalculateSearchScore(sp, searchTerms)
-                    })
-                    .Where(x => x.Score > 0)
-                    .OrderByDescending(x => x.Score)
-                    .ThenByDescending(x => x.Product.NgayTao)
-                    .ThenByDescending(x => x.Product.MaSP)
-                    .Select(x => x.Product)
-                    .Take(12)
-                    .ToList();
-
-                if (ketQua.Count == 0)
+                var danhSachChamDiem = products.Select(sp => new
                 {
-                    ViewBag.Message = "AI hiểu ảnh của bạn là: \"" + imageDescription + "\". Nhưng chưa tìm thấy sản phẩm phù hợp trong kho.";
+                    Product = sp,
+                    AiScore = (queryVector != null && AIEmbeddingHelper.ProductVectorCache.ContainsKey(sp.MaSP))
+                        ? AIEmbeddingHelper.CosineSimilarity(queryVector, AIEmbeddingHelper.ProductVectorCache[sp.MaSP])
+                        : 0,
+                    KeywordScore = CalculateSearchScore(sp, searchTerms)
+                })
+                .OrderByDescending(x => x.AiScore)
+                .ThenByDescending(x => x.KeywordScore)
+                .ToList();
+
+                List<SANPHAM> ketQua = new List<SANPHAM>();
+
+                if (danhSachChamDiem.Any())
+                {
+                    // Lấy ra ứng cử viên có điểm cao nhất (Thủ khoa)
+                    var top1 = danhSachChamDiem.First();
+
+                    // 4. KIỂM TRA ĐIỀU KIỆN "GIỐNG HỆT 100%"
+                    // Đặt ngưỡng: AI thấy cực giống (>= 0.75) HOẶC trùng quá nhiều từ khóa (>= 40)
+                    if (top1.AiScore >= 0.75 || top1.KeywordScore >= 40)
+                    {
+                        ViewBag.Message = "Đã tìm thấy sản phẩm chính xác 100% theo hình ảnh của bạn!";
+                        // CHỈ LẤY ĐÚNG 1 SẢN PHẨM
+                        ketQua.Add(top1.Product);
+                    }
+                    else
+                    {
+                        // 5. ĐIỀU KIỆN "TƯƠNG TỰ"
+                        // Điểm không đủ cao để chắc chắn 100%, nên sẽ hiện một list gợi ý
+                        ViewBag.Message = "Không có sản phẩm giống hệt 100%. Dưới đây là các sản phẩm tương tự để bạn tham khảo:";
+
+                        ketQua = danhSachChamDiem
+                            .Where(x => x.AiScore >= 0.25 || x.KeywordScore >= 10) // Hạ điểm để lấy đồ na ná nhau
+                            .Select(x => x.Product)
+                            .Take(8) // Hiển thị 8 sản phẩm tương tự
+                            .ToList();
+                    }
                 }
 
-                ViewBag.TuKhoa = "AI nhận diện ảnh: \"" + imageDescription + "\"";
+                // 6. Xử lý khi trang trắng (ảnh tào lao, không có nội thất)
+                if (ketQua.Count == 0)
+                {
+                    ViewBag.Message = "AI hiểu ảnh của bạn là: \"" + imageDescription + "\". Nhưng chưa tìm thấy sản phẩm nào liên quan trong kho. Dưới đây là gợi ý:";
+                    // Tự động gợi ý hàng mới cho khách
+                    ketQua = products.OrderByDescending(x => x.NgayTao).Take(8).ToList();
+                }
 
                 return View("Search", ketQua);
             }
             catch
             {
-                ViewBag.Message = "Có lỗi khi tìm kiếm bằng hình ảnh. Vui lòng thử lại sau hoặc dùng tìm kiếm bằng từ khóa.";
+                ViewBag.Message = "Có lỗi khi tìm kiếm bằng hình ảnh. Vui lòng thử lại sau.";
                 ViewBag.TuKhoa = "Tìm kiếm bằng hình ảnh";
-
                 return View("Search", new List<SANPHAM>());
             }
         }
-
         // =========================================================
         // TÁCH CÂU NGƯỜI DÙNG THÀNH TỪ KHÓA QUAN TRỌNG
         // =========================================================

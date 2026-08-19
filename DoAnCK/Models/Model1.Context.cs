@@ -38,5 +38,8 @@ namespace DoAnCK.Models
         public virtual DbSet<THANHTOAN> THANHTOANs { get; set; }
         public virtual DbSet<TIN_TUC> TIN_TUC { get; set; }
         public virtual DbSet<VANCHUYEN> VANCHUYENs { get; set; }
+        public virtual DbSet<CUAHANG> CUAHANGs { get; set; }
+        public virtual DbSet<YEUTHICH> YEUTHICHes { get; set; }
+        public virtual DbSet<CUAHANG_SANPHAM> CUAHANG_SANPHAM { get; set; }
     }
 }

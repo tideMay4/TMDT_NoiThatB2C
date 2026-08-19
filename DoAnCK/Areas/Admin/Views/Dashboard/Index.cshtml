@@ -1,512 +1,295 @@
-﻿@{
+@{
     ViewBag.Title = "Dashboard";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
 }
 
-<!-- ===================== PAGE TITLE ===================== -->
+<style>
+    /* =====================================================
+       ADMIN DASHBOARD FIX - CHỈ ÁP DỤNG TRANG /Admin/Dashboard
+       Không dùng class .dashboard / .content-grid cũ để tránh bị CSS cũ kéo lệch
+    ===================================================== */
 
-<div class="page-title fade-up">
+    #adminDashboardFixed {
+        width: 100%;
+        max-width: 100%;
+    }
 
-    <div>
-        <h2>Dashboard</h2>
-        <p>Chào mừng quay lại, Admin. Đây là tổng quan hoạt động cửa hàng nội thất hôm nay.</p>
-    </div>
+        #adminDashboardFixed .adm-title {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 24px;
+            margin-bottom: 30px;
+        }
 
-    <div>
-        <a href="/Admin/Product/Create" class="btn-admin">
-            <i class="fa-solid fa-plus"></i>
-            Thêm sản phẩm
-        </a>
-    </div>
+            #adminDashboardFixed .adm-title h2 {
+                margin: 0 0 6px;
+                font-size: 30px;
+                font-weight: 800;
+                color: #2f241c;
+                line-height: 1.2;
+            }
 
-</div>
+            #adminDashboardFixed .adm-title p {
+                margin: 0;
+                font-size: 14px;
+                color: #7f7368;
+            }
 
+        #adminDashboardFixed .adm-add-btn {
+            height: 48px;
+            padding: 0 22px;
+            border-radius: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 9px;
+            background: #b08a63;
+            color: #fff !important;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 14px;
+            box-shadow: 0 14px 30px rgba(176, 138, 99, .22);
+            white-space: nowrap;
+        }
 
-<!-- ===================== STATISTICS ===================== -->
+            #adminDashboardFixed .adm-add-btn:hover {
+                background: #7b5738;
+                color: #fff !important;
+            }
 
-<div class="dashboard fade-up">
+        /* 4 thẻ thống kê nằm đúng 1 hàng */
+        #adminDashboardFixed .adm-stats {
+            display: grid !important;
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 24px !important;
+            width: 100% !important;
+            margin-bottom: 30px !important;
+            align-items: stretch !important;
+        }
 
-    @Html.Action("_TotalRevenue", "Dashboard")
+        #adminDashboardFixed .adm-stat-cell {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
 
+            #adminDashboardFixed .adm-stat-cell > *,
+            #adminDashboardFixed .adm-stat-cell [class*="col-"],
+            #adminDashboardFixed .adm-stat-cell .row {
+                width: 100% !important;
+                max-width: 100% !important;
+                min-width: 0 !important;
+                flex: none !important;
+                margin-left: 0 !important;
+                margin-right: 0 !important;
+                padding-left: 0 !important;
+                padding-right: 0 !important;
+            }
 
-    @Html.Action("_TotalOrders", "Dashboard")
+            #adminDashboardFixed .adm-stat-cell .stat-card {
+                width: 100% !important;
+                height: 100% !important;
+                min-height: 170px !important;
+                margin: 0 !important;
+            }
 
+        /* Hàng biểu đồ: doanh thu trái, Product Views phải */
+        #adminDashboardFixed .adm-two-col {
+            display: grid !important;
+            grid-template-columns: minmax(0, 1.65fr) minmax(360px, .95fr) !important;
+            gap: 26px !important;
+            width: 100% !important;
+            margin-bottom: 30px !important;
+            align-items: stretch !important;
+        }
 
-    <div class="stat-card">
+        #adminDashboardFixed .adm-left,
+        #adminDashboardFixed .adm-right {
+            min-width: 0 !important;
+            width: 100% !important;
+        }
 
-        <div class="stat-top">
+            #adminDashboardFixed .adm-left > *,
+            #adminDashboardFixed .adm-right > * {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
 
-            <div>
-                <div class="stat-title">Khách hàng</div>
-                <div class="stat-value">1.258</div>
-                <div class="stat-footer">
-                    <i class="fa-solid fa-arrow-trend-up"></i>
-                    +5.4% so với tháng trước
-                </div>
-            </div>
+        #adminDashboardFixed .adm-two-col .card-box,
+        #adminDashboardFixed .adm-two-col .table-box,
+        #adminDashboardFixed .adm-two-col .compare-section {
+            width: 100% !important;
+            height: 100% !important;
+            margin: 0 !important;
+        }
 
-            <div class="stat-icon bg-orange">
-                <i class="fa-solid fa-users"></i>
-            </div>
+        #adminDashboardFixed .adm-two-col .chart-box {
+            height: 350px !important;
+            min-height: 350px !important;
+            width: 100% !important;
+        }
 
-        </div>
+        #adminDashboardFixed .adm-two-col canvas {
+            width: 100% !important;
+            height: 100% !important;
+        }
 
-    </div>
+        /* Đơn hàng gần đây full width */
+        #adminDashboardFixed .adm-orders {
+            width: 100% !important;
+            margin-bottom: 30px !important;
+        }
 
+            #adminDashboardFixed .adm-orders > * {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+            }
 
-    @Html.Action("_TotalProductSales", "Dashboard")
+            #adminDashboardFixed .adm-orders .table-box,
+            #adminDashboardFixed .adm-orders .card-box {
+                width: 100% !important;
+                margin: 0 !important;
+            }
 
-</div>
+        #adminDashboardFixed .adm-footer {
+            margin-top: 28px;
+            padding: 18px 0 8px;
+            text-align: center;
+            color: #7f7368;
+            font-size: 13px;
+        }
 
+    @@media (max-width: 1200px) {
+        #adminDashboardFixed .adm-stats {
+            grid-template-columns: repeat(4, minmax(0, 1fr)) !important;
+            gap: 18px !important;
+        }
 
-<!-- ===================== MAIN CONTENT ===================== -->
+        #adminDashboardFixed .adm-two-col {
+            grid-template-columns: minmax(0, 1.5fr) minmax(320px, .9fr) !important;
+            gap: 22px !important;
+        }
 
-<div class="content-grid fade-up">
+        #adminDashboardFixed .adm-stat-cell .stat-card {
+            min-height: 158px !important;
+            padding: 22px !important;
+        }
 
-    <!-- Revenue Chart -->
+        #adminDashboardFixed .adm-stat-cell .stat-value {
+            font-size: 28px !important;
+        }
+    }
 
-    <div class="card-box">
+    @@media (max-width: 980px) {
+        #adminDashboardFixed .adm-stats {
+            grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+        }
 
-        <div class="card-header">
+        #adminDashboardFixed .adm-two-col {
+            grid-template-columns: 1fr !important;
+        }
+    }
 
-            <div>
-                <div class="card-title">Tổng quan doanh thu</div>
-                <small class="text-muted">Hiệu suất doanh thu theo tháng</small>
-            </div>
+    @@media (max-width: 768px) {
+        #adminDashboardFixed .adm-title {
+            flex-direction: column;
+            align-items: flex-start;
+        }
 
-            <a href="#" class="card-link">
-                Xem báo cáo
-            </a>
+        #adminDashboardFixed .adm-stats {
+            grid-template-columns: 1fr !important;
+        }
+    }
+</style>
 
-        </div>
+<div id="adminDashboardFixed">
 
-        <div class="chart-box">
-            <canvas id="revenueChart"></canvas>
-        </div>
+    <!-- ===================== PAGE TITLE ===================== -->
 
-    </div>
-
-
-    <!-- Top Categories -->
-
-    @Html.Action("_TopCategories", "Dashboard")
-
-</div>
-
-
-<!-- ===================== ORDER SECTION ===================== -->
-
-<div class="table-box fade-up">
-
-    <div class="card-header">
+    <div class="adm-title fade-up">
 
         <div>
-            <div class="card-title">Đơn hàng gần đây</div>
-            <small class="text-muted">Các đơn hàng mới nhất của khách hàng</small>
+            <h2>Dashboard</h2>
+            <p>Chào mừng quay lại, Admin. Đây là tổng quan hoạt động cửa hàng nội thất hôm nay.</p>
         </div>
 
-        <div class="d-flex gap-2">
-
-            <button class="btn-outline-admin">
-                <i class="fa-solid fa-filter"></i>
-                Bộ lọc
-            </button>
-
-            <button class="btn-admin">
+        <div>
+            <a href="@Url.Action("Create", "Product", new { area = "Admin" })" class="adm-add-btn">
                 <i class="fa-solid fa-plus"></i>
-                Tạo đơn mới
-            </button>
-
+                Thêm sản phẩm
+            </a>
         </div>
 
     </div>
 
 
-    <div class="filter-bar">
+    <!-- ===================== STATISTICS ===================== -->
 
-        <div class="filter-left">
+    <div class="adm-stats fade-up">
 
-            <input type="text"
-                   class="form-control"
-                   placeholder="Tìm kiếm đơn hàng..."
-                   style="width:280px;" />
-
-            <select class="form-select" style="width:190px;">
-                <option>Tất cả trạng thái</option>
-                <option>Hoàn thành</option>
-                <option>Đang giao</option>
-                <option>Chờ xử lý</option>
-                <option>Đã hủy</option>
-            </select>
-
+        <div class="adm-stat-cell">
+            @Html.Action("_TotalRevenue", "Dashboard", new { area = "Admin" })
         </div>
 
-        <div class="filter-right">
+        <div class="adm-stat-cell">
+            @Html.Action("_TotalOrders", "Dashboard", new { area = "Admin" })
+        </div>
 
-            <select class="form-select" style="width:140px;">
-                <option>2026</option>
-                <option>2025</option>
-                <option>2024</option>
-            </select>
+        <div class="adm-stat-cell">
+            @Html.Action("_TotalActiveStores", "Dashboard", new { area = "Admin" })
+        </div>
 
+        <div class="adm-stat-cell">
+            @Html.Action("_TotalCustomers", "Dashboard", new { area = "Admin" })
         </div>
 
     </div>
 
 
-    <div class="table-responsive">
+    <!-- ===================== MAIN CONTENT ===================== -->
 
-        <table class="table">
+    <div class="adm-two-col fade-up">
 
-            <thead>
+        <div class="adm-left">
+            @Html.Action("_YearlyRevenueChart", "Dashboard", new { area = "Admin" })
+        </div>
 
-                <tr>
-                    <th>Mã đơn</th>
-                    <th>Khách hàng</th>
-                    <th>Sản phẩm</th>
-                    <th>Ngày đặt</th>
-                    <th>Tổng tiền</th>
-                    <th>Trạng thái</th>
-                    <th class="text-end">Thao tác</th>
-                </tr>
-
-            </thead>
-
-            <tbody>
-
-                <tr>
-
-                    <td>#ORD-1025</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=1" />
-                            <div>
-                                <h6>Nguyễn Văn A</h6>
-                                <span>nguyenvana@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Sofa Luxury</td>
-
-                    <td>07/07/2026</td>
-
-                    <td>18.500.000đ</td>
-
-                    <td>
-                        <span class="badge-success">Hoàn thành</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1024</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=2" />
-                            <div>
-                                <h6>Trần Thị B</h6>
-                                <span>tranthib@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Bàn gỗ tự nhiên</td>
-
-                    <td>07/07/2026</td>
-
-                    <td>9.300.000đ</td>
-
-                    <td>
-                        <span class="badge-warning">Đang giao</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1023</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=3" />
-                            <div>
-                                <h6>Lê Minh C</h6>
-                                <span>leminhc@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Bộ giường ngủ</td>
-
-                    <td>06/07/2026</td>
-
-                    <td>25.900.000đ</td>
-
-                    <td>
-                        <span class="badge-success">Hoàn thành</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1022</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=4" />
-                            <div>
-                                <h6>Phạm Quốc D</h6>
-                                <span>phamquocd@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Ghế văn phòng</td>
-
-                    <td>06/07/2026</td>
-
-                    <td>4.700.000đ</td>
-
-                    <td>
-                        <span class="badge-danger">Đã hủy</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-
-                <tr>
-
-                    <td>#ORD-1021</td>
-
-                    <td>
-                        <div class="product-info">
-                            <img src="https://i.pravatar.cc/80?img=5" />
-                            <div>
-                                <h6>Đỗ Thanh E</h6>
-                                <span>dothanhe@gmail.com</span>
-                            </div>
-                        </div>
-                    </td>
-
-                    <td>Ghế sân vườn</td>
-
-                    <td>05/07/2026</td>
-
-                    <td>3.200.000đ</td>
-
-                    <td>
-                        <span class="badge-warning">Chờ xử lý</span>
-                    </td>
-
-                    <td class="text-end">
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-eye"></i>
-                        </button>
-                        <button class="btn btn-light btn-sm">
-                            <i class="fa-solid fa-pen"></i>
-                        </button>
-                    </td>
-
-                </tr>
-
-            </tbody>
-
-        </table>
+        <div class="adm-right">
+            @Html.Action("_TopProductViews", "Dashboard", new { area = "Admin" })
+        </div>
 
     </div>
 
 
-    <nav>
+    <!-- ===================== ORDER SECTION ===================== -->
 
-        <ul class="pagination">
+    <div class="adm-orders fade-up">
 
-            <li class="page-item active">
-                <a class="page-link" href="#">1</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">2</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">3</a>
-            </li>
-
-            <li class="page-item">
-                <a class="page-link" href="#">
-                    <i class="fa-solid fa-angle-right"></i>
-                </a>
-            </li>
-
-        </ul>
-
-    </nav>
-
-</div>
-
-
-<!-- ===================== PRODUCT + ACTIVITY ===================== -->
-
-<div class="content-grid mt-4 fade-up">
-
-    <div class="content-grid mt-4 fade-up">
-
-        @Html.Action("_BestSellers", "Dashboard", new { area = "Admin" })
+        @Html.Action("_RecentTransactions", "Dashboard", new { area = "Admin" })
 
     </div>
 
 
-    <div class="card-box">
+    <!-- ===================== PRODUCT + ACTIVITY ===================== -->
 
-        <div class="card-header">
+    <div class="adm-two-col fade-up">
 
-            <div>
-                <div class="card-title">Hoạt động gần đây</div>
-                <small class="text-muted">Các thao tác mới nhất trong hệ thống</small>
-            </div>
-
+        <div class="adm-left">
+            @Html.Action("_StoreSalesShare", "Dashboard", new { area = "Admin" })
         </div>
 
-        <div class="activity-list">
-
-            <div class="activity-item">
-                <div class="activity-dot green"></div>
-                <div>
-                    <h6>Đơn hàng mới</h6>
-                    <p>#ORD-1025 vừa được tạo</p>
-                    <span>5 phút trước</span>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-dot blue"></div>
-                <div>
-                    <h6>Cập nhật sản phẩm</h6>
-                    <p>Thông tin Sofa hiện đại đã được chỉnh sửa</p>
-                    <span>25 phút trước</span>
-                </div>
-            </div>
-
-            <div class="activity-item">
-                <div class="activity-dot orange"></div>
-                <div>
-                    <h6>Khách hàng mới</h6>
-                    <p>Một tài khoản khách hàng mới đã đăng ký</p>
-                    <span>1 giờ trước</span>
-                </div>
-            </div>
-
+        <div class="adm-right">
+            @Html.Action("_TopSoldItemsCompare", "Dashboard", new { area = "Admin" })
         </div>
 
+    </div>
+
+
+    <div class="adm-footer">
+        © 2026 Furni Admin Dashboard. Website bán nội thất B2C.
     </div>
 
 </div>
-
-
-<div class="admin-footer">
-    © 2026 Furni Admin Dashboard. Website bán nội thất B2C.
-</div>
-
-
-<!-- ===================== CHART SCRIPT ===================== -->
 
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-<script>
-
-    const ctx = document.getElementById('revenueChart');
-
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7'],
-            datasets: [{
-                label: 'Doanh thu',
-                data: [120, 190, 160, 250, 220, 310, 380],
-                borderColor: '#b08a63',
-                backgroundColor: 'rgba(176, 138, 99, 0.18)',
-                pointBackgroundColor: '#7b5738',
-                pointBorderColor: '#7b5738',
-                pointRadius: 4,
-                pointHoverRadius: 6,
-                borderWidth: 3,
-                tension: 0.4,
-                fill: true
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: false,
-
-            plugins: {
-                legend: {
-                    display: false
-                }
-            },
-
-            scales: {
-                y: {
-                    beginAtZero: true,
-                    grid: {
-                        color: '#efe5da'
-                    },
-                    ticks: {
-                        color: '#7f7368'
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    },
-                    ticks: {
-                        color: '#7f7368'
-                    }
-                }
-            }
-        }
-    });
-
-</script>

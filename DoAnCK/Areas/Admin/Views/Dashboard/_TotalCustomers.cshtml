@@ -1,0 +1,26 @@
+﻿﻿@model DoAnCK.Areas.Admin.Models.CustomerViewModel
+
+<div class="stat-card">
+    <div class="stat-top">
+        <div>
+            <div class="stat-title">Khách hàng</div>
+            <div class="stat-value">@Model.TongKhachHangThangNay.ToString("N0")</div>
+            <div class="stat-footer">
+                @if (Model.IsTangTruongDuong)
+                {
+                    <i class="fa-solid fa-arrow-trend-up"></i>
+                    @: +@Model.PhanTramTangTruong% so với tháng trước
+                }
+                else
+                {
+                    <i class="fa-solid fa-arrow-trend-down"></i>
+                    @: -@Model.PhanTramTangTruong% so với tháng trước
+                }
+            </div>
+        </div>
+
+        <div class="stat-icon bg-purple">
+            <i class="fa-solid fa-users"></i>
+        </div>
+    </div>
+</div>

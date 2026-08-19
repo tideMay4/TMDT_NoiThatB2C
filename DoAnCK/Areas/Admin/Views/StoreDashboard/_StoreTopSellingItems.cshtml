@@ -1,0 +1,63 @@
+﻿@model IEnumerable<DoAnCK.Areas.Admin.Models.StoreTopProductViewModel>
+@using System.Linq
+
+<div class="card-box">
+    <div class="card-header">
+        <div>
+            <h5 class="card-title">
+                <i class="fa-solid fa-fire"></i>
+                Sản phẩm bán chạy
+            </h5>
+            <p class="text-muted mb-0">Sản phẩm có lượng tiêu thụ tốt nhất của shop</p>
+        </div>
+
+        <div>
+            <span class="badge-soft">Top sản phẩm</span>
+        </div>
+    </div>
+
+    @if (Model == null || !Model.Any())
+    {
+        <div class="text-muted" style="padding: 28px; text-align:center;">
+            Chưa có dữ liệu sản phẩm bán chạy.
+        </div>
+    }
+    else
+    {
+        decimal maxQty = Model.Max(x => (decimal)x.SoLuongDaBan);
+
+        if (maxQty <= 0)
+        {
+            maxQty = 1;
+        }
+
+        <div class="activity-list">
+            @foreach (var item in Model)
+            {
+                decimal percent = Math.Round(((decimal)item.SoLuongDaBan / maxQty) * 100, 1);
+
+                <div class="progress-item" style="padding: 14px; border: 1px solid #eadfd2; border-radius: 16px; background: #fffdfa;">
+                    <div class="progress-title">
+                        <strong>@item.TenSP</strong>
+                        <span>@item.SoLuongDaBan sp</span>
+                    </div>
+
+                    <div class="progress">
+                        <div class="progress-bar" style="width:@percent%; background:#7b5738;"></div>
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; margin-top:8px; font-size:13px; color:#7f7368;">
+                        <span>
+                            <i class="fa-solid fa-tag"></i>
+                            Giá: @String.Format("{0:N0}đ", item.GiaBan)
+                        </span>
+
+                        <strong style="color:#4f8a56;">
+                            @String.Format("{0:N0}đ", item.TongDoanhThu)
+                        </strong>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+</div>

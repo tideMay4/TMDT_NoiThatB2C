@@ -1,0 +1,134 @@
+﻿@using System.Linq
+@model IEnumerable<DoAnCK.Models.ViewModel.CustomerOrderHistoryViewModel>
+
+@{
+    ViewBag.Title = "Lịch sử đơn hàng";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    .order-history-page {
+        max-width: 1100px;
+        margin: 50px auto;
+        padding: 0 16px;
+    }
+
+    .order-history-card {
+        background: #fffdfa;
+        border: 1px solid #eadfd2;
+        border-radius: 22px;
+        padding: 30px;
+        box-shadow: 0 14px 35px rgba(92, 65, 42, 0.08);
+    }
+
+        .order-history-card h2 {
+            margin: 0 0 8px;
+            color: #2f241c;
+            font-weight: 800;
+        }
+
+        .order-history-card p {
+            color: #7f7368;
+            margin-bottom: 24px;
+        }
+
+    .order-table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+    }
+
+        .order-table th {
+            background: #faf4ee;
+            color: #7f7368;
+            padding: 15px;
+            font-size: 13px;
+        }
+
+        .order-table td {
+            padding: 15px;
+            border-bottom: 1px solid #f0e7de;
+            color: #2f241c;
+            font-size: 14px;
+        }
+
+    .status-badge {
+        display: inline-flex;
+        padding: 6px 12px;
+        border-radius: 999px;
+        background: #fff1d8;
+        color: #9a6a22;
+        font-size: 12px;
+        font-weight: 700;
+    }
+</style>
+
+<div class="order-history-page">
+
+    <div class="order-history-card">
+
+        <h2>Lịch sử đơn hàng</h2>
+        <p>Theo dõi các đơn hàng bạn đã đặt trên website.</p>
+
+        <div class="table-responsive">
+
+            <table class="order-table">
+
+                <thead>
+                    <tr>
+                        <th>Mã đơn</th>
+                        <th>Ngày đặt</th>
+                        <th>Sản phẩm</th>
+                        <th>Địa chỉ giao</th>
+                        <th>Tổng tiền</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+
+                    @if (Model == null || !Model.Any())
+                    {
+                        <tr>
+                            <td colspan="6" style="text-align:center; padding:25px; color:#7f7368;">
+                                Bạn chưa có đơn hàng nào.
+                            </td>
+                        </tr>
+                    }
+                    else
+                    {
+                        foreach (var item in Model)
+                        {
+                            <tr>
+                                <td><strong>#ORD-@item.MaDH</strong></td>
+
+                                <td>
+                                    @(item.NgayDat.HasValue ? item.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                                </td>
+
+                                <td>@item.SanPhamTomTat</td>
+
+                                <td>@item.DiaChiGiaoHang</td>
+
+                                <td>
+                                    <strong style="color:#4f8a56;">
+                                        @String.Format("{0:N0}đ", item.TongTien ?? 0)
+                                    </strong>
+                                </td>
+
+                                <td>
+                                    <span class="status-badge">@item.TrangThai</span>
+                                </td>
+                            </tr>
+                        }
+                    }
+
+                </tbody>
+
+            </table>
+
+        </div>
+
+    </div>
+
+</div>

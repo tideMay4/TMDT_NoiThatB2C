@@ -1,0 +1,102 @@
+﻿﻿@model List<DoAnCK.Areas.Admin.Models.RecentTransactionViewModel>
+
+<div class="table-box fade-up" id="store-recent-orders-container">
+
+    <div class="card-header d-flex justify-content-between align-items-center mb-3">
+        <div>
+            <div class="card-title fw-bold" style="color: #7A5C43; font-size: 1.1rem;">Đơn hàng gần đây</div>
+            <small class="text-muted">Các đơn hàng mới nhất phát sinh tại cửa hàng</small>
+        </div>
+
+        <div class="d-flex gap-2">
+            <button class="btn btn-outline-secondary btn-sm">
+                <i class="fa-solid fa-filter"></i> Lọc
+            </button>
+            <a href="@Url.Action("Index", "QuanLyDonHangStore")" class="btn btn-sm btn-primary" style="background-color: #7A5C43; border-color: #7A5C43;">
+                Xem tất cả đơn
+            </a>
+        </div>
+    </div>
+
+    <div class="filter-bar mb-3">
+        <div class="filter-left d-flex gap-2">
+            <input type="text" class="form-control form-control-sm" placeholder="Tìm kiếm mã đơn, tên khách..." style="width:260px;" />
+            <select class="form-select form-select-sm" style="width:160px;">
+                <option value="">Tất cả trạng thái</option>
+                <option value="Hoàn thành">Hoàn thành</option>
+                <option value="Đang giao">Đang giao</option>
+                <option value="Đang xử lý">Chờ xử lý</option>
+                <option value="Đã hủy">Đã hủy</option>
+            </select>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-hover align-middle" style="font-size: 0.9rem;">
+            <thead class="table-light">
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Sản phẩm</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+            <tbody>
+                @if (Model != null && Model.Any())
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong style="color: #7A5C43;">#@item.MaDonHang</strong></td>
+                            <td>
+                                <div>
+                                    <h6 class="mb-0 fw-semibold" style="font-size: 0.88rem;">@item.TenKhachHang</h6>
+                                    <small class="text-muted">@item.EmailKhachHang</small>
+                                </div>
+                            </td>
+                            <td style="max-width: 220px;" class="text-truncate" title="@item.TenSanPham">
+                                @item.TenSanPham
+                            </td>
+                            <td>@item.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><strong style="color: #2E7D32;">@item.TongTien.ToString("N0")đ</strong></td>
+                            <td>
+                                <span class="badge @item.BadgeClass">@item.TrangThai</span>
+                            </td>
+                            <td class="text-end">
+                                <a href="@Url.Action("Details", "QuanLyDonHangStore", new { id = item.MaDonHang })" class="btn btn-light btn-sm" title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+                else
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fa-solid fa-box-open me-2"></i>Chưa có đơn hàng nào phát sinh gần đây.
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Script Polling cập nhật dữ liệu Real-time cho Store -->
+<script>
+    if (typeof storeOrdersTimer === 'undefined') {
+        var storeOrdersTimer = setInterval(function () {
+            $.ajax({
+                url: '@Url.Action("_StoreRecentOrders", "StoreDashboard")',
+                type: 'GET',
+                success: function (data) {
+                    $('#store-recent-orders-container').html($(data).find('#store-recent-orders-container').html());
+                }
+            });
+        }, 15000);
+    }
+</script>

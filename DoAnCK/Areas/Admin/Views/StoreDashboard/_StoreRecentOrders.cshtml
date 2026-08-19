@@ -1,0 +1,82 @@
+﻿@model IEnumerable<DoAnCK.Areas.Admin.Models.RecentTransactionViewModel>
+@using System.Linq
+
+<div class="card-box">
+
+    <div class="card-header">
+        <div>
+            <h5 class="card-title">Đơn hàng gần đây</h5>
+            <p class="text-muted mb-0">Các đơn hàng mới nhất phát sinh tại cửa hàng</p>
+        </div>
+
+        <div>
+            <a href="@Url.Action("Index", "Order", new { area = "Admin" })" class="btn-outline-admin">
+                Xem tất cả đơn
+            </a>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table align-middle">
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Sản phẩm</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="7" class="text-center text-muted" style="padding: 25px;">
+                            Chưa có đơn hàng nào cho cửa hàng này.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td><strong>@item.MaDonHang</strong></td>
+
+                            <td>
+                                <strong>@item.TenKhachHang</strong>
+                                <br />
+                                <span class="text-muted">@item.EmailKhachHang</span>
+                            </td>
+
+                            <td>@item.TenSanPham</td>
+
+                            <td>@item.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+
+                            <td>
+                                <strong style="color: #4f8a56;">
+                                    @String.Format("{0:N0}đ", item.TongTien)
+                                </strong>
+                            </td>
+
+                            <td>
+                                <span class="@item.BadgeClass">@item.TrangThai</span>
+                            </td>
+
+                            <td class="text-end">
+                                <a href="@Url.Action("Details", "Order", new { area = "Admin", id = item.MaDonHang })"
+                                   class="action-btn"
+                                   title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

@@ -41,8 +41,7 @@
 
     <!-- CSS -->
 
-    <link href="~/Areas/Admin/Content/admin.css"
-          rel="stylesheet" />
+    <link href="@Url.Content("~/Areas/Admin/Content/admin.css")?v=@DateTime.Now.Ticks" rel="stylesheet" />
 
 </head>
 
@@ -125,30 +124,15 @@
                 </li>
 
                 <li class="@(currentController == "Customer" ? "active" : "")">
-
-                    <a href="/Admin/Customer">
-
+                    <a href="@Url.Action("Index", "Customer", new { area = "Admin" })">
                         <i class="fa-solid fa-users"></i>
-
                         <span>Customers</span>
-
                     </a>
-
                 </li>
 
-                <li class="@(currentController == "Banner" ? "active" : "")">
+                
 
-                    <a href="/Admin/Banner">
-
-                        <i class="fa-solid fa-image"></i>
-
-                        <span>Banner</span>
-
-                    </a>
-
-                </li>
-
-                <li class="@(currentController == "Seo" ? "active" : "")">
+                @*<li class="@(currentController == "Seo" ? "active" : "")">
 
                     <a href="/Admin/Seo">
 
@@ -158,19 +142,9 @@
 
                     </a>
 
-                </li>
+                </li>*@
 
-                <li class="@(currentController == "Statistic" ? "active" : "")">
-
-                    <a href="/Admin/Statistic">
-
-                        <i class="fa-solid fa-chart-line"></i>
-
-                        <span>Statistics</span>
-
-                    </a>
-
-                </li>
+                
 
                 <li class="@(currentController == "Setting" ? "active" : "")">
 

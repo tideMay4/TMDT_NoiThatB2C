@@ -1,12 +1,10 @@
-﻿/*=====================================================
+﻿﻿ /*=====================================================
     ADMIN CSS - FURNI LUXURY INTERIOR THEME
     ASP.NET MVC 5 - Admin Area
 =====================================================*/
-
 /*=====================================================
     ROOT COLORS
 =====================================================*/
-
 :root {
     --admin-bg: #f5f1eb;
     --admin-bg-soft: #faf7f2;
@@ -1574,3 +1572,282 @@ ul {
         grid-template-columns: 1fr;
     }
 }
+
+/* =====================================================
+   FIX ADMIN LUXURY BEIGE THEME - MODERNO
+   Dán ở CUỐI file admin.css
+===================================================== */
+
+:root {
+    --admin-bg: #f5f1eb;
+    --admin-bg-soft: #faf7f2;
+    --admin-sidebar: #fffaf5;
+    --admin-card: #fffdfa;
+    --admin-border: #eadfd2;
+    --admin-primary: #b08a63;
+    --admin-primary-dark: #7b5738;
+    --admin-primary-soft: #f2e8dc;
+    --admin-text: #2f241c;
+    --admin-muted: #7f7368;
+    --admin-success: #7f9b7d;
+    --admin-warning: #c49a5a;
+    --admin-danger: #b76e6e;
+}
+
+/* Nền tổng */
+body,
+.admin-wrapper,
+.admin-main,
+.main-content,
+.content-wrapper,
+.page-content {
+    background: var(--admin-bg) !important;
+    color: var(--admin-text) !important;
+}
+
+/* Sidebar */
+.sidebar,
+.admin-sidebar {
+    background: var(--admin-sidebar) !important;
+    border-right: 1px solid var(--admin-border) !important;
+    box-shadow: 12px 0 35px rgba(92, 65, 42, 0.05) !important;
+}
+
+/* Logo sidebar */
+.sidebar-logo,
+.logo-box,
+.brand-box {
+    color: var(--admin-text) !important;
+}
+
+    .sidebar-logo h2,
+    .logo-box h2,
+    .brand-box h2,
+    .sidebar h2 {
+        color: var(--admin-text) !important;
+    }
+
+/* Menu sidebar */
+.sidebar-menu a,
+.admin-sidebar a,
+.sidebar a {
+    color: var(--admin-text) !important;
+}
+
+.sidebar-menu li,
+.sidebar-menu a,
+.admin-menu li,
+.admin-menu a {
+    background: transparent !important;
+}
+
+    .sidebar-menu li.active,
+    .sidebar-menu a.active,
+    .admin-menu li.active,
+    .admin-menu a.active,
+    .sidebar-menu a:hover,
+    .admin-menu a:hover {
+        background: var(--admin-primary-soft) !important;
+        color: var(--admin-primary-dark) !important;
+        border-radius: 16px !important;
+    }
+
+/* Topbar */
+.topbar,
+.admin-topbar,
+.header-admin,
+.admin-header {
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 14px 35px rgba(92, 65, 42, 0.06) !important;
+    border-radius: 24px !important;
+}
+
+    /* Ô tìm kiếm */
+    .topbar input,
+    .admin-topbar input,
+    .search-box input,
+    .search-input,
+    input[type="search"] {
+        background: var(--admin-bg-soft) !important;
+        border: 1px solid var(--admin-border) !important;
+        color: var(--admin-text) !important;
+    }
+
+        .topbar input::placeholder,
+        .admin-topbar input::placeholder {
+            color: var(--admin-muted) !important;
+        }
+
+/* Tiêu đề trang */
+.page-title h1,
+.page-title h2,
+.content-title h1,
+.content-title h2,
+h1,
+h2 {
+    color: var(--admin-text) !important;
+}
+
+.page-title p,
+.content-title p {
+    color: var(--admin-muted) !important;
+}
+
+/* Card thống kê */
+.stat-card,
+.dashboard-card,
+.overview-card,
+.product-stat-card,
+.card {
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 18px 45px rgba(92, 65, 42, 0.07) !important;
+    color: var(--admin-text) !important;
+}
+
+/* Icon card */
+.stat-icon,
+.card-icon,
+.product-stat-icon {
+    background: var(--admin-primary-soft) !important;
+    color: var(--admin-primary-dark) !important;
+}
+
+/* Khối bảng */
+.table-box,
+.table-card,
+.admin-table-box,
+.product-table-box {
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-border) !important;
+    box-shadow: 0 18px 45px rgba(92, 65, 42, 0.07) !important;
+    border-radius: 24px !important;
+}
+
+/* Bảng */
+.table,
+.admin-table,
+.product-table {
+    background: var(--admin-card) !important;
+    color: var(--admin-text) !important;
+}
+
+    .table thead,
+    .admin-table thead,
+    .product-table thead {
+        background: var(--admin-primary-soft) !important;
+        color: var(--admin-text) !important;
+    }
+
+        .table thead th,
+        .admin-table thead th,
+        .product-table thead th {
+            background: var(--admin-primary-soft) !important;
+            color: var(--admin-muted) !important;
+            border-color: var(--admin-border) !important;
+        }
+
+    .table tbody tr,
+    .admin-table tbody tr,
+    .product-table tbody tr {
+        background: var(--admin-card) !important;
+        border-color: var(--admin-border) !important;
+    }
+
+        .table tbody tr:hover,
+        .admin-table tbody tr:hover,
+        .product-table tbody tr:hover {
+            background: var(--admin-bg-soft) !important;
+        }
+
+/* Filter / input / select */
+.filter-bar,
+.product-filter,
+.filter-section {
+    background: var(--admin-card) !important;
+}
+
+.form-control,
+.form-select,
+input,
+select,
+textarea {
+    background: var(--admin-bg-soft) !important;
+    border: 1px solid var(--admin-border) !important;
+    color: var(--admin-text) !important;
+}
+
+    .form-control:focus,
+    .form-select:focus,
+    input:focus,
+    select:focus,
+    textarea:focus {
+        border-color: var(--admin-primary) !important;
+        box-shadow: 0 0 0 3px rgba(176, 138, 99, 0.15) !important;
+    }
+
+/* Button chính */
+.btn-primary,
+.btn-add,
+.btn-create,
+.btn-save,
+.btn-filter {
+    background: var(--admin-primary) !important;
+    border-color: var(--admin-primary) !important;
+    color: #fff !important;
+}
+
+    .btn-primary:hover,
+    .btn-add:hover,
+    .btn-create:hover,
+    .btn-save:hover,
+    .btn-filter:hover {
+        background: var(--admin-primary-dark) !important;
+        border-color: var(--admin-primary-dark) !important;
+    }
+
+/* Button phụ */
+.btn-outline,
+.btn-secondary {
+    background: var(--admin-bg-soft) !important;
+    border-color: var(--admin-border) !important;
+    color: var(--admin-primary-dark) !important;
+}
+
+/* Modal */
+.modal-content {
+    background: var(--admin-card) !important;
+    border: 1px solid var(--admin-border) !important;
+    border-radius: 22px !important;
+}
+
+.modal-header,
+.modal-footer {
+    border-color: var(--admin-border) !important;
+}
+
+/* Badge trạng thái */
+.badge,
+.status-badge {
+    border-radius: 999px !important;
+}
+
+/* Scrollbar nhẹ màu be */
+::-webkit-scrollbar {
+    width: 10px;
+    height: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: #f5f1eb;
+}
+
+::-webkit-scrollbar-thumb {
+    background: #d8c5ad;
+    border-radius: 999px;
+}
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: #b08a63;
+    }

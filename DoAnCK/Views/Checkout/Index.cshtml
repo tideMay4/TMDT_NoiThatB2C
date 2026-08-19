@@ -1,18 +1,28 @@
-﻿@model DoAnCK.Models.CheckoutViewModel
+﻿@using System.Globalization
+@model DoAnCK.Models.CheckoutViewModel
 
 @{
     ViewBag.Title = "Thanh toán đơn hàng";
     Layout = "~/Views/Shared/_Layout.cshtml";
+
+    decimal subTotal = Model != null ? Model.SubTotal : 0;
+    decimal shippingFee = Model != null ? Model.ShippingFee : 0;
+    decimal bulkyFee = Model != null ? Model.BulkyFee : 0;
+    decimal assemblyFee = Model != null ? Model.AssemblyFee : 0;
+    decimal grandTotal = Model != null ? Model.GrandTotal : 0;
 }
 
 <style>
     :root {
         --brand-dark: #2B2623;
+        --brand-brown: #7b5738;
+        --brand-main: #b08a63;
         --brand-bg: #F8F7F5;
         --text-main: #333333;
         --text-muted: #888888;
         --border-soft: #EAE8E3;
         --danger-color: #D9534F;
+        --success-color: #4f8a56;
     }
 
     body {
@@ -20,56 +30,102 @@
     }
 
     .checkout-wrapper {
-        font-family: 'Montserrat', 'Segoe UI', Tahoma, sans-serif;
-        padding: 40px 0;
+        font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+        padding: 45px 0;
     }
 
     .checkout-container {
-        display: flex;
-        flex-wrap: wrap;
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(360px, 0.85fr);
         gap: 40px;
         max-width: 1200px;
         margin: 0 auto;
+        padding: 0 20px;
         color: var(--text-main);
     }
 
     .checkout-details,
     .order-summary {
-        flex: 1;
-        min-width: 320px;
         background: #FFFFFF;
         padding: 35px;
-        border-radius: 16px;
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-        border: 1px solid rgba(0,0,0,0.02);
+        border-radius: 18px;
+        box-shadow: 0 12px 35px rgba(92, 65, 42, 0.06);
+        border: 1px solid rgba(0,0,0,0.03);
     }
 
     .section-title {
-        font-size: 1.5rem;
-        font-weight: 700;
-        margin-bottom: 25px;
+        font-size: 1.45rem;
+        font-weight: 800;
+        margin-bottom: 24px;
         color: var(--brand-dark);
     }
 
     .form-group {
-        margin-bottom: 20px;
+        margin-bottom: 18px;
+    }
+
+    .form-label-custom {
+        font-weight: 700;
+        margin-top: 12px;
+        margin-bottom: 8px;
+        display: block;
+        color: var(--brand-dark);
+        font-size: 14px;
     }
 
     .form-control {
         width: 100%;
-        padding: 15px;
+        min-height: 48px;
+        padding: 13px 15px;
         border: 1px solid var(--border-soft);
-        border-radius: 8px;
+        border-radius: 10px;
         box-sizing: border-box;
         background-color: #FAFAFA;
-        transition: all 0.3s ease;
+        transition: all 0.25s ease;
         font-family: inherit;
+        font-size: 14px;
     }
 
         .form-control:focus {
             outline: none;
-            border-color: var(--brand-dark);
+            border-color: var(--brand-main);
             background-color: #FFF;
+            box-shadow: 0 0 0 3px rgba(176, 138, 99, 0.12);
+        }
+
+    .address-row {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 15px;
+        margin-bottom: 15px;
+    }
+
+    .assembly-box {
+        margin: 18px 0 22px;
+        padding: 16px;
+        border: 1px solid #eadfd2;
+        border-radius: 14px;
+        background: #fffaf5;
+        display: flex;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+        .assembly-box input {
+            margin-top: 4px;
+        }
+
+        .assembly-box label {
+            cursor: pointer;
+            color: var(--brand-dark);
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .assembly-box small {
+            display: block;
+            color: var(--text-muted);
+            margin-top: 3px;
         }
 
     .payment-options {
@@ -84,16 +140,22 @@
         gap: 12px;
         padding: 15px;
         border: 1px solid var(--border-soft);
-        border-radius: 8px;
+        border-radius: 10px;
         cursor: pointer;
         background: #FAFAFA;
-        font-weight: 500;
+        font-weight: 600;
+        transition: all 0.25s ease;
     }
+
+        .payment-method:hover {
+            border-color: var(--brand-main);
+            background: #fffaf5;
+        }
 
     .cart-item {
         display: flex;
         justify-content: space-between;
-        align-items: center;
+        align-items: flex-start;
         padding: 15px 0;
         border-bottom: 1px solid var(--border-soft);
         gap: 15px;
@@ -102,13 +164,14 @@
     .item-info {
         display: flex;
         flex-direction: column;
-        gap: 4px;
+        gap: 5px;
         flex: 1;
     }
 
     .item-name {
-        font-weight: 600;
+        font-weight: 700;
         color: var(--brand-dark);
+        line-height: 1.4;
     }
 
     .item-qty {
@@ -116,33 +179,75 @@
         font-size: 0.9em;
     }
 
+    .item-fee-note {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 4px;
+    }
+
+    .fee-tag {
+        display: inline-flex;
+        align-items: center;
+        padding: 4px 8px;
+        border-radius: 999px;
+        background: #fff1d8;
+        color: #9a6a22;
+        font-size: 11px;
+        font-weight: 700;
+    }
+
+        .fee-tag.assembly {
+            background: #e5f4e7;
+            color: #3f7a46;
+        }
+
     .item-price {
-        font-weight: 600;
+        font-weight: 700;
         white-space: nowrap;
+        color: var(--brand-dark);
+    }
+
+    .summary-box {
+        margin-top: 22px;
     }
 
     .summary-line {
         display: flex;
         justify-content: space-between;
+        gap: 16px;
         padding: 12px 0;
         color: var(--text-muted);
-        font-weight: 500;
+        font-weight: 600;
+        border-bottom: 1px dashed #eee6dd;
     }
 
-    .highlight-bulky {
-        color: var(--danger-color);
-        font-size: 0.85rem;
-        font-weight: normal;
-    }
+        .summary-line span:last-child {
+            color: var(--text-main);
+            white-space: nowrap;
+        }
+
+        .summary-line .danger {
+            color: var(--danger-color) !important;
+        }
+
+        .summary-line .success {
+            color: var(--success-color) !important;
+        }
 
     .total-line {
+        border-bottom: none;
         border-top: 2px solid var(--border-soft);
-        font-size: 1.5rem;
-        font-weight: 800;
+        font-size: 1.35rem;
+        font-weight: 850;
         color: var(--brand-dark);
         margin-top: 15px;
         padding-top: 20px;
     }
+
+        .total-line span:last-child {
+            color: var(--brand-brown);
+        }
 
     .btn-submit-order {
         width: 100%;
@@ -150,19 +255,47 @@
         background-color: var(--brand-dark);
         color: #fff;
         border: none;
-        border-radius: 8px;
+        border-radius: 10px;
         font-size: 1rem;
-        font-weight: 600;
+        font-weight: 700;
         text-transform: uppercase;
         letter-spacing: 1px;
         cursor: pointer;
         margin-top: 30px;
-        transition: 0.3s;
+        transition: 0.25s;
     }
 
         .btn-submit-order:hover {
             background-color: #000000;
         }
+
+        .btn-submit-order:disabled {
+            opacity: 0.65;
+            cursor: not-allowed;
+        }
+
+    .empty-cart {
+        color: var(--text-muted);
+        font-style: italic;
+        padding: 20px 0;
+    }
+
+    @@media(max-width: 992px) {
+        .checkout-container {
+            grid-template-columns: 1fr;
+        }
+    }
+
+    @@media(max-width: 576px) {
+        .address-row {
+            grid-template-columns: 1fr;
+        }
+
+        .checkout-details,
+        .order-summary {
+            padding: 24px;
+        }
+    }
 </style>
 
 <div class="checkout-wrapper">
@@ -176,29 +309,39 @@
             <form id="checkoutForm">
 
                 <div class="form-group">
-                    <input type="text" class="form-control" name="FullName" placeholder="Họ và tên" required />
+                    <input type="text"
+                           class="form-control"
+                           name="FullName"
+                           placeholder="Họ và tên"
+                           required />
                 </div>
 
                 <div class="form-group">
-                    <input type="tel" class="form-control" name="PhoneNumber" placeholder="Số điện thoại" required />
+                    <input type="tel"
+                           class="form-control"
+                           name="PhoneNumber"
+                           placeholder="Số điện thoại"
+                           required />
                 </div>
 
-                <label style="font-weight: 600; margin-top: 15px; margin-bottom: 5px; display: block;">
+                <label class="form-label-custom">
                     Địa chỉ giao hàng:
                 </label>
 
-                <div class="row" style="margin-bottom: 15px; display: flex; gap: 15px;">
-                    <div class="col" style="flex: 1;">
+                <div class="address-row">
+
+                    <div>
                         <select class="form-control" id="city" name="City" required>
                             <option value="" selected disabled>Chọn Tỉnh / Thành phố</option>
                         </select>
                     </div>
 
-                    <div class="col" style="flex: 1;">
+                    <div>
                         <select class="form-control" id="district" name="District" required>
                             <option value="" selected disabled>Chọn Quận / Huyện</option>
                         </select>
                     </div>
+
                 </div>
 
                 <div class="form-group">
@@ -208,13 +351,39 @@
                 </div>
 
                 <div class="form-group">
-                    <input type="text" class="form-control" id="street" name="Street" placeholder="Số nhà, tên đường..." required />
+                    <input type="text"
+                           class="form-control"
+                           id="street"
+                           name="Street"
+                           placeholder="Số nhà, tên đường..."
+                           required />
+
+                    <input type="hidden" id="Address" name="Address" value="" />
                     <input type="hidden" id="txtCityName" name="CityName" value="" />
+                    <input type="hidden" id="TotalPrice" name="TotalPrice" value="@grandTotal.ToString("0", CultureInfo.InvariantCulture)" />
                 </div>
 
-                <h3 class="section-title mt-4" style="margin-top: 30px;">Phương thức thanh toán</h3>
+                <div class="assembly-box">
+
+                    <input type="checkbox"
+                           class="form-check-input"
+                           id="YeuCauLapRap"
+                           name="YeuCauLapRap"
+                           value="true" />
+
+                    <label class="form-check-label" for="YeuCauLapRap">
+                        Tôi muốn sử dụng dịch vụ lắp ráp tại nhà
+                        <small>Phí lắp ráp chỉ tính cho sản phẩm có hỗ trợ lắp ráp.</small>
+                    </label>
+
+                </div>
+
+                <h3 class="section-title mt-4" style="margin-top: 30px;">
+                    Phương thức thanh toán
+                </h3>
 
                 <div class="payment-options">
+
                     <label class="payment-method">
                         <input type="radio" name="PaymentType" value="COD" checked />
                         <span>Thanh toán khi nhận hàng</span>
@@ -225,7 +394,6 @@
                         <span>Chuyển khoản qua mã QR ngân hàng</span>
                     </label>
 
-                    
                 </div>
 
                 <button type="button" class="btn-submit-order" id="btnPlaceOrder">
@@ -246,62 +414,81 @@
                 {
                     foreach (var item in Model.CartItems)
                     {
-                        var isBulkyStr = item.IsBulky.ToString().ToLower();
                         var lineTotal = item.Price * item.Quantity;
 
-                <div class="cart-item" data-is-bulky="@isBulkyStr">
+                        <div class="cart-item">
 
-                    <div class="item-info">
-                        <span class="item-name">
-                            @item.ProductName
+                            <div class="item-info">
 
-                            @if (item.IsBulky)
+                                <span class="item-name">
+                                    @item.ProductName
+                                </span>
+
+                                <span class="item-qty">
+                                    Số lượng: @item.Quantity
+                                </span>
+
+                                <div class="item-fee-note">
+
+                                    @if (item.IsBulky)
                                     {
-                            <span class="highlight-bulky">(Cồng kềnh)</span>
+                                        <span class="fee-tag">
+                                            Cồng kềnh
+                                        </span>
                                     }
-                        </span>
 
-                        <span class="item-qty">
-                            Số lượng: @item.Quantity
-                        </span>
-                    </div>
+                                    @if (item.CanLapRap)
+                                    {
+                                        <span class="fee-tag assembly">
+                                            Hỗ trợ lắp ráp
+                                        </span>
+                                    }
 
-                    <span class="item-price" data-price="@lineTotal">
-                        @lineTotal.ToString("N0") ₫
-                    </span>
+                                </div>
 
-                </div>
+                            </div>
+
+                            <span class="item-price">
+                                @lineTotal.ToString("N0") ₫
+                            </span>
+
+                        </div>
                     }
                 }
                 else
                 {
-                <p style="color: var(--text-muted); font-style: italic;">
-                    Giỏ hàng của bạn đang trống.
-                </p>
+                    <p class="empty-cart">
+                        Giỏ hàng của bạn đang trống.
+                    </p>
                 }
 
             </div>
 
-            <div style="margin-top: 20px;">
+            <div class="summary-box">
 
                 <div class="summary-line">
                     <span>Tạm tính</span>
-                    <span id="subTotal" style="color: var(--text-main);">0 ₫</span>
+                    <span id="subTotalText">@subTotal.ToString("N0") ₫</span>
                 </div>
 
                 <div class="summary-line">
                     <span>Phí vận chuyển</span>
-                    <span id="shippingFee" style="color: var(--text-main);">0 ₫</span>
+                    <span id="shippingFeeText">@shippingFee.ToString("N0") ₫</span>
                 </div>
 
                 <div class="summary-line">
-                    <span class="highlight-bulky">Phí phụ thu hàng cồng kềnh</span>
-                    <span id="bulkyFee" class="highlight-bulky">0 ₫</span>
+                    <span>Phí cồng kềnh</span>
+                    <span id="bulkyFeeText" class="danger">@bulkyFee.ToString("N0") ₫</span>
+                </div>
+
+                <div class="summary-line">
+                    <span>Phí lắp ráp</span>
+                    <span id="assemblyFeeText" class="success">@assemblyFee.ToString("N0") ₫</span>
                 </div>
 
                 <div class="summary-line total-line">
                     <span>Tổng cộng</span>
-                    <span id="totalPrice">0 ₫</span>
+                    <span id="grandTotalText">@grandTotal.ToString("N0") ₫</span>
                 </div>
 
             </div>
@@ -315,171 +502,254 @@
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
 <script>
-    $(document).ready(function () {
+    function formatMoney(value) {
+        value = Number(value || 0);
+        return value.toLocaleString("vi-VN") + " ₫";
+    }
 
-        const SHIPPING_FEE = @(Model != null ? Model.ShippingFee : 0);
-        const BULKY_ITEM_FEE = @(Model != null ? Model.BulkyFeePerItem : 0);
+    function getFullAddress() {
+        var street = $("#street").val() || "";
+        var ward = $("#ward option:selected").text() || "";
+        var district = $("#district option:selected").text() || "";
+        var city = $("#city option:selected").text() || "";
 
-        function calculateTotal() {
-            let subTotal = 0;
-            let hasBulkyItem = false;
-
-            $('.cart-item').each(function () {
-                let price = parseFloat($(this).find('.item-price').attr('data-price')) || 0;
-                subTotal += price;
-
-                if ($(this).attr('data-is-bulky') === "true") {
-                    hasBulkyItem = true;
-                }
-            });
-
-            let currentBulkyFee = hasBulkyItem ? BULKY_ITEM_FEE : 0;
-            let total = subTotal + SHIPPING_FEE + currentBulkyFee;
-
-            $('#subTotal').text(subTotal.toLocaleString('vi-VN') + ' ₫');
-            $('#shippingFee').text(SHIPPING_FEE.toLocaleString('vi-VN') + ' ₫');
-            $('#bulkyFee').text(currentBulkyFee.toLocaleString('vi-VN') + ' ₫');
-            $('#totalPrice').text(total.toLocaleString('vi-VN') + ' ₫');
+        if (ward.indexOf("Chọn") >= 0) {
+            ward = "";
         }
 
-        calculateTotal();
+        if (district.indexOf("Chọn") >= 0) {
+            district = "";
+        }
 
-        $('#btnPlaceOrder').click(function () {
-            let rawTotal = $('#totalPrice').text().replace(/\./g, '').replace(' ₫', '').trim();
+        if (city.indexOf("Chọn") >= 0) {
+            city = "";
+        }
 
-            let address =
-                $('#street').val() + ', ' +
-                $('#ward option:selected').text() + ', ' +
-                $('#district option:selected').text() + ', ' +
-                $('#city option:selected').text();
+        var addressParts = [];
 
-            let formData = {
-                FullName: $('input[name="FullName"]').val(),
-                PhoneNumber: $('input[name="PhoneNumber"]').val(),
-                Address: address,
-                PaymentMethod: $('input[name="PaymentType"]:checked').val(),
-                TotalPrice: parseInt(rawTotal)
-            };
+        if (street.trim() !== "") {
+            addressParts.push(street.trim());
+        }
 
-            if (!formData.FullName || !formData.PhoneNumber || !$('#street').val()) {
-                alert("Vui lòng nhập đầy đủ thông tin giao hàng.");
+        if (ward.trim() !== "") {
+            addressParts.push(ward.trim());
+        }
+
+        if (district.trim() !== "") {
+            addressParts.push(district.trim());
+        }
+
+        if (city.trim() !== "") {
+            addressParts.push(city.trim());
+        }
+
+        var fullAddress = addressParts.join(", ");
+
+        $("#Address").val(fullAddress);
+
+        return fullAddress;
+    }
+
+    function updateFeeDisplay(data) {
+        $("#subTotalText").text(formatMoney(data.subTotal));
+        $("#shippingFeeText").text(formatMoney(data.shippingFee));
+        $("#bulkyFeeText").text(formatMoney(data.bulkyFee));
+        $("#assemblyFeeText").text(formatMoney(data.assemblyFee));
+        $("#grandTotalText").text(formatMoney(data.grandTotal));
+        $("#TotalPrice").val(data.grandTotal);
+    }
+
+    function calculateCheckoutFee() {
+        var address = getFullAddress();
+        var yeuCauLapRap = $("#YeuCauLapRap").is(":checked");
+
+        $.ajax({
+            url: '@Url.Action("CalculateCheckoutFee", "Checkout")',
+            type: 'POST',
+            data: {
+                address: address,
+                yeuCauLapRap: yeuCauLapRap
+            },
+            success: function (res) {
+                if (res && res.success) {
+                    updateFeeDisplay(res);
+                }
+            }
+        });
+    }
+
+    function validateCheckoutForm() {
+        var fullName = $('input[name="FullName"]').val();
+        var phoneNumber = $('input[name="PhoneNumber"]').val();
+        var street = $("#street").val();
+        var city = $("#city").val();
+        var district = $("#district").val();
+        var ward = $("#ward").val();
+
+        if (!fullName || !phoneNumber || !street || !city || !district || !ward) {
+            alert("Vui lòng nhập đầy đủ thông tin giao hàng.");
+            return false;
+        }
+
+        return true;
+    }
+
+    $(document).ready(function () {
+
+        calculateCheckoutFee();
+
+        $("#street").on("keyup change", function () {
+            calculateCheckoutFee();
+        });
+
+        $("#YeuCauLapRap").on("change", function () {
+            calculateCheckoutFee();
+        });
+
+        $("#btnPlaceOrder").on("click", function () {
+
+            if (!validateCheckoutForm()) {
                 return;
             }
 
-            $(this).text('Đang xử lý...').prop('disabled', true);
+            calculateCheckoutFee();
 
-            if (formData.PaymentMethod === 'COD') {
+            var paymentMethod = $('input[name="PaymentType"]:checked').val();
+
+            var formData = {
+                FullName: $('input[name="FullName"]').val(),
+                PhoneNumber: $('input[name="PhoneNumber"]').val(),
+                Address: getFullAddress(),
+                PaymentMethod: paymentMethod,
+                TotalPrice: $("#TotalPrice").val(),
+                YeuCauLapRap: $("#YeuCauLapRap").is(":checked")
+            };
+
+            $("#btnPlaceOrder").text("Đang xử lý...").prop("disabled", true);
+
+            if (paymentMethod === "COD") {
+
                 $.ajax({
-                    url: '/Checkout/ProcessCOD',
+                    url: '@Url.Action("ProcessCOD", "Checkout")',
                     type: 'POST',
                     data: formData,
                     success: function (res) {
                         if (res.success) {
-                            window.location.href = '/Checkout/OrderSuccess?orderCode=' + res.orderCode;
-                        } else {
+                            window.location.href = '@Url.Action("OrderSuccess", "Checkout")' + '?orderCode=' + res.orderCode;
+                        }
+                        else {
                             alert(res.message || "Đã xảy ra lỗi khi đặt hàng.");
-                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            $("#btnPlaceOrder").text("ĐẶT HÀNG").prop("disabled", false);
                         }
                     },
                     error: function () {
                         alert("Không kết nối được đến server.");
-                        $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                        $("#btnPlaceOrder").text("ĐẶT HÀNG").prop("disabled", false);
                     }
                 });
-            } else if (formData.PaymentMethod === 'QR_BANK') {
+
+            }
+            else if (paymentMethod === "QR_BANK") {
+
                 $.ajax({
-                    url: '/Checkout/PaymentWithPayOS',
+                    url: '@Url.Action("PaymentWithPayOS", "Checkout")',
                     type: 'POST',
                     data: formData,
                     success: function (res) {
                         if (res.success && res.url) {
                             window.location.href = res.url;
-                        } else {
+                        }
+                        else {
                             alert(res.message || "Chức năng thanh toán QR ngân hàng chưa sẵn sàng.");
-                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                            $("#btnPlaceOrder").text("ĐẶT HÀNG").prop("disabled", false);
                         }
                     },
                     error: function () {
                         alert("Không kết nối được thanh toán QR ngân hàng.");
-                        $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
+                        $("#btnPlaceOrder").text("ĐẶT HÀNG").prop("disabled", false);
                     }
                 });
-            } else if (formData.PaymentMethod === 'QR_MOMO') {
-                $.ajax({
-                    url: '/Checkout/PaymentWithMoMo',
-                    type: 'POST',
-                    data: formData,
-                    success: function (res) {
-                        if (res.success && res.url) {
-                            window.location.href = res.url;
-                        } else {
-                            alert(res.message || "Chức năng MoMo chưa sẵn sàng.");
-                            $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
-                        }
-                    },
-                    error: function () {
-                        alert("Không kết nối được thanh toán MoMo.");
-                        $('#btnPlaceOrder').text('ĐẶT HÀNG').prop('disabled', false);
-                    }
-                });
+
             }
+
         });
 
         $.ajax({
             url: "https://provinces.open-api.vn/api/?depth=3",
             method: "GET",
             success: function (data) {
-                let cityHtml = '<option value="" selected disabled>Chọn Tỉnh / Thành phố</option>';
+
+                var cityHtml = '<option value="" selected disabled>Chọn Tỉnh / Thành phố</option>';
 
                 $.each(data, function (index, city) {
-                    cityHtml += `<option value="${city.code}" data-name="${city.name}">${city.name}</option>`;
+                    cityHtml += '<option value="' + city.code + '" data-name="' + city.name + '">' + city.name + '</option>';
                 });
 
                 $("#city").html(cityHtml);
 
-                $("#city").change(function () {
-                    let cityCode = $(this).val();
-                    let cityName = $(this).find(':selected').data('name');
+                $("#city").on("change", function () {
+
+                    var cityCode = $(this).val();
+                    var cityName = $(this).find(":selected").data("name");
 
                     $("#txtCityName").val(cityName);
 
-                    $.post('/Checkout/CalculatePriceByLocation', { cityName: cityName }, function (res) {
-                        if (res.success) {
-                            $('#shippingFee').text(res.shippingFee.toLocaleString('vi-VN') + ' ₫');
-                            $('#totalPrice').text(res.totalPrice.toLocaleString('vi-VN') + ' ₫');
-                        }
+                    var selectedCity = data.find(function (c) {
+                        return c.code == cityCode;
                     });
 
-                    let selectedCity = data.find(c => c.code == cityCode);
-                    let districtHtml = '<option value="" selected disabled>Chọn Quận / Huyện</option>';
+                    var districtHtml = '<option value="" selected disabled>Chọn Quận / Huyện</option>';
 
                     if (selectedCity && selectedCity.districts) {
                         $.each(selectedCity.districts, function (index, district) {
-                            districtHtml += `<option value="${district.code}">${district.name}</option>`;
+                            districtHtml += '<option value="' + district.code + '">' + district.name + '</option>';
                         });
                     }
 
                     $("#district").html(districtHtml);
                     $("#ward").html('<option value="" selected disabled>Chọn Phường / Xã</option>');
+
+                    calculateCheckoutFee();
                 });
 
-                $("#district").change(function () {
-                    let cityCode = $("#city").val();
-                    let districtCode = $(this).val();
-                    let selectedCity = data.find(c => c.code == cityCode);
-                    let selectedDistrict = selectedCity.districts.find(d => d.code == districtCode);
+                $("#district").on("change", function () {
 
-                    let wardHtml = '<option value="" selected disabled>Chọn Phường / Xã</option>';
+                    var cityCode = $("#city").val();
+                    var districtCode = $(this).val();
+
+                    var selectedCity = data.find(function (c) {
+                        return c.code == cityCode;
+                    });
+
+                    var selectedDistrict = null;
+
+                    if (selectedCity && selectedCity.districts) {
+                        selectedDistrict = selectedCity.districts.find(function (d) {
+                            return d.code == districtCode;
+                        });
+                    }
+
+                    var wardHtml = '<option value="" selected disabled>Chọn Phường / Xã</option>';
 
                     if (selectedDistrict && selectedDistrict.wards) {
                         $.each(selectedDistrict.wards, function (index, ward) {
-                            wardHtml += `<option value="${ward.code}">${ward.name}</option>`;
+                            wardHtml += '<option value="' + ward.code + '">' + ward.name + '</option>';
                         });
                     }
 
                     $("#ward").html(wardHtml);
+
+                    calculateCheckoutFee();
                 });
+
+                $("#ward").on("change", function () {
+                    calculateCheckoutFee();
+                });
+            },
+            error: function () {
+                console.log("Không tải được danh sách tỉnh/thành.");
             }
         });
+
     });
 </script>

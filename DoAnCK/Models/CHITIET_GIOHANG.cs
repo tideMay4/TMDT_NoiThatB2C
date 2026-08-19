@@ -18,6 +18,7 @@ namespace DoAnCK.Models
         public int MaSP { get; set; }
         public int SoLuong { get; set; }
         public decimal Gia { get; set; }
+        public bool CoLapRap { get; set; }
     
         public virtual GIOHANG GIOHANG { get; set; }
         public virtual SANPHAM SANPHAM { get; set; }

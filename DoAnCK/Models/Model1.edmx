@@ -15,6 +15,8 @@
           <Property Name="SoLuong" Type="int" Nullable="false" />
           <Property Name="GiaBan" Type="decimal" Precision="18" Scale="2" Nullable="false" />
           <Property Name="ThanhTien" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CoLapRap" Type="bit" Nullable="false" />
+          <Property Name="MaTK_Store" Type="int" />
         </EntityType>
         <EntityType Name="CHITIET_GIOHANG">
           <Key>
@@ -25,6 +27,30 @@
           <Property Name="MaSP" Type="int" Nullable="false" />
           <Property Name="SoLuong" Type="int" Nullable="false" />
           <Property Name="Gia" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="CoLapRap" Type="bit" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CUAHANG">
+          <Key>
+            <PropertyRef Name="MaTK" />
+          </Key>
+          <Property Name="MaTK" Type="int" Nullable="false" />
+          <Property Name="TenCH" Type="nvarchar" MaxLength="150" Nullable="false" />
+          <Property Name="DiaChi" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="Logo" Type="nvarchar" MaxLength="255" />
+          <Property Name="MoTa" Type="nvarchar(max)" />
+          <Property Name="NgayThanhLap" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="CUAHANG_SANPHAM">
+          <Key>
+            <PropertyRef Name="MaCHSP" />
+          </Key>
+          <Property Name="MaCHSP" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaTK_Store" Type="int" Nullable="false" />
+          <Property Name="MaSP" Type="int" Nullable="false" />
+          <Property Name="GiaBan" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="SoLuongTon" Type="int" Nullable="false" />
+          <Property Name="TrangThai" Type="bit" Nullable="false" />
+          <Property Name="NgayCapNhat" Type="datetime" Nullable="false" />
         </EntityType>
         <EntityType Name="DANHGIA">
           <Key>
@@ -121,6 +147,12 @@
           <Property Name="NoiBat" Type="bit" Nullable="false" />
           <Property Name="TrangThai" Type="bit" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
+          <Property Name="MaTK_Store" Type="int" />
+          <Property Name="LuotXem" Type="int" Nullable="false" />
+          <Property Name="LaCongKenh" Type="bit" Nullable="false" />
+          <Property Name="HoTroLapRap" Type="bit" Nullable="false" />
+          <Property Name="PhiCongKenhMacDinh" Type="decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="PhiLapRapMacDinh" Type="decimal" Precision="18" Scale="2" Nullable="false" />
         </EntityType>
         <EntityType Name="TAIKHOAN">
           <Key>
@@ -134,6 +166,8 @@
           <Property Name="VaiTro" Type="nvarchar" MaxLength="30" Nullable="false" />
           <Property Name="TrangThai" Type="bit" Nullable="false" />
           <Property Name="NgayTao" Type="datetime" Nullable="false" />
+          <Property Name="RefreshToken" Type="nvarchar" MaxLength="255" />
+          <Property Name="RefreshTokenExpiryTime" Type="datetime" />
         </EntityType>
         <EntityType Name="THANHTOAN">
           <Key>
@@ -178,6 +212,27 @@
           <Property Name="NgayGiaoThucTe" Type="date" />
           <Property Name="TrangThai" Type="nvarchar" MaxLength="50" Nullable="false" />
         </EntityType>
+        <EntityType Name="YEUTHICH">
+          <Key>
+            <PropertyRef Name="MaYT" />
+          </Key>
+          <Property Name="MaYT" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MaKH" Type="int" Nullable="false" />
+          <Property Name="MaSP" Type="int" Nullable="false" />
+          <Property Name="NgayThem" Type="datetime" Nullable="false" />
+        </EntityType>
+        <Association Name="FK_CHITIET_DONHANG_CUAHANG">
+          <End Role="CUAHANG" Type="Self.CUAHANG" Multiplicity="0..1" />
+          <End Role="CHITIET_DONHANG" Type="Self.CHITIET_DONHANG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CHITIET_DONHANG">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_CTDONHANG_DONHANG">
           <End Role="DONHANG" Type="Self.DONHANG" Multiplicity="1" />
           <End Role="CHITIET_DONHANG" Type="Self.CHITIET_DONHANG" Multiplicity="*" />
@@ -223,6 +278,44 @@
             </Principal>
             <Dependent Role="CHITIET_GIOHANG">
               <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CUAHANG_SANPHAM_CUAHANG">
+          <End Role="CUAHANG" Type="Self.CUAHANG" Multiplicity="1" />
+          <End Role="CUAHANG_SANPHAM" Type="Self.CUAHANG_SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CUAHANG_SANPHAM">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CUAHANG_SANPHAM_SANPHAM">
+          <End Role="SANPHAM" Type="Self.SANPHAM" Multiplicity="1" />
+          <End Role="CUAHANG_SANPHAM" Type="Self.CUAHANG_SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SANPHAM">
+              <PropertyRef Name="MaSP" />
+            </Principal>
+            <Dependent Role="CUAHANG_SANPHAM">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CUAHANG_TAIKHOAN">
+          <End Role="TAIKHOAN" Type="Self.TAIKHOAN" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CUAHANG" Type="Self.CUAHANG" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="TAIKHOAN">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
             </Dependent>
           </ReferentialConstraint>
         </Association>
@@ -298,6 +391,18 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_SANPHAM_CUAHANG">
+          <End Role="CUAHANG" Type="Self.CUAHANG" Multiplicity="0..1" />
+          <End Role="SANPHAM" Type="Self.SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="SANPHAM">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <Association Name="FK_SANPHAM_DANHMUC">
           <End Role="DANHMUC" Type="Self.DANHMUC" Multiplicity="1" />
           <End Role="SANPHAM" Type="Self.SANPHAM" Multiplicity="*" />
@@ -346,9 +451,39 @@
             </Dependent>
           </ReferentialConstraint>
         </Association>
+        <Association Name="FK_YEUTHICH_KHACHHANG">
+          <End Role="KHACHHANG" Type="Self.KHACHHANG" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="YEUTHICH" Type="Self.YEUTHICH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KHACHHANG">
+              <PropertyRef Name="MaKH" />
+            </Principal>
+            <Dependent Role="YEUTHICH">
+              <PropertyRef Name="MaKH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_YEUTHICH_SANPHAM">
+          <End Role="SANPHAM" Type="Self.SANPHAM" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="YEUTHICH" Type="Self.YEUTHICH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SANPHAM">
+              <PropertyRef Name="MaSP" />
+            </Principal>
+            <Dependent Role="YEUTHICH">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
         <EntityContainer Name="DoAnNoiThatB2CModelStoreContainer">
           <EntitySet Name="CHITIET_DONHANG" EntityType="Self.CHITIET_DONHANG" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="CHITIET_GIOHANG" EntityType="Self.CHITIET_GIOHANG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CUAHANG" EntityType="Self.CUAHANG" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="CUAHANG_SANPHAM" EntityType="Self.CUAHANG_SANPHAM" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DANHGIA" EntityType="Self.DANHGIA" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DANHMUC" EntityType="Self.DANHMUC" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="DONHANG" EntityType="Self.DONHANG" Schema="dbo" store:Type="Tables" />
@@ -360,6 +495,11 @@
           <EntitySet Name="THANHTOAN" EntityType="Self.THANHTOAN" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="TIN_TUC" EntityType="Self.TIN_TUC" Schema="dbo" store:Type="Tables" />
           <EntitySet Name="VANCHUYEN" EntityType="Self.VANCHUYEN" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="YEUTHICH" EntityType="Self.YEUTHICH" Schema="dbo" store:Type="Tables" />
+          <AssociationSet Name="FK_CHITIET_DONHANG_CUAHANG" Association="Self.FK_CHITIET_DONHANG_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANG" />
+            <End Role="CHITIET_DONHANG" EntitySet="CHITIET_DONHANG" />
+          </AssociationSet>
           <AssociationSet Name="FK_CTDONHANG_DONHANG" Association="Self.FK_CTDONHANG_DONHANG">
             <End Role="DONHANG" EntitySet="DONHANG" />
             <End Role="CHITIET_DONHANG" EntitySet="CHITIET_DONHANG" />
@@ -375,6 +515,18 @@
           <AssociationSet Name="FK_CTGIOHANG_SANPHAM" Association="Self.FK_CTGIOHANG_SANPHAM">
             <End Role="SANPHAM" EntitySet="SANPHAM" />
             <End Role="CHITIET_GIOHANG" EntitySet="CHITIET_GIOHANG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CUAHANG_SANPHAM_CUAHANG" Association="Self.FK_CUAHANG_SANPHAM_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANG" />
+            <End Role="CUAHANG_SANPHAM" EntitySet="CUAHANG_SANPHAM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CUAHANG_SANPHAM_SANPHAM" Association="Self.FK_CUAHANG_SANPHAM_SANPHAM">
+            <End Role="SANPHAM" EntitySet="SANPHAM" />
+            <End Role="CUAHANG_SANPHAM" EntitySet="CUAHANG_SANPHAM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CUAHANG_TAIKHOAN" Association="Self.FK_CUAHANG_TAIKHOAN">
+            <End Role="TAIKHOAN" EntitySet="TAIKHOAN" />
+            <End Role="CUAHANG" EntitySet="CUAHANG" />
           </AssociationSet>
           <AssociationSet Name="FK_DANHGIA_KHACHHANG" Association="Self.FK_DANHGIA_KHACHHANG">
             <End Role="KHACHHANG" EntitySet="KHACHHANG" />
@@ -400,6 +552,10 @@
             <End Role="TAIKHOAN" EntitySet="TAIKHOAN" />
             <End Role="KHACHHANG" EntitySet="KHACHHANG" />
           </AssociationSet>
+          <AssociationSet Name="FK_SANPHAM_CUAHANG" Association="Self.FK_SANPHAM_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANG" />
+            <End Role="SANPHAM" EntitySet="SANPHAM" />
+          </AssociationSet>
           <AssociationSet Name="FK_SANPHAM_DANHMUC" Association="Self.FK_SANPHAM_DANHMUC">
             <End Role="DANHMUC" EntitySet="DANHMUC" />
             <End Role="SANPHAM" EntitySet="SANPHAM" />
@@ -415,6 +571,14 @@
           <AssociationSet Name="FK_VANCHUYEN_DONHANG" Association="Self.FK_VANCHUYEN_DONHANG">
             <End Role="DONHANG" EntitySet="DONHANG" />
             <End Role="VANCHUYEN" EntitySet="VANCHUYEN" />
+          </AssociationSet>
+          <AssociationSet Name="FK_YEUTHICH_KHACHHANG" Association="Self.FK_YEUTHICH_KHACHHANG">
+            <End Role="KHACHHANG" EntitySet="KHACHHANG" />
+            <End Role="YEUTHICH" EntitySet="YEUTHICH" />
+          </AssociationSet>
+          <AssociationSet Name="FK_YEUTHICH_SANPHAM" Association="Self.FK_YEUTHICH_SANPHAM">
+            <End Role="SANPHAM" EntitySet="SANPHAM" />
+            <End Role="YEUTHICH" EntitySet="YEUTHICH" />
           </AssociationSet>
         </EntityContainer>
       </Schema></edmx:StorageModels>
@@ -433,6 +597,9 @@
           <Property Name="ThanhTien" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
           <NavigationProperty Name="DONHANG" Relationship="Self.FK_CTDONHANG_DONHANG" FromRole="CHITIET_DONHANG" ToRole="DONHANG" />
           <NavigationProperty Name="SANPHAM" Relationship="Self.FK_CTDONHANG_SANPHAM" FromRole="CHITIET_DONHANG" ToRole="SANPHAM" />
+          <Property Name="CoLapRap" Type="Boolean" Nullable="false" />
+          <Property Name="MaTK_Store" Type="Int32" />
+          <NavigationProperty Name="CUAHANG" Relationship="DoAnNoiThatB2CModel.FK_CHITIET_DONHANG_CUAHANG" FromRole="CHITIET_DONHANG" ToRole="CUAHANG" />
         </EntityType>
         <EntityType Name="CHITIET_GIOHANG">
           <Key>
@@ -445,6 +612,7 @@
           <Property Name="Gia" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
           <NavigationProperty Name="GIOHANG" Relationship="Self.FK_CTGIOHANG_GIOHANG" FromRole="CHITIET_GIOHANG" ToRole="GIOHANG" />
           <NavigationProperty Name="SANPHAM" Relationship="Self.FK_CTGIOHANG_SANPHAM" FromRole="CHITIET_GIOHANG" ToRole="SANPHAM" />
+          <Property Name="CoLapRap" Type="Boolean" Nullable="false" />
         </EntityType>
         <EntityType Name="DANHGIA">
           <Key>
@@ -533,6 +701,7 @@
           <NavigationProperty Name="DONHANGs" Relationship="Self.FK_DONHANG_KHACHHANG" FromRole="KHACHHANG" ToRole="DONHANG" />
           <NavigationProperty Name="GIOHANGs" Relationship="Self.FK_GIOHANG_KHACHHANG" FromRole="KHACHHANG" ToRole="GIOHANG" />
           <NavigationProperty Name="TAIKHOAN" Relationship="Self.FK_KHACHHANG_TAIKHOAN" FromRole="KHACHHANG" ToRole="TAIKHOAN" />
+          <NavigationProperty Name="YEUTHICHes" Relationship="DoAnNoiThatB2CModel.FK_YEUTHICH_KHACHHANG" FromRole="KHACHHANG" ToRole="YEUTHICH" />
         </EntityType>
         <EntityType Name="SANPHAM">
           <Key>
@@ -560,6 +729,15 @@
           <NavigationProperty Name="DANHGIAs" Relationship="Self.FK_DANHGIA_SANPHAM" FromRole="SANPHAM" ToRole="DANHGIA" />
           <NavigationProperty Name="DANHMUC" Relationship="Self.FK_SANPHAM_DANHMUC" FromRole="SANPHAM" ToRole="DANHMUC" />
           <NavigationProperty Name="GIAs" Relationship="Self.FK_GIA_SANPHAM" FromRole="SANPHAM" ToRole="GIA" />
+          <Property Name="MaTK_Store" Type="Int32" />
+          <Property Name="LuotXem" Type="Int32" Nullable="false" />
+          <Property Name="LaCongKenh" Type="Boolean" Nullable="false" />
+          <Property Name="HoTroLapRap" Type="Boolean" Nullable="false" />
+          <NavigationProperty Name="CUAHANG" Relationship="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG" FromRole="SANPHAM" ToRole="CUAHANG" />
+          <NavigationProperty Name="YEUTHICHes" Relationship="DoAnNoiThatB2CModel.FK_YEUTHICH_SANPHAM" FromRole="SANPHAM" ToRole="YEUTHICH" />
+          <Property Name="PhiCongKenhMacDinh" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="PhiLapRapMacDinh" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <NavigationProperty Name="CUAHANG_SANPHAM" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_SANPHAM_SANPHAM" FromRole="SANPHAM" ToRole="CUAHANG_SANPHAM" />
         </EntityType>
         <EntityType Name="TAIKHOAN">
           <Key>
@@ -575,6 +753,9 @@
           <Property Name="NgayTao" Type="DateTime" Nullable="false" Precision="3" />
           <NavigationProperty Name="KHACHHANGs" Relationship="Self.FK_KHACHHANG_TAIKHOAN" FromRole="TAIKHOAN" ToRole="KHACHHANG" />
           <NavigationProperty Name="TIN_TUC" Relationship="Self.FK_TIN_TUC_TAIKHOAN" FromRole="TAIKHOAN" ToRole="TIN_TUC" />
+          <Property Name="RefreshToken" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="RefreshTokenExpiryTime" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="CUAHANG" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN" FromRole="TAIKHOAN" ToRole="CUAHANG" />
         </EntityType>
         <EntityType Name="THANHTOAN">
           <Key>
@@ -860,7 +1041,168 @@
             <End Role="TAIKHOAN" EntitySet="TAIKHOANs" />
             <End Role="TIN_TUC" EntitySet="TIN_TUC" />
           </AssociationSet>
+          <EntitySet Name="CUAHANGs" EntityType="DoAnNoiThatB2CModel.CUAHANG" />
+          <EntitySet Name="YEUTHICHes" EntityType="DoAnNoiThatB2CModel.YEUTHICH" />
+          <AssociationSet Name="FK_CUAHANG_TAIKHOAN" Association="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN">
+            <End Role="TAIKHOAN" EntitySet="TAIKHOANs" />
+            <End Role="CUAHANG" EntitySet="CUAHANGs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_SANPHAM_CUAHANG" Association="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANGs" />
+            <End Role="SANPHAM" EntitySet="SANPHAMs" />
+          </AssociationSet>
+          <AssociationSet Name="FK_YEUTHICH_KHACHHANG" Association="DoAnNoiThatB2CModel.FK_YEUTHICH_KHACHHANG">
+            <End Role="KHACHHANG" EntitySet="KHACHHANGs" />
+            <End Role="YEUTHICH" EntitySet="YEUTHICHes" />
+          </AssociationSet>
+          <AssociationSet Name="FK_YEUTHICH_SANPHAM" Association="DoAnNoiThatB2CModel.FK_YEUTHICH_SANPHAM">
+            <End Role="SANPHAM" EntitySet="SANPHAMs" />
+            <End Role="YEUTHICH" EntitySet="YEUTHICHes" />
+          </AssociationSet>
+          <EntitySet Name="CUAHANG_SANPHAM" EntityType="DoAnNoiThatB2CModel.CUAHANG_SANPHAM" />
+          <AssociationSet Name="FK_CHITIET_DONHANG_CUAHANG" Association="DoAnNoiThatB2CModel.FK_CHITIET_DONHANG_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANGs" />
+            <End Role="CHITIET_DONHANG" EntitySet="CHITIET_DONHANG" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CUAHANG_SANPHAM_CUAHANG" Association="DoAnNoiThatB2CModel.FK_CUAHANG_SANPHAM_CUAHANG">
+            <End Role="CUAHANG" EntitySet="CUAHANGs" />
+            <End Role="CUAHANG_SANPHAM" EntitySet="CUAHANG_SANPHAM" />
+          </AssociationSet>
+          <AssociationSet Name="FK_CUAHANG_SANPHAM_SANPHAM" Association="DoAnNoiThatB2CModel.FK_CUAHANG_SANPHAM_SANPHAM">
+            <End Role="SANPHAM" EntitySet="SANPHAMs" />
+            <End Role="CUAHANG_SANPHAM" EntitySet="CUAHANG_SANPHAM" />
+          </AssociationSet>
         </EntityContainer>
+        <EntityType Name="CUAHANG">
+          <Key>
+            <PropertyRef Name="MaTK" />
+          </Key>
+          <Property Name="MaTK" Type="Int32" Nullable="false" />
+          <Property Name="TenCH" Type="String" Nullable="false" MaxLength="150" FixedLength="false" Unicode="true" />
+          <Property Name="DiaChi" Type="String" Nullable="false" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="Logo" Type="String" MaxLength="255" FixedLength="false" Unicode="true" />
+          <Property Name="MoTa" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" />
+          <Property Name="NgayThanhLap" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="TAIKHOAN" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_TAIKHOAN" FromRole="CUAHANG" ToRole="TAIKHOAN" />
+          <NavigationProperty Name="SANPHAMs" Relationship="DoAnNoiThatB2CModel.FK_SANPHAM_CUAHANG" FromRole="CUAHANG" ToRole="SANPHAM" />
+          <NavigationProperty Name="CHITIET_DONHANG" Relationship="DoAnNoiThatB2CModel.FK_CHITIET_DONHANG_CUAHANG" FromRole="CUAHANG" ToRole="CHITIET_DONHANG" />
+          <NavigationProperty Name="CUAHANG_SANPHAM" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_SANPHAM_CUAHANG" FromRole="CUAHANG" ToRole="CUAHANG_SANPHAM" />
+        </EntityType>
+        <EntityType Name="YEUTHICH">
+          <Key>
+            <PropertyRef Name="MaYT" />
+          </Key>
+          <Property Name="MaYT" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaKH" Type="Int32" Nullable="false" />
+          <Property Name="MaSP" Type="Int32" Nullable="false" />
+          <Property Name="NgayThem" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="KHACHHANG" Relationship="DoAnNoiThatB2CModel.FK_YEUTHICH_KHACHHANG" FromRole="YEUTHICH" ToRole="KHACHHANG" />
+          <NavigationProperty Name="SANPHAM" Relationship="DoAnNoiThatB2CModel.FK_YEUTHICH_SANPHAM" FromRole="YEUTHICH" ToRole="SANPHAM" />
+        </EntityType>
+        <Association Name="FK_CUAHANG_TAIKHOAN">
+          <End Type="DoAnNoiThatB2CModel.TAIKHOAN" Role="TAIKHOAN" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DoAnNoiThatB2CModel.CUAHANG" Role="CUAHANG" Multiplicity="0..1" />
+          <ReferentialConstraint>
+            <Principal Role="TAIKHOAN">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_SANPHAM_CUAHANG">
+          <End Type="DoAnNoiThatB2CModel.CUAHANG" Role="CUAHANG" Multiplicity="0..1" />
+          <End Type="DoAnNoiThatB2CModel.SANPHAM" Role="SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="SANPHAM">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_YEUTHICH_KHACHHANG">
+          <End Type="DoAnNoiThatB2CModel.KHACHHANG" Role="KHACHHANG" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DoAnNoiThatB2CModel.YEUTHICH" Role="YEUTHICH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="KHACHHANG">
+              <PropertyRef Name="MaKH" />
+            </Principal>
+            <Dependent Role="YEUTHICH">
+              <PropertyRef Name="MaKH" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_YEUTHICH_SANPHAM">
+          <End Type="DoAnNoiThatB2CModel.SANPHAM" Role="SANPHAM" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="DoAnNoiThatB2CModel.YEUTHICH" Role="YEUTHICH" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SANPHAM">
+              <PropertyRef Name="MaSP" />
+            </Principal>
+            <Dependent Role="YEUTHICH">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="CUAHANG_SANPHAM">
+          <Key>
+            <PropertyRef Name="MaCHSP" />
+          </Key>
+          <Property Name="MaCHSP" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MaTK_Store" Type="Int32" Nullable="false" />
+          <Property Name="MaSP" Type="Int32" Nullable="false" />
+          <Property Name="GiaBan" Type="Decimal" Nullable="false" Precision="18" Scale="2" />
+          <Property Name="SoLuongTon" Type="Int32" Nullable="false" />
+          <Property Name="TrangThai" Type="Boolean" Nullable="false" />
+          <Property Name="NgayCapNhat" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="CUAHANG" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_SANPHAM_CUAHANG" FromRole="CUAHANG_SANPHAM" ToRole="CUAHANG" />
+          <NavigationProperty Name="SANPHAM" Relationship="DoAnNoiThatB2CModel.FK_CUAHANG_SANPHAM_SANPHAM" FromRole="CUAHANG_SANPHAM" ToRole="SANPHAM" />
+        </EntityType>
+        <Association Name="FK_CHITIET_DONHANG_CUAHANG">
+          <End Type="DoAnNoiThatB2CModel.CUAHANG" Role="CUAHANG" Multiplicity="0..1" />
+          <End Type="DoAnNoiThatB2CModel.CHITIET_DONHANG" Role="CHITIET_DONHANG" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CHITIET_DONHANG">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CUAHANG_SANPHAM_CUAHANG">
+          <End Type="DoAnNoiThatB2CModel.CUAHANG" Role="CUAHANG" Multiplicity="1" />
+          <End Type="DoAnNoiThatB2CModel.CUAHANG_SANPHAM" Role="CUAHANG_SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="CUAHANG">
+              <PropertyRef Name="MaTK" />
+            </Principal>
+            <Dependent Role="CUAHANG_SANPHAM">
+              <PropertyRef Name="MaTK_Store" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK_CUAHANG_SANPHAM_SANPHAM">
+          <End Type="DoAnNoiThatB2CModel.SANPHAM" Role="SANPHAM" Multiplicity="1" />
+          <End Type="DoAnNoiThatB2CModel.CUAHANG_SANPHAM" Role="CUAHANG_SANPHAM" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="SANPHAM">
+              <PropertyRef Name="MaSP" />
+            </Principal>
+            <Dependent Role="CUAHANG_SANPHAM">
+              <PropertyRef Name="MaSP" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
       </Schema>
     </edmx:ConceptualModels>
     <!-- C-S mapping content -->
@@ -870,6 +1212,8 @@
           <EntitySetMapping Name="CHITIET_DONHANG">
             <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.CHITIET_DONHANG">
               <MappingFragment StoreEntitySet="CHITIET_DONHANG">
+                <ScalarProperty Name="MaTK_Store" ColumnName="MaTK_Store" />
+                <ScalarProperty Name="CoLapRap" ColumnName="CoLapRap" />
                 <ScalarProperty Name="MaCTDH" ColumnName="MaCTDH" />
                 <ScalarProperty Name="MaDH" ColumnName="MaDH" />
                 <ScalarProperty Name="MaSP" ColumnName="MaSP" />
@@ -882,6 +1226,7 @@
           <EntitySetMapping Name="CHITIET_GIOHANG">
             <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.CHITIET_GIOHANG">
               <MappingFragment StoreEntitySet="CHITIET_GIOHANG">
+                <ScalarProperty Name="CoLapRap" ColumnName="CoLapRap" />
                 <ScalarProperty Name="MaGH" ColumnName="MaGH" />
                 <ScalarProperty Name="MaSP" ColumnName="MaSP" />
                 <ScalarProperty Name="SoLuong" ColumnName="SoLuong" />
@@ -972,6 +1317,12 @@
           <EntitySetMapping Name="SANPHAMs">
             <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.SANPHAM">
               <MappingFragment StoreEntitySet="SANPHAM">
+                <ScalarProperty Name="PhiLapRapMacDinh" ColumnName="PhiLapRapMacDinh" />
+                <ScalarProperty Name="PhiCongKenhMacDinh" ColumnName="PhiCongKenhMacDinh" />
+                <ScalarProperty Name="HoTroLapRap" ColumnName="HoTroLapRap" />
+                <ScalarProperty Name="LaCongKenh" ColumnName="LaCongKenh" />
+                <ScalarProperty Name="LuotXem" ColumnName="LuotXem" />
+                <ScalarProperty Name="MaTK_Store" ColumnName="MaTK_Store" />
                 <ScalarProperty Name="MaSP" ColumnName="MaSP" />
                 <ScalarProperty Name="MaDM" ColumnName="MaDM" />
                 <ScalarProperty Name="TenSP" ColumnName="TenSP" />
@@ -995,6 +1346,8 @@
           <EntitySetMapping Name="TAIKHOANs">
             <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.TAIKHOAN">
               <MappingFragment StoreEntitySet="TAIKHOAN">
+                <ScalarProperty Name="RefreshTokenExpiryTime" ColumnName="RefreshTokenExpiryTime" />
+                <ScalarProperty Name="RefreshToken" ColumnName="RefreshToken" />
                 <ScalarProperty Name="MaTK" ColumnName="MaTK" />
                 <ScalarProperty Name="HoTen" ColumnName="HoTen" />
                 <ScalarProperty Name="Email" ColumnName="Email" />
@@ -1049,6 +1402,41 @@
                 <ScalarProperty Name="NgayGiaoDuKien" ColumnName="NgayGiaoDuKien" />
                 <ScalarProperty Name="NgayGiaoThucTe" ColumnName="NgayGiaoThucTe" />
                 <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUAHANGs">
+            <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.CUAHANG">
+              <MappingFragment StoreEntitySet="CUAHANG">
+                <ScalarProperty Name="NgayThanhLap" ColumnName="NgayThanhLap" />
+                <ScalarProperty Name="MoTa" ColumnName="MoTa" />
+                <ScalarProperty Name="Logo" ColumnName="Logo" />
+                <ScalarProperty Name="DiaChi" ColumnName="DiaChi" />
+                <ScalarProperty Name="TenCH" ColumnName="TenCH" />
+                <ScalarProperty Name="MaTK" ColumnName="MaTK" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="YEUTHICHes">
+            <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.YEUTHICH">
+              <MappingFragment StoreEntitySet="YEUTHICH">
+                <ScalarProperty Name="NgayThem" ColumnName="NgayThem" />
+                <ScalarProperty Name="MaSP" ColumnName="MaSP" />
+                <ScalarProperty Name="MaKH" ColumnName="MaKH" />
+                <ScalarProperty Name="MaYT" ColumnName="MaYT" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="CUAHANG_SANPHAM">
+            <EntityTypeMapping TypeName="DoAnNoiThatB2CModel.CUAHANG_SANPHAM">
+              <MappingFragment StoreEntitySet="CUAHANG_SANPHAM">
+                <ScalarProperty Name="NgayCapNhat" ColumnName="NgayCapNhat" />
+                <ScalarProperty Name="TrangThai" ColumnName="TrangThai" />
+                <ScalarProperty Name="SoLuongTon" ColumnName="SoLuongTon" />
+                <ScalarProperty Name="GiaBan" ColumnName="GiaBan" />
+                <ScalarProperty Name="MaSP" ColumnName="MaSP" />
+                <ScalarProperty Name="MaTK_Store" ColumnName="MaTK_Store" />
+                <ScalarProperty Name="MaCHSP" ColumnName="MaCHSP" />
               </MappingFragment>
             </EntityTypeMapping>
           </EntitySetMapping>

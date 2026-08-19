@@ -17,6 +17,8 @@ namespace DoAnCK.Models
 
         public bool DaDangNhap { get; set; }
 
+        public bool DaYeuThich { get; set; }
+
         public bool DaDanhGia { get; set; }
 
         public List<ProductReviewViewModel> Reviews { get; set; }

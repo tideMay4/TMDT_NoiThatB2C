@@ -1,0 +1,70 @@
+﻿﻿@model DoAnCK.Areas.Admin.Models.ProductViewsChartViewModel
+
+<div class="card-box">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Lượt xem sản phẩm</div>
+            <!-- Chỉnh chữ "sàn" thành "cửa hàng" -->
+            <small class="text-muted">Thống kê lượt xem sản phẩm của cửa hàng</small>
+        </div>
+        <!-- Đồng bộ chấm màu chú thích -->
+        <div class="chart-legend" style="display: flex; gap: 12px; font-size: 12px;">
+            <span style="color: #7A5C43; font-weight: 600;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Tuần này</span>
+            <span style="color: #D99B6A; font-weight: 600;"><i class="fa-solid fa-circle" style="font-size: 8px;"></i> Tuần trước</span>
+        </div>
+    </div>
+
+    <div class="chart-box" style="position: relative; height: 300px;">
+        <!-- Đổi ID canvas nhẹ để tránh trùng lặp với trang Admin nếu nhúng chung -->
+        <canvas id="storeProductViewsChart"></canvas>
+    </div>
+</div>
+
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        const ctxView = document.getElementById('storeProductViewsChart');
+        if (ctxView) {
+            const labelsViews = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.Labels ?? new List<string>()));
+            const viewsThisWeek = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ViewsThisWeek ?? new List<int>()));
+            const viewsLastWeek = @Html.Raw(Newtonsoft.Json.JsonConvert.SerializeObject(Model.ViewsLastWeek ?? new List<int>()));
+
+            new Chart(ctxView.getContext('2d'), {
+                type: 'bar',
+                data: {
+                    labels: labelsViews,
+                    datasets: [
+                        {
+                            label: 'Tuần này',
+                            data: viewsThisWeek,
+                            backgroundColor: '#7A5C43', // Màu Nâu Đậm đồng bộ Theme
+                            borderRadius: 6,
+                            barThickness: 8
+                        },
+                        {
+                            label: 'Tuần trước',
+                            data: viewsLastWeek,
+                            backgroundColor: '#D99B6A', // Màu Nâu Kem Cam
+                            borderRadius: 6,
+                            barThickness: 8
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: {
+                            grid: { display: false },
+                            ticks: { color: '#786C66' }
+                        },
+                        y: {
+                            grid: { borderDash: [4, 4], color: '#EBE3DB' },
+                            ticks: { color: '#786C66' }
+                        }
+                    }
+                }
+            });
+        }
+    });
+</script>

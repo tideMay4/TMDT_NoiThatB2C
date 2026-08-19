@@ -1,0 +1,78 @@
+﻿﻿@model List<DoAnCK.Areas.Admin.Models.StoreShareViewModel>
+
+<div class="card-box">
+    <div class="card-header">
+        <div>
+            <div class="card-title">Thị phần sản phẩm bán ra</div>
+            <small class="text-muted">Tỉ lệ sản phẩm đã bán theo từng cửa hàng</small>
+        </div>
+        <a href="#" class="card-link">Xem chi tiết</a>
+    </div>
+
+    <div class="chart-box" style="position: relative; height: 300px;">
+        @if (Model != null && Model.Any())
+        {
+            <canvas id="storeShareBarChart"></canvas>
+        }
+        else
+        {
+            <div class="d-flex align-items-center justify-content-center h-100">
+                <p class="text-muted text-center my-auto">Chưa có dữ liệu bán hàng.</p>
+            </div>
+        }
+    </div>
+</div>
+
+<script>
+    function renderStoreShareBarChart() {
+        const ctxBar = document.getElementById('storeShareBarChart');
+        if (!ctxBar) return;
+
+        const existingChart = Chart.getChart(ctxBar);
+        if (existingChart) {
+            existingChart.destroy();
+        }
+
+        const labels = [@Html.Raw(string.Join(",", Model.Select(m => "'" + m.TenCuaHang + "'")))];
+        const dataValues = [@string.Join(",", Model.Select(m => m.SoLuongDaBan))];
+        const backgroundColors = [@Html.Raw(string.Join(",", Model.Select(m => "'" + m.ColorHex + "'")))];
+
+        new Chart(ctxBar.getContext('2d'), {
+            type: 'bar',
+            data: {
+                labels: labels,
+                datasets: [{
+                    label: 'Số lượng bán',
+                    data: dataValues,
+                    backgroundColor: backgroundColors.length > 0 ? backgroundColors : '#7A5C43',
+                    borderRadius: 6,
+                    barThickness: 24
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#786C66' }
+                    },
+                    y: {
+                        beginAtZero: true,
+                        grid: { borderDash: [4, 4], color: '#EBE3DB' },
+                        ticks: { color: '#786C66', precision: 0 }
+                    }
+                }
+            }
+        });
+    }
+
+    if (document.readyState === 'complete' || document.readyState === 'interactive') {
+        setTimeout(renderStoreShareBarChart, 100);
+    } else {
+        document.addEventListener("DOMContentLoaded", renderStoreShareBarChart);
+    }
+</script>

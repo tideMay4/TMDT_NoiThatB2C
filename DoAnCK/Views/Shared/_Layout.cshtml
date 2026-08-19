@@ -30,6 +30,116 @@
           rel="stylesheet" />
 
     <style>
+
+        /* CSS Chatbox */
+        .chatbot-widget {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 10000;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        .chatbot-btn {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: #b08a63;
+            color: white;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: 0.3s;
+        }
+
+            .chatbot-btn:hover {
+                background: #8e6d4c;
+            }
+
+        .chatbot-window {
+            width: 350px;
+            height: 450px;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.2);
+            display: none;
+            flex-direction: column;
+            overflow: hidden;
+            position: absolute;
+            bottom: 80px;
+            right: 0;
+        }
+
+        .chatbot-header {
+            background: #b08a63;
+            color: white;
+            padding: 15px;
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+        }
+
+            .chatbot-header span.close-chat {
+                cursor: pointer;
+            }
+
+        .chatbot-body {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f4ed;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .chat-msg {
+            max-width: 80%;
+            padding: 10px 15px;
+            border-radius: 15px;
+            font-size: 14px;
+        }
+
+            .chat-msg.bot {
+                background: white;
+                color: #333;
+                align-self: flex-start;
+                border: 1px solid #eadfd2;
+            }
+
+            .chat-msg.user {
+                background: #b08a63;
+                color: white;
+                align-self: flex-end;
+            }
+
+        .chatbot-footer {
+            display: flex;
+            padding: 10px;
+            border-top: 1px solid #eadfd2;
+            background: white;
+        }
+
+            .chatbot-footer input {
+                flex: 1;
+                border: 1px solid #eadfd2;
+                border-radius: 20px;
+                padding: 8px 15px;
+                outline: none;
+            }
+
+            .chatbot-footer button {
+                background: transparent;
+                border: none;
+                color: #b08a63;
+                font-size: 20px;
+                margin-left: 10px;
+                cursor: pointer;
+            }
         body {
             margin: 0;
             font-family: 'Poppins', sans-serif;
@@ -180,6 +290,159 @@
             justify-content: center;
             font-weight: 700;
         }
+
+        /* ===================== USER DROPDOWN ===================== */
+
+        .user-dropdown-wrapper {
+            position: relative;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-icon-btn {
+            width: 38px;
+            height: 38px;
+            border: none;
+            outline: none;
+            background: transparent;
+            color: #6f4e37;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            cursor: pointer;
+            text-decoration: none;
+            font-size: 18px;
+            transition: all 0.25s ease;
+            position: relative;
+        }
+
+            .user-icon-btn:hover {
+                background: #f2e8dc;
+                color: #7b5738;
+            }
+
+        .user-dropdown-menu {
+            position: absolute;
+            top: 48px;
+            right: 0;
+            width: 255px;
+            background: #2f343a;
+            border-radius: 13px;
+            padding: 10px;
+            box-shadow: 0 16px 40px rgba(0, 0, 0, 0.22);
+            display: none;
+            z-index: 9999;
+        }
+
+            .user-dropdown-menu.show {
+                display: block;
+                animation: userFadeIn 0.18s ease;
+            }
+
+            .user-dropdown-menu::before {
+                content: "";
+                position: absolute;
+                top: -8px;
+                right: 17px;
+                border-left: 8px solid transparent;
+                border-right: 8px solid transparent;
+                border-bottom: 8px solid #2f343a;
+            }
+
+        .user-dropdown-header {
+            display: flex;
+            align-items: center;
+            gap: 11px;
+            padding: 10px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.11);
+            margin-bottom: 6px;
+        }
+
+        .user-avatar-small {
+            width: 40px;
+            height: 40px;
+            min-width: 40px;
+            border-radius: 50%;
+            background: #b08a63;
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .user-dropdown-header strong {
+            display: block;
+            color: #fff;
+            font-size: 14px;
+            font-weight: 700;
+            line-height: 1.25;
+            max-width: 165px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+
+        .user-dropdown-header span {
+            display: block;
+            color: #c9c9c9;
+            font-size: 12px;
+            margin-top: 3px;
+        }
+
+        .user-dropdown-item {
+            display: flex !important;
+            align-items: center;
+            gap: 12px;
+            padding: 11px 12px;
+            border-radius: 9px;
+            color: #f1f1f1 !important;
+            text-decoration: none;
+            font-size: 14px !important;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+            .user-dropdown-item i {
+                width: 18px;
+                text-align: center;
+                color: #d8c7b5;
+                font-size: 15px;
+            }
+
+            .user-dropdown-item:hover {
+                background: rgba(255, 255, 255, 0.08);
+                color: #fff !important;
+            }
+
+            .user-dropdown-item.logout {
+                color: #ffd0d0 !important;
+            }
+
+                .user-dropdown-item.logout i {
+                    color: #ffb5b5;
+                }
+
+        .user-dropdown-divider {
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+            margin: 6px 0;
+        }
+
+        @@keyframes userFadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-8px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* ===================== FOOTER ===================== */
 
         .site-footer {
             background: #1f1f1f;
@@ -346,6 +609,27 @@
                 cartCount += item.Quantity;
             }
         }
+
+        bool daDangNhap = Session["MaTK"] != null;
+
+        string hoTenNguoiDung = Session["HoTen"] != null
+            ? Session["HoTen"].ToString()
+            : "Tài khoản";
+
+        string vaiTroNguoiDung = Session["VaiTro"] != null
+            ? Session["VaiTro"].ToString()
+            : "Customer";
+
+        string tenVaiTroHienThi = "Khách hàng";
+
+        if (vaiTroNguoiDung == "Admin")
+        {
+            tenVaiTroHienThi = "Quản trị viên";
+        }
+        else if (vaiTroNguoiDung == "Store")
+        {
+            tenVaiTroHienThi = "Cửa hàng";
+        }
     }
 
     <header class="site-header">
@@ -425,9 +709,86 @@
 
                 </div>
 
-                <a href="#" title="Tài khoản">
-                    <i class="fa-regular fa-user"></i>
-                </a>
+                <div class="user-dropdown-wrapper">
+
+                    @if (daDangNhap)
+                    {
+                        <button type="button"
+                                class="user-icon-btn"
+                                id="btnUserMenu"
+                                title="Tài khoản">
+                            <i class="fa-solid fa-user"></i>
+                        </button>
+
+                        <div class="user-dropdown-menu" id="userDropdownMenu">
+
+                            <div class="user-dropdown-header">
+
+                                <div class="user-avatar-small">
+                                    <i class="fa-solid fa-user"></i>
+                                </div>
+
+                                <div>
+                                    <strong>@hoTenNguoiDung</strong>
+                                    <span>@tenVaiTroHienThi</span>
+                                </div>
+
+                            </div>
+
+                            @if (vaiTroNguoiDung == "Admin")
+                            {
+                                <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="user-dropdown-item">
+                                    <i class="fa-solid fa-table-columns"></i>
+                                    <span>Trang quản trị</span>
+                                </a>
+                            }
+                            else if (vaiTroNguoiDung == "Store")
+                            {
+                                <a href="@Url.Action("Index", "StoreDashboard", new { area = "Admin" })" class="user-dropdown-item">
+                                    <i class="fa-solid fa-store"></i>
+                                    <span>Dashboard cửa hàng</span>
+                                </a>
+                            }
+
+                            <a href="@Url.Action("MyAccount", "Account")" class="user-dropdown-item">
+                                <i class="fa-regular fa-id-card"></i>
+                                <span>Tài khoản của tôi</span>
+                            </a>
+
+                            <a href="@Url.Action("MyFavorites", "Account")" class="user-dropdown-item">
+                                <i class="fa-regular fa-heart"></i>
+                                <span>Sản phẩm yêu thích</span>
+                            </a>
+
+                            <a href="@Url.Action("OrderHistory", "Account")" class="user-dropdown-item">
+                                <i class="fa-solid fa-receipt"></i>
+                                <span>Lịch sử đơn hàng</span>
+                            </a>
+
+                            <a href="@Url.Action("MyReviews", "Account")" class="user-dropdown-item">
+                                <i class="fa-regular fa-star"></i>
+                                <span>Đánh giá của tôi</span>
+                            </a>
+
+                            <div class="user-dropdown-divider"></div>
+
+                            <a href="@Url.Action("Logout", "Account")" class="user-dropdown-item logout">
+                                <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                                <span>Đăng xuất</span>
+                            </a>
+
+                        </div>
+                    }
+                    else
+                    {
+                        <a href="@Url.Action("Login", "Account")"
+                           class="user-icon-btn"
+                           title="Đăng nhập">
+                            <i class="fa-solid fa-user"></i>
+                        </a>
+                    }
+
+                </div>
 
                 <a href="@Url.Action("Index", "Cart")" title="Giỏ hàng">
                     <i class="fa-solid fa-bag-shopping"></i>
@@ -439,6 +800,24 @@
         </div>
 
     </header>
+
+    <!-- HTML Chatbox -->
+    <div class="chatbot-widget">
+        <div class="chatbot-window" id="chatWindow">
+            <div class="chatbot-header">
+                Trợ lý Moderno AI
+                <span class="close-chat" onclick="toggleChat()">✖</span>
+            </div>
+            <div class="chatbot-body" id="chatBody">
+                <div class="chat-msg bot">Xin chào! Tôi là AI tư vấn nội thất của Moderno. Tôi có thể giúp gì cho bạn?</div>
+            </div>
+            <div class="chatbot-footer">
+                <input type="text" id="chatInput" placeholder="Nhập câu hỏi..." onkeypress="handleChatKeyPress(event)" />
+                <button onclick="sendChatMessage()"><i class="fa-solid fa-paper-plane"></i></button>
+            </div>
+        </div>
+        <button class="chatbot-btn" onclick="toggleChat()"><i class="fa-solid fa-comment-dots"></i></button>
+    </div>
 
     @RenderBody()
 
@@ -562,7 +941,136 @@
         });
     </script>
 
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var btnUserMenu = document.getElementById("btnUserMenu");
+            var userDropdownMenu = document.getElementById("userDropdownMenu");
+
+            if (btnUserMenu && userDropdownMenu) {
+                btnUserMenu.addEventListener("click", function (e) {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    userDropdownMenu.classList.toggle("show");
+                });
+
+                userDropdownMenu.addEventListener("click", function (e) {
+                    e.stopPropagation();
+                });
+
+                document.addEventListener("click", function () {
+                    userDropdownMenu.classList.remove("show");
+                });
+
+                document.addEventListener("keydown", function (e) {
+                    if (e.key === "Escape") {
+                        userDropdownMenu.classList.remove("show");
+                    }
+                });
+            }
+        });
+    </script>
+
     @RenderSection("scripts", required: false)
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            var buttons = document.querySelectorAll(".btn-add-to-cart");
+
+            buttons.forEach(function (btn) {
+                btn.addEventListener("click", function () {
+                    var productId = this.getAttribute("data-id");
+
+                    fetch("/Cart/AddToCart", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
+                            "X-Requested-With": "XMLHttpRequest"
+                        },
+                        body: "productId=" + encodeURIComponent(productId) + "&quantity=1"
+                    })
+                        .then(function (response) {
+                            return response.json();
+                        })
+                        .then(function (data) {
+                            if (data.success) {
+                                var cartBadge = document.getElementById("cart-badge");
+
+                                if (cartBadge) {
+                                    cartBadge.innerText = data.totalItems;
+                                }
+
+                                alert(data.message || "Đã thêm sản phẩm vào giỏ hàng.");
+                            } else {
+                                alert(data.message || "Không thể thêm sản phẩm vào giỏ hàng.");
+                            }
+                        })
+                        .catch(function () {
+                            alert("Không kết nối được server.");
+                        });
+                });
+            });
+        });
+    </script>
+
+    <script>
+function toggleChat() {
+    var chatWindow = document.getElementById("chatWindow");
+    chatWindow.style.display = chatWindow.style.display === "flex" ? "none" : "flex";
+}
+
+function handleChatKeyPress(event) {
+    if (event.key === "Enter") sendChatMessage();
+}
+
+function sendChatMessage() {
+    var input = document.getElementById("chatInput");
+    var msg = input.value.trim();
+    if (!msg) return;
+
+    // 1. Hiển thị tin nhắn của Người dùng (Bong bóng màu nâu, nằm bên phải)
+    appendMessage("user", msg);
+    input.value = "";
+
+    // 2. Hiển thị trạng thái đang chờ (Bong bóng màu trắng, nằm bên trái)
+    var loadingId = appendMessage("bot", "Đang phân tích...");
+
+    fetch('@Url.Action("Chat", "Home")', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: 'message=' + encodeURIComponent(msg)
+    })
+    .then(response => response.json())
+    .then(data => {
+        // 3. Cập nhật câu trả lời thực sự của AI vào đúng bong bóng màu trắng của bot
+        var botMsgElement = document.getElementById(loadingId);
+        if (botMsgElement) {
+            botMsgElement.innerText = data.reply;
+        }
+    })
+    .catch(err => {
+        var botMsgElement = document.getElementById(loadingId);
+        if (botMsgElement) {
+            botMsgElement.innerText = "Lỗi kết nối đến server.";
+        }
+    });
+}
+
+function appendMessage(sender, text) {
+    var body = document.getElementById("chatBody");
+    var div = document.createElement("div");
+
+    // Phân biệt rõ class: 'user' (nâu, phải) và 'bot' (trắng, trái)
+    div.className = "chat-msg " + sender;
+    div.innerText = text;
+
+    var id = "msg-" + Date.now() + "-" + Math.floor(Math.random() * 1000);
+    div.id = id;
+
+    body.appendChild(div);
+    body.scrollTop = body.scrollHeight;
+    return id;
+}
+    </script>
 
 </body>
 

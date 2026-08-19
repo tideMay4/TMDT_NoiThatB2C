@@ -130,6 +130,9 @@ namespace DoAnCK.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
+            var danhMuc = db.DANHMUCs.Find(MaDM);
+            string tenDanhMuc = danhMuc != null ? danhMuc.TenDM : "";
+
             if (string.IsNullOrWhiteSpace(Slug))
             {
                 Slug = TaoSlug(TenSP);
@@ -144,6 +147,21 @@ namespace DoAnCK.Areas.Admin.Controllers
             if (slugDaTonTai)
             {
                 Slug = Slug + "-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+
+            if (string.IsNullOrWhiteSpace(MetaTitle))
+            {
+                MetaTitle = TaoMetaTitle(TenSP, tenDanhMuc, ThuongHieu);
+            }
+
+            if (string.IsNullOrWhiteSpace(MetaKeyword))
+            {
+                MetaKeyword = TaoMetaKeyword(TenSP, tenDanhMuc);
+            }
+
+            if (string.IsNullOrWhiteSpace(MetaDescription))
+            {
+                MetaDescription = TaoMetaDescription(TenSP, tenDanhMuc, MoTa);
             }
 
             string hinhAnhPath = "~/Content/images/no-image.jpg";
@@ -174,7 +192,7 @@ namespace DoAnCK.Areas.Admin.Controllers
 
             SANPHAM sanPham = new SANPHAM
             {
-                TenSP = TenSP,
+                TenSP = TenSP.Trim(),
                 MaDM = MaDM,
                 MoTa = MoTa,
                 GiaHienTai = GiaHienTai,
@@ -184,7 +202,7 @@ namespace DoAnCK.Areas.Admin.Controllers
                 BaoHanh = BaoHanh,
                 VAT = VAT ?? 0,
                 Slug = Slug,
-                MetaTitle = string.IsNullOrWhiteSpace(MetaTitle) ? TenSP : MetaTitle,
+                MetaTitle = MetaTitle,
                 MetaDescription = MetaDescription,
                 MetaKeyword = MetaKeyword,
                 NoiBat = NoiBat,
@@ -195,6 +213,52 @@ namespace DoAnCK.Areas.Admin.Controllers
             db.SANPHAMs.Add(sanPham);
             db.SaveChanges();
 
+            /*
+                Sau khi thêm sản phẩm vào SANPHAM,
+                tự động gán sản phẩm này cho Store 2 và Store 3.
+                Dùng SQL trực tiếp để không phụ thuộc EDMX có entity CUAHANG_SANPHAM hay chưa.
+            */
+
+            db.Database.ExecuteSqlCommand(
+                @"INSERT INTO CUAHANG_SANPHAM
+      (
+          MaTK_Store,
+          MaSP,
+          GiaBan,
+          SoLuongTon,
+          TrangThai,
+          NgayCapNhat
+      )
+      SELECT 
+          CH.MaTK,
+          @p0,
+          CASE 
+              WHEN CH.MaTK = 3 THEN @p1 * 0.95
+              ELSE @p1
+          END,
+          CASE 
+              WHEN CH.MaTK = 2 THEN @p2 + 10
+              ELSE 
+                  CASE 
+                      WHEN @p2 - 3 < 0 THEN 0
+                      ELSE @p2 - 3
+                  END
+          END,
+          1,
+          GETDATE()
+      FROM CUAHANG CH
+      WHERE CH.MaTK IN (2, 3)
+        AND NOT EXISTS (
+            SELECT 1
+            FROM CUAHANG_SANPHAM CSP
+            WHERE CSP.MaTK_Store = CH.MaTK
+              AND CSP.MaSP = @p0
+        )",
+                sanPham.MaSP,
+                sanPham.GiaHienTai,
+                sanPham.SoLuongTon
+            );
+
             TempData["Success"] = "Thêm sản phẩm thành công.";
 
             return RedirectToAction("Index");
@@ -202,17 +266,11 @@ namespace DoAnCK.Areas.Admin.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult UpdatePrice(
-            int MaSP,
-            decimal GiaMoi,
-            DateTime NgayBatDau,
-            DateTime? NgayKetThuc,
-            string LyDoThayDoi,
-            string TrangThai)
+        public ActionResult UpdatePrice(int MaSP, decimal GiaMoi, DateTime NgayBatDau, DateTime? NgayKetThuc, string LyDoThayDoi)
         {
-            var sanPham = db.SANPHAMs.Find(MaSP);
+            var product = db.SANPHAMs.Find(MaSP);
 
-            if (sanPham == null)
+            if (product == null)
             {
                 TempData["Error"] = "Không tìm thấy sản phẩm cần cập nhật giá.";
                 return RedirectToAction("Index");
@@ -224,46 +282,138 @@ namespace DoAnCK.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
-            if (NgayKetThuc.HasValue && NgayKetThuc.Value < NgayBatDau)
+            if (NgayKetThuc.HasValue && NgayKetThuc.Value.Date < NgayBatDau.Date)
             {
                 TempData["Error"] = "Ngày kết thúc không được nhỏ hơn ngày bắt đầu.";
                 return RedirectToAction("Index");
             }
 
-            decimal giaCu = sanPham.GiaHienTai;
+            DateTime today = DateTime.Today;
 
-            if (TrangThai == "Đang áp dụng")
+            /*
+                Kiểm tra sản phẩm có giá đang áp dụng chưa hết hạn hay không.
+                Nếu còn giá đang áp dụng thì không cho thay đổi giá mới.
+            */
+            var giaDangApDung = db.GIAs
+                .Where(x =>
+                    x.MaSP == MaSP &&
+                    x.TrangThai == "Đang áp dụng" &&
+                    x.NgayBatDau <= today &&
+                    (
+                        x.NgayKetThuc == null ||
+                        x.NgayKetThuc >= today
+                    )
+                )
+                .OrderByDescending(x => x.NgayBatDau)
+                .FirstOrDefault();
+
+            if (giaDangApDung != null)
             {
-                var giaDangApDung = db.GIAs
-                    .Where(x => x.MaSP == MaSP && x.TrangThai == "Đang áp dụng")
-                    .ToList();
+                string ngayHetHanText = giaDangApDung.NgayKetThuc.HasValue
+                    ? giaDangApDung.NgayKetThuc.Value.ToString("dd/MM/yyyy")
+                    : "chưa có ngày kết thúc";
 
-                foreach (var item in giaDangApDung)
-                {
-                    item.TrangThai = "Ngừng áp dụng";
-                }
+                TempData["Error"] =
+                    "Không thể thay đổi giá sản phẩm \"" + product.TenSP + "\" vì đang có giá áp dụng chưa hết hạn. " +
+                    "Giá hiện tại còn hiệu lực đến: " + ngayHetHanText + ".";
 
-                sanPham.GiaHienTai = GiaMoi;
+                return RedirectToAction("Index");
             }
 
-            GIA gia = new GIA
+            decimal giaCu = product.GiaHienTai;
+
+            GIA giaMoi = new GIA
             {
                 MaSP = MaSP,
                 GiaCu = giaCu,
                 GiaMoi = GiaMoi,
-                NgayBatDau = NgayBatDau,
-                NgayKetThuc = NgayKetThuc,
+                NgayBatDau = NgayBatDau.Date,
+                NgayKetThuc = NgayKetThuc.HasValue ? NgayKetThuc.Value.Date : (DateTime?)null,
                 LyDoThayDoi = LyDoThayDoi,
-                TrangThai = TrangThai,
+                TrangThai = "Đang áp dụng",
                 NgayTao = DateTime.Now
             };
 
-            db.GIAs.Add(gia);
+            db.GIAs.Add(giaMoi);
+
+            /*
+                Nếu ngày bắt đầu nhỏ hơn hoặc bằng hôm nay,
+                cập nhật luôn giá hiện tại của sản phẩm.
+            */
+            if (NgayBatDau.Date <= today)
+            {
+                product.GiaHienTai = GiaMoi;
+            }
+
             db.SaveChanges();
 
             TempData["Success"] = "Cập nhật giá sản phẩm thành công.";
-
             return RedirectToAction("Index");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult AddReview(int MaSP, int SoSao, string BinhLuan)
+        {
+            int? maKH = null;
+
+            if (Session["MaKH"] != null)
+            {
+                maKH = Convert.ToInt32(Session["MaKH"]);
+            }
+
+            if (maKH == null)
+            {
+                TempData["Error"] = "Vui lòng đăng nhập để gửi đánh giá.";
+                return RedirectToAction("Login", "Account");
+            }
+
+            var product = db.SANPHAMs.Find(MaSP);
+
+            if (product == null)
+            {
+                return HttpNotFound();
+            }
+
+            if (SoSao < 1 || SoSao > 5)
+            {
+                TempData["Error"] = "Số sao đánh giá không hợp lệ.";
+                return RedirectToAction("Detail", new { slug = product.Slug });
+            }
+
+            if (string.IsNullOrWhiteSpace(BinhLuan))
+            {
+                TempData["Error"] = "Vui lòng nhập nội dung đánh giá.";
+                return RedirectToAction("Detail", new { slug = product.Slug });
+            }
+
+            bool daDanhGia = db.DANHGIAs.Any(x =>
+                x.MaSP == MaSP &&
+                x.MaKH == maKH.Value
+            );
+
+            if (daDanhGia)
+            {
+                TempData["Error"] = "Bạn đã đánh giá sản phẩm này rồi.";
+                return RedirectToAction("Detail", new { slug = product.Slug });
+            }
+
+            DANHGIA danhGia = new DANHGIA
+            {
+                MaSP = MaSP,
+                MaKH = maKH.Value,
+                SoSao = SoSao,
+                NoiDung = BinhLuan.Trim(),
+                NgayDanhGia = DateTime.Now,
+                TrangThai = true
+            };
+
+            db.DANHGIAs.Add(danhGia);
+            db.SaveChanges();
+
+            TempData["Success"] = "Gửi đánh giá thành công.";
+
+            return RedirectToAction("Detail", new { slug = product.Slug });
         }
 
         [HttpPost]
@@ -300,6 +450,15 @@ namespace DoAnCK.Areas.Admin.Controllers
                 return RedirectToAction("Index");
             }
 
+            if (MaDM <= 0)
+            {
+                TempData["Error"] = "Vui lòng chọn danh mục sản phẩm.";
+                return RedirectToAction("Index");
+            }
+
+            var danhMuc = db.DANHMUCs.Find(MaDM);
+            string tenDanhMuc = danhMuc != null ? danhMuc.TenDM : "";
+
             if (string.IsNullOrWhiteSpace(Slug))
             {
                 Slug = TaoSlug(TenSP);
@@ -314,6 +473,21 @@ namespace DoAnCK.Areas.Admin.Controllers
             if (slugDaTonTai)
             {
                 Slug = Slug + "-" + DateTime.Now.ToString("yyyyMMddHHmmss");
+            }
+
+            if (string.IsNullOrWhiteSpace(MetaTitle))
+            {
+                MetaTitle = TaoMetaTitle(TenSP, tenDanhMuc, ThuongHieu);
+            }
+
+            if (string.IsNullOrWhiteSpace(MetaKeyword))
+            {
+                MetaKeyword = TaoMetaKeyword(TenSP, tenDanhMuc);
+            }
+
+            if (string.IsNullOrWhiteSpace(MetaDescription))
+            {
+                MetaDescription = TaoMetaDescription(TenSP, tenDanhMuc, MoTa);
             }
 
             if (HinhAnhFile != null && HinhAnhFile.ContentLength > 0)
@@ -340,7 +514,7 @@ namespace DoAnCK.Areas.Admin.Controllers
                 sanPham.HinhAnh = "~/Content/images/products/" + newFileName;
             }
 
-            sanPham.TenSP = TenSP;
+            sanPham.TenSP = TenSP.Trim();
             sanPham.MaDM = MaDM;
             sanPham.MoTa = MoTa;
             sanPham.GiaHienTai = GiaHienTai;
@@ -349,7 +523,7 @@ namespace DoAnCK.Areas.Admin.Controllers
             sanPham.BaoHanh = BaoHanh;
             sanPham.VAT = VAT ?? 0;
             sanPham.Slug = Slug;
-            sanPham.MetaTitle = string.IsNullOrWhiteSpace(MetaTitle) ? TenSP : MetaTitle;
+            sanPham.MetaTitle = MetaTitle;
             sanPham.MetaDescription = MetaDescription;
             sanPham.MetaKeyword = MetaKeyword;
             sanPham.NoiBat = NoiBat;
@@ -488,6 +662,77 @@ namespace DoAnCK.Areas.Admin.Controllers
 
             return RedirectToAction("Index");
         }
+        private string TaoMetaTitle(string tenSP, string tenDanhMuc, string thuongHieu)
+        {
+            string brand = string.IsNullOrWhiteSpace(thuongHieu) ? "MODERNO" : thuongHieu.Trim();
+
+            string result;
+
+            if (!string.IsNullOrWhiteSpace(tenDanhMuc))
+            {
+                result = tenSP.Trim() + " - " + tenDanhMuc.Trim() + " hiện đại | " + brand;
+            }
+            else
+            {
+                result = tenSP.Trim() + " | " + brand;
+            }
+
+            return CatChuoi(result, 255);
+        }
+
+        private string TaoMetaKeyword(string tenSP, string tenDanhMuc)
+        {
+            string result = tenSP.Trim().ToLower();
+
+            if (!string.IsNullOrWhiteSpace(tenDanhMuc))
+            {
+                result += ", " + tenDanhMuc.Trim().ToLower();
+            }
+
+            result += ", nội thất, nội thất hiện đại, moderno";
+
+            return CatChuoi(result, 255);
+        }
+
+        private string TaoMetaDescription(string tenSP, string tenDanhMuc, string moTa)
+        {
+            string result;
+
+            if (!string.IsNullOrWhiteSpace(moTa))
+            {
+                result = moTa.Trim();
+            }
+            else if (!string.IsNullOrWhiteSpace(tenDanhMuc))
+            {
+                result = "Khám phá " + tenSP.Trim() + " thuộc danh mục " + tenDanhMuc.Trim() +
+                         " tại MODERNO, phù hợp cho không gian sống hiện đại, tiện nghi và sang trọng.";
+            }
+            else
+            {
+                result = "Khám phá " + tenSP.Trim() +
+                         " tại MODERNO, sản phẩm nội thất hiện đại, phù hợp cho không gian sống tiện nghi và sang trọng.";
+            }
+
+            return CatChuoi(result, 500);
+        }
+
+        private string CatChuoi(string text, int maxLength)
+        {
+            if (string.IsNullOrWhiteSpace(text))
+            {
+                return "";
+            }
+
+            text = text.Trim();
+
+            if (text.Length <= maxLength)
+            {
+                return text;
+            }
+
+            return text.Substring(0, maxLength - 3) + "...";
+        }
+
         private string TaoSlug(string text)
         {
             if (string.IsNullOrWhiteSpace(text))

@@ -21,6 +21,8 @@ namespace DoAnCK.Models
             this.CHITIET_GIOHANG = new HashSet<CHITIET_GIOHANG>();
             this.DANHGIAs = new HashSet<DANHGIA>();
             this.GIAs = new HashSet<GIA>();
+            this.YEUTHICHes = new HashSet<YEUTHICH>();
+            this.CUAHANG_SANPHAM = new HashSet<CUAHANG_SANPHAM>();
         }
     
         public int MaSP { get; set; }
@@ -40,6 +42,12 @@ namespace DoAnCK.Models
         public bool NoiBat { get; set; }
         public bool TrangThai { get; set; }
         public System.DateTime NgayTao { get; set; }
+        public Nullable<int> MaTK_Store { get; set; }
+        public int LuotXem { get; set; }
+        public bool LaCongKenh { get; set; }
+        public bool HoTroLapRap { get; set; }
+        public decimal PhiCongKenhMacDinh { get; set; }
+        public decimal PhiLapRapMacDinh { get; set; }
     
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<CHITIET_DONHANG> CHITIET_DONHANG { get; set; }
@@ -50,5 +58,10 @@ namespace DoAnCK.Models
         public virtual DANHMUC DANHMUC { get; set; }
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GIA> GIAs { get; set; }
+        public virtual CUAHANG CUAHANG { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<YEUTHICH> YEUTHICHes { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<CUAHANG_SANPHAM> CUAHANG_SANPHAM { get; set; }
     }
 }

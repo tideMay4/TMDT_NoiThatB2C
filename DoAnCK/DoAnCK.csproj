@@ -54,7 +54,22 @@
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>..\packages\EntityFramework.6.5.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.1.1.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.IdentityModel.Abstractions, Version=6.35.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Abstractions.6.35.0\lib\net472\Microsoft.IdentityModel.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=6.35.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.6.35.0\lib\net472\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.35.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.35.0\lib\net472\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.35.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.35.0\lib\net472\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Web.Infrastructure.2.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
@@ -62,10 +77,38 @@
       <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
+    </Reference>
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=6.35.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.6.35.0\lib\net472\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Numerics" />
+    <Reference Include="System.Numerics.Vectors, Version=4.1.4.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Numerics.Vectors.4.5.0\lib\net46\System.Numerics.Vectors.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=4.0.6.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.4.7.1\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
+    </Reference>
     <Reference Include="System.Runtime.Serialization" />
     <Reference Include="System.Security" />
+    <Reference Include="System.Text.Encodings.Web, Version=4.0.5.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.4.7.2\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Text.Json, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.4.7.2\lib\net461\System.Text.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net47\System.ValueTuple.dll</HintPath>
+    </Reference>
     <Reference Include="System.Web.DynamicData" />
     <Reference Include="System.Web.Entity" />
     <Reference Include="System.Web.ApplicationServices" />
@@ -111,23 +154,56 @@
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
     <Compile Include="Areas\Admin\Controllers\CategoryController.cs" />
+    <Compile Include="Areas\Admin\Controllers\CustomerController.cs" />
     <Compile Include="Areas\Admin\Controllers\DashboardController.cs" />
+    <Compile Include="Areas\Admin\Controllers\OrderController.cs" />
     <Compile Include="Areas\Admin\Controllers\ProductController.cs" />
+    <Compile Include="Areas\Admin\Controllers\StoreDashboardController.cs" />
+    <Compile Include="Areas\Admin\Models\AdminCustomerViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\AdminOrderViewModel.cs" />
     <Compile Include="Areas\Admin\Models\BestSellerViewModel.cs" />
     <Compile Include="Areas\Admin\Models\CategorySalesViewModel.cs" />
     <Compile Include="Areas\Admin\Models\CategoryViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\CustomerViewModel.cs" />
     <Compile Include="Areas\Admin\Models\OrderViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\PendingOrdersViewModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductPriceViewModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductSalesViewModel.cs" />
     <Compile Include="Areas\Admin\Models\ProductViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\ProductViewsChartViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\RecentTransactionViewModel.cs" />
     <Compile Include="Areas\Admin\Models\RevenueViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\StoreShareViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\StoreTopProductViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\StoreViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\TopSoldCompareViewModel.cs" />
+    <Compile Include="Areas\Admin\Models\YearlyRevenueChartViewModel.cs" />
     <Compile Include="Areas\Customer\CustomerAreaRegistration.cs" />
+    <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\CartController.cs" />
     <Compile Include="Controllers\CheckoutController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
     <Compile Include="Controllers\ProductController.cs" />
+    <Compile Include="Filters\JwtAuthorizeAttribute.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
+    </Compile>
+    <Compile Include="Helpers\ChatbotHelper.cs" />
+    <Compile Include="Helpers\ComboSuggestionHelper.cs" />
+    <Compile Include="Helpers\JwtHelper.cs" />
+    <Compile Include="Models\CUAHANG.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\CUAHANG_SANPHAM.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
+    </Compile>
+    <Compile Include="Models\ViewModel\ComboSuggestionViewModel.cs" />
+    <Compile Include="Models\ViewModel\CustomerAccountViewModel.cs" />
+    <Compile Include="Models\ViewModel\FavoriteProductViewModel.cs" />
+    <Compile Include="Models\ViewModel\LoginViewModel.cs" />
+    <Compile Include="Models\ViewModel\RegisterViewModel.cs" />
+    <Compile Include="Models\YEUTHICH.cs">
+      <DependentUpon>Model1.tt</DependentUpon>
     </Compile>
     <Compile Include="Others\MoMoSecurity.cs" />
     <Compile Include="Models\CartItemViewModel.cs" />
@@ -210,8 +286,10 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\css\login-style.css" />
     <Content Include="Content\css\style.css" />
     <Content Include="Content\images\armchair.jpg" />
+    <Content Include="Content\images\background_room.jpg" />
     <Content Include="Content\images\banner.jpg" />
     <Content Include="Content\images\bed.jpg" />
     <Content Include="Content\images\lighting.jpg" />
@@ -245,6 +323,26 @@
     <Content Include="Areas\Admin\Views\Dashboard\_TotalOrders.cshtml" />
     <Content Include="Areas\Admin\Views\Dashboard\_TotalProductSales.cshtml" />
     <Content Include="Areas\Admin\Views\Dashboard\_TopCategories.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_RecentTransactions.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_StoreSalesShare.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_TopProductViews.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_TopSoldItemsCompare.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_TotalActiveStores.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_TotalCustomers.cshtml" />
+    <Content Include="Areas\Admin\Views\Dashboard\_YearlyRevenueChart.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreOrderStatusShare.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StorePendingOrders.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreRevenueChart.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreTopSellingItems.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreTopViews.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreTotalOrders.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreTotalProducts.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreTotalRevenue.cshtml" />
+    <Content Include="Areas\Admin\Views\StoreDashboard\_StoreRecentOrders.cshtml" />
+    <Content Include="Areas\Admin\Views\Order\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Order\Details.cshtml" />
+    <Content Include="Areas\Admin\Views\Customer\Index.cshtml" />
     <None Include="Areas\Admin\Views\Web.Debug.config">
       <DependentUpon>Web.config</DependentUpon>
     </None>
@@ -293,6 +391,13 @@
     <Content Include="Views\Product\Index.cshtml" />
     <Content Include="Views\Product\Detail.cshtml" />
     <Content Include="Views\Checkout\OrderSuccess.cshtml" />
+    <Content Include="Views\Account\Login.cshtml" />
+    <Content Include="Views\Account\Register.cshtml" />
+    <Content Include="Views\Shared\AccessDenied.cshtml" />
+    <Content Include="Views\Account\MyAccount.cshtml" />
+    <Content Include="Views\Account\OrderHistory.cshtml" />
+    <Content Include="Views\Account\MyReviews.cshtml" />
+    <Content Include="Views\Account\MyFavorites.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

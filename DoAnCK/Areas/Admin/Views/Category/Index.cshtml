@@ -1,8 +1,191 @@
-﻿@model IEnumerable<DoAnCK.Areas.Admin.Models.CategoryViewModel>
+﻿﻿@model IEnumerable<DoAnCK.Areas.Admin.Models.CategoryViewModel>
 
 @{
     ViewBag.Title = "Quản lý danh mục";
 }
+
+<style>
+    /* ===== FIX CATEGORY PAGE ONLY ===== */
+
+    .table-box {
+        overflow: hidden !important;
+    }
+
+    .filter-bar {
+        display: flex !important;
+        justify-content: space-between !important;
+        align-items: center !important;
+        gap: 18px !important;
+        flex-wrap: wrap !important;
+        margin-bottom: 22px !important;
+    }
+
+    .filter-left,
+    .filter-right {
+        display: flex !important;
+        align-items: center !important;
+        gap: 12px !important;
+        flex-wrap: wrap !important;
+    }
+
+    .filter-bar .form-control,
+    .filter-bar .form-select {
+        height: 42px !important;
+        border: 1px solid #eadfd2 !important;
+        border-radius: 13px !important;
+        background: #faf7f2 !important;
+        font-size: 13px !important;
+        box-shadow: none !important;
+    }
+
+    .category-table {
+        width: 100% !important;
+        border-collapse: separate !important;
+        border-spacing: 0 !important;
+        table-layout: fixed !important;
+    }
+
+        .category-table th,
+        .category-table td {
+            vertical-align: middle !important;
+            padding: 16px !important;
+            font-size: 13px !important;
+            border-bottom: 1px solid #f0e7de !important;
+        }
+
+        .category-table thead th {
+            background: #faf4ee !important;
+            color: #7f7368 !important;
+            font-weight: 750 !important;
+        }
+
+        .category-table th:nth-child(1),
+        .category-table td:nth-child(1) {
+            width: 70px !important;
+        }
+
+        .category-table th:nth-child(2),
+        .category-table td:nth-child(2) {
+            width: 260px !important;
+        }
+
+        .category-table th:nth-child(3),
+        .category-table td:nth-child(3) {
+            width: 180px !important;
+        }
+
+        .category-table th:nth-child(4),
+        .category-table td:nth-child(4) {
+            width: 280px !important;
+        }
+
+        .category-table th:nth-child(5),
+        .category-table td:nth-child(5) {
+            width: 90px !important;
+            text-align: center !important;
+        }
+
+        .category-table th:nth-child(6),
+        .category-table td:nth-child(6) {
+            width: 150px !important;
+        }
+
+        .category-table th:nth-child(7),
+        .category-table td:nth-child(7) {
+            width: 120px !important;
+        }
+
+        .category-table th:nth-child(8),
+        .category-table td:nth-child(8) {
+            width: 130px !important;
+        }
+
+    .category-info {
+        display: flex !important;
+        align-items: center !important;
+        gap: 14px !important;
+        min-width: 0 !important;
+    }
+
+        .category-info img,
+        .category-thumb {
+            width: 58px !important;
+            height: 58px !important;
+            min-width: 58px !important;
+            max-width: 58px !important;
+            max-height: 58px !important;
+            object-fit: cover !important;
+            border-radius: 14px !important;
+            display: block !important;
+            border: 1px solid #eadfd2 !important;
+            background: #faf7f2 !important;
+        }
+
+        .category-info h6 {
+            margin: 0 0 4px 0 !important;
+            font-size: 14px !important;
+            font-weight: 800 !important;
+            color: #2f241c !important;
+        }
+
+        .category-info span {
+            display: block !important;
+            font-size: 12px !important;
+            color: #7f7368 !important;
+        }
+
+    .slug-text {
+        display: block !important;
+        max-width: 160px !important;
+        color: #7b5738 !important;
+        white-space: nowrap !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+    }
+
+    .category-desc {
+        max-width: 260px !important;
+        color: #7f7368 !important;
+        line-height: 1.5 !important;
+    }
+
+    .action-btn {
+        width: 32px !important;
+        height: 32px !important;
+        min-width: 32px !important;
+        border-radius: 9px !important;
+        padding: 0 !important;
+        margin-left: 4px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+    }
+
+    .pagination {
+        justify-content: flex-end !important;
+        gap: 8px !important;
+        margin-top: 24px !important;
+        margin-bottom: 0 !important;
+    }
+
+    .page-link {
+        border: none !important;
+        min-width: 36px !important;
+        height: 36px !important;
+        border-radius: 10px !important;
+        background: #faf7f2 !important;
+        color: #7b5738 !important;
+        display: flex !important;
+        align-items: center !important;
+        justify-content: center !important;
+        font-weight: 700 !important;
+    }
+
+    .page-item.active .page-link {
+        background: #b08a63 !important;
+        color: #fff !important;
+    }
+</style>
 
 <div class="page-title fade-up">
 
@@ -123,7 +306,14 @@
                         <td>
                             <div class="category-info">
 
-                                <img src="@Url.Content(item.HinhAnh)" />
+                                @if (!string.IsNullOrWhiteSpace(item.HinhAnh))
+                                {
+                                    <img src="@Url.Content(item.HinhAnh)" class="category-thumb" />
+                                }
+                                else
+                                {
+                                    <img src="@Url.Content("~/Content/images/no-image.png")" class="category-thumb" />
+                                }
 
                                 <div>
                                     <h6>@item.TenDM</h6>

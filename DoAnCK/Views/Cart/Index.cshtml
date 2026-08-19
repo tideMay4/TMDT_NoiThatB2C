@@ -1,353 +1,503 @@
 ﻿@model IEnumerable<DoAnCK.Models.CartItemViewModel>
-    @{
-        ViewBag.Title = "Giỏ hàng của bạn";
-        Layout = "~/Views/Shared/_Layout.cshtml";
+
+@{
+    ViewBag.Title = "Giỏ hàng của bạn";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<style>
+    :root {
+        --brand-dark: #2B2623;
+        --brand-bg: #F8F7F5;
+        --text-main: #333333;
+        --text-muted: #888888;
+        --border-soft: #EAE8E3;
+        --danger-color: #D9534F;
+        --success-color: #4f8a56;
+        --brown: #b08a63;
     }
 
-    <style>
-        /* BỘ MÀU CHUẨN MODERNO */
-        :root {
-            --brand-dark: #2B2623;
-            --brand-bg: #F8F7F5;
-            --text-main: #333333;
-            --text-muted: #888888;
-            --border-soft: #EAE8E3;
-            --danger-color: #D9534F;
+    body {
+        background-color: var(--brand-bg) !important;
+    }
+
+    .cart-wrapper {
+        font-family: 'Poppins', 'Segoe UI', Tahoma, sans-serif;
+        padding: 40px 0;
+    }
+
+    .cart-container {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 40px;
+        max-width: 1200px;
+        margin: 0 auto;
+        color: var(--text-main);
+    }
+
+    .cart-items-section {
+        flex: 2;
+        min-width: 320px;
+        background: #ffffff;
+        padding: 35px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+    }
+
+    .cart-summary-section {
+        flex: 1;
+        min-width: 300px;
+        background: #ffffff;
+        padding: 35px;
+        border-radius: 16px;
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
+        height: fit-content;
+    }
+
+    .page-title {
+        font-size: 1.8rem;
+        font-weight: 800;
+        margin-bottom: 25px;
+        color: var(--brand-dark);
+    }
+
+    .cart-item-row {
+        display: flex;
+        align-items: center;
+        padding: 20px 0;
+        border-bottom: 1px solid var(--border-soft);
+        gap: 20px;
+    }
+
+    .item-image {
+        width: 100px;
+        height: 100px;
+        object-fit: cover;
+        border-radius: 10px;
+        background-color: #FAFAFA;
+    }
+
+    .item-details {
+        flex: 1;
+    }
+
+    .item-name {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--brand-dark);
+        margin-bottom: 6px;
+        display: block;
+        line-height: 1.4;
+    }
+
+    .item-price {
+        color: var(--text-muted);
+        font-weight: 500;
+    }
+
+    .combo-price-box {
+        margin-top: 6px;
+    }
+
+    .combo-original-price {
+        display: block;
+        color: #999;
+        font-size: 13px;
+        text-decoration: line-through;
+        margin-bottom: 3px;
+    }
+
+    .combo-discount-price {
+        display: block;
+        color: var(--success-color);
+        font-weight: 800;
+        font-size: 15px;
+    }
+
+    .combo-note {
+        display: inline-flex;
+        margin-top: 6px;
+        padding: 4px 9px;
+        border-radius: 999px;
+        background: #fff1d8;
+        color: #9a6a22;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .bulky-note {
+        color: var(--danger-color);
+        font-size: 0.85rem;
+        font-weight: 500;
+    }
+
+    .qty-controls {
+        display: flex;
+        align-items: center;
+        border: 1px solid var(--border-soft);
+        border-radius: 6px;
+        overflow: hidden;
+        width: fit-content;
+    }
+
+    .qty-btn {
+        background: #FAFAFA;
+        border: none;
+        padding: 8px 12px;
+        cursor: pointer;
+        font-weight: bold;
+        color: var(--brand-dark);
+        transition: 0.2s;
+    }
+
+        .qty-btn:hover {
+            background: #EAE8E3;
         }
 
-        body {
-            background-color: var(--brand-bg) !important;
+    .qty-input {
+        width: 40px;
+        text-align: center;
+        border: none;
+        font-weight: 600;
+        color: var(--brand-dark);
+        outline: none;
+    }
+
+    .item-total {
+        font-weight: 800;
+        color: var(--brand-dark);
+        font-size: 1.1rem;
+        min-width: 125px;
+        text-align: right;
+    }
+
+    .btn-remove {
+        background: none;
+        border: none;
+        color: var(--danger-color);
+        cursor: pointer;
+        font-size: 1.2rem;
+        padding: 5px;
+        transition: 0.2s;
+    }
+
+        .btn-remove:hover {
+            transform: scale(1.1);
         }
 
-        .cart-wrapper {
-            font-family: 'Montserrat', 'Segoe UI', Tahoma, sans-serif;
-            padding: 40px 0;
-        }
+    .summary-line {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        font-weight: 500;
+        color: var(--text-muted);
+    }
 
-        .cart-container {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 40px;
-            max-width: 1200px;
-            margin: 0 auto;
-            color: var(--text-main);
-        }
-
-        /* Khối danh sách sản phẩm (Bên trái) */
-        .cart-items-section {
-            flex: 2;
-            min-width: 320px;
-            background: #FFFFFF;
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-        }
-
-        /* Khối tổng tiền (Bên phải) */
-        .cart-summary-section {
-            flex: 1;
-            min-width: 300px;
-            background: #FFFFFF;
-            padding: 35px;
-            border-radius: 16px;
-            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.03);
-            height: fit-content;
-        }
-
-        .page-title {
-            font-size: 1.8rem;
+        .summary-line span:last-child {
+            color: var(--brand-dark);
             font-weight: 700;
-            margin-bottom: 25px;
-            color: var(--brand-dark);
         }
 
+    .summary-total {
+        border-top: 2px solid var(--border-soft);
+        font-size: 1.5rem;
+        font-weight: 800;
+        color: var(--brand-dark);
+        margin-top: 15px;
+        padding-top: 20px;
+    }
+
+    .btn-checkout {
+        display: block;
+        width: 100%;
+        padding: 16px;
+        background-color: var(--brand-dark);
+        color: #fff;
+        border: none;
+        border-radius: 8px;
+        font-size: 1rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        text-align: center;
+        text-decoration: none;
+        margin-top: 25px;
+        transition: 0.3s;
+    }
+
+        .btn-checkout:hover {
+            background-color: #000000;
+            color: #fff;
+        }
+
+    .empty-cart-text {
+        color: var(--text-muted);
+        font-style: italic;
+    }
+
+        .empty-cart-text a {
+            color: var(--brand-dark);
+            font-weight: 700;
+        }
+
+    @@media(max-width: 768px) {
         .cart-item-row {
-            display: flex;
-            align-items: center;
-            padding: 20px 0;
-            border-bottom: 1px solid var(--border-soft);
-            gap: 20px;
-        }
-
-        .item-image {
-            width: 100px;
-            height: 100px;
-            object-fit: cover;
-            border-radius: 8px;
-            background-color: #FAFAFA;
-        }
-
-        .item-details {
-            flex: 1;
-        }
-
-        .item-name {
-            font-size: 1.1rem;
-            font-weight: 600;
-            color: var(--brand-dark);
-            margin-bottom: 5px;
-            display: block;
-        }
-
-        .item-price {
-            color: var(--text-muted);
-            font-weight: 500;
-        }
-
-        .qty-controls {
-            display: flex;
-            align-items: center;
-            border: 1px solid var(--border-soft);
-            border-radius: 6px;
-            overflow: hidden;
-            width: fit-content;
-        }
-
-        .qty-btn {
-            background: #FAFAFA;
-            border: none;
-            padding: 8px 12px;
-            cursor: pointer;
-            font-weight: bold;
-            color: var(--brand-dark);
-            transition: 0.2s;
-        }
-
-            .qty-btn:hover {
-                background: #EAE8E3;
-            }
-
-        .qty-input {
-            width: 40px;
-            text-align: center;
-            border: none;
-            font-weight: 600;
-            color: var(--brand-dark);
-            outline: none;
+            flex-wrap: wrap;
         }
 
         .item-total {
-            font-weight: 700;
-            color: var(--brand-dark);
-            font-size: 1.1rem;
-            min-width: 120px;
-            text-align: right;
+            text-align: left;
         }
+    }
+</style>
 
-        .btn-remove {
-            background: none;
-            border: none;
-            color: var(--danger-color);
-            cursor: pointer;
-            font-size: 1.2rem;
-            padding: 5px;
-            transition: 0.2s;
-        }
+<div class="cart-wrapper">
 
-            .btn-remove:hover {
-                transform: scale(1.1);
-            }
+    <div class="cart-container">
 
-        .summary-line {
-            display: flex;
-            justify-content: space-between;
-            padding: 12px 0;
-            font-weight: 500;
-            color: var(--text-muted);
-        }
+        <div class="cart-items-section">
 
-        .summary-total {
-            border-top: 2px solid var(--border-soft);
-            font-size: 1.5rem;
-            font-weight: 800;
-            color: var(--brand-dark);
-            margin-top: 15px;
-            padding-top: 20px;
-        }
+            <h2 class="page-title">Giỏ hàng</h2>
 
-        .btn-checkout {
-            display: block;
-            width: 100%;
-            padding: 16px;
-            background-color: var(--brand-dark);
-            color: #fff;
-            border: none;
-            border-radius: 8px;
-            font-size: 1rem;
-            font-weight: 600;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            text-align: center;
-            text-decoration: none;
-            margin-top: 25px;
-            transition: 0.3s;
-        }
-
-            .btn-checkout:hover {
-                background-color: #000000;
-                box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-                color: #fff;
-            }
-    </style>
-
-    <div class="cart-wrapper">
-        <div class="cart-container">
-            <div class="cart-items-section">
-                <h2 class="page-title">Giỏ hàng</h2>
-
-                @if (Model != null && Model.Any())
+            @if (Model != null && Model.Any())
+            {
+                foreach (var item in Model)
                 {
-                    foreach (var item in Model)
-                    {
-                        <div class="cart-item-row" data-id="@item.ProductId" data-price="@item.Price">
-                            @{
-                                var anhGioHang = string.IsNullOrWhiteSpace(item.HinhAnh)
-                                    ? "~/Content/images/no-image.jpg"
-                                    : item.HinhAnh;
+                    var anhGioHang = string.IsNullOrWhiteSpace(item.HinhAnh)
+                        ? "~/Content/images/no-image.jpg"
+                        : item.HinhAnh;
+
+                    decimal lineTotal = item.Price * item.Quantity;
+
+                    <div class="cart-item-row"
+                         data-id="@item.ProductId"
+                         data-price="@item.Price">
+
+                        <img src="@Url.Content(anhGioHang)"
+                             alt="@item.ProductName"
+                             class="item-image" />
+
+                        <div class="item-details">
+
+                            <span class="item-name">
+                                @item.ProductName
+
+                                @if (item.IsBulky)
+                                {
+                                    <span class="bulky-note">(Cồng kềnh)</span>
+                                }
+                            </span>
+
+                            @if (item.IsComboItem && item.OriginalPrice > item.Price)
+                            {
+                                <div class="combo-price-box">
+
+                                    <span class="combo-original-price">
+                                        @item.OriginalPrice.ToString("N0") ₫
+                                    </span>
+
+                                    <span class="combo-discount-price">
+                                        @item.Price.ToString("N0") ₫
+                                    </span>
+
+                                    <span class="combo-note">
+                                        @item.ComboName - Giảm @item.DiscountPercent.ToString("0")%
+                                    </span>
+
+                                </div>
+                            }
+                            else
+                            {
+                                <span class="item-price">
+                                    @item.Price.ToString("N0") ₫
+                                </span>
                             }
 
-                            <img src="@Url.Content(anhGioHang)"
-                                 alt="@item.ProductName"
-                                 class="item-image"
-                                 style="object-fit: cover;" />
-
-                            <div class="item-details">
-                                <span class="item-name">
-                                    @item.ProductName
-                                    @if (item.IsBulky)
-                                    {<span style="color: var(--danger-color); font-size: 0.85rem; font-weight: normal;">(Cồng kềnh)</span>}
-                                </span>
-                                <span class="item-price">@item.Price.ToString("N0") ₫</span>
-                            </div>
-
-                            <div class="qty-controls">
-                                <button type="button" class="qty-btn btn-minus">-</button>
-                                <input type="number" class="qty-input" value="@item.Quantity" min="1" readonly />
-                                <button type="button" class="qty-btn btn-plus">+</button>
-                            </div>
-
-                            <div class="item-total">
-                                @((item.Price * item.Quantity).ToString("N0")) ₫
-                            </div>
-
-                            <button type="button" class="btn-remove" title="Xóa sản phẩm">✖</button>
                         </div>
-                    }
-                }
-                else
-                {
-                    <p style="color: var(--text-muted); font-style: italic;">Giỏ hàng của bạn đang trống. <a href="/Home" style="color: var(--brand-dark); font-weight: bold;">Tiếp tục mua sắm</a></p>
-                }
-            </div>
 
-            <div class="cart-summary-section">
-                <h3 class="page-title" style="font-size: 1.4rem;">Tóm tắt đơn hàng</h3>
+                        <div class="qty-controls">
 
-                <div class="summary-line">
-                    <span>Tạm tính</span>
-                    <span id="cartSubTotal" style="color: var(--brand-dark);">0 ₫</span>
-                </div>
-                <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">
-                    * Phí giao hàng và phí hàng cồng kềnh (nếu có) sẽ được tính ở bước Thanh toán.
+                            <button type="button" class="qty-btn btn-minus">
+                                -
+                            </button>
+
+                            <input type="number"
+                                   class="qty-input"
+                                   value="@item.Quantity"
+                                   min="1"
+                                   readonly />
+
+                            <button type="button" class="qty-btn btn-plus">
+                                +
+                            </button>
+
+                        </div>
+
+                        <div class="item-total">
+                            @lineTotal.ToString("N0") ₫
+                        </div>
+
+                        <button type="button"
+                                class="btn-remove"
+                                title="Xóa sản phẩm">
+                            ✖
+                        </button>
+
+                    </div>
+                }
+            }
+            else
+            {
+                <p class="empty-cart-text">
+                    Giỏ hàng của bạn đang trống.
+                    <a href="@Url.Action("Index", "Product")">Tiếp tục mua sắm</a>
                 </p>
+            }
 
-                <div class="summary-line summary-total">
-                    <span>Tổng tiền</span>
-                    <span id="cartTotal">0 ₫</span>
-                </div>
-
-                <a href="@Url.Action("Index", "Checkout")" class="btn-checkout">TIẾN HÀNH THANH TOÁN</a>
-            </div>
         </div>
+
+        <div class="cart-summary-section">
+
+            <h3 class="page-title" style="font-size: 1.4rem;">
+                Tóm tắt đơn hàng
+            </h3>
+
+            <div class="summary-line">
+                <span>Tạm tính</span>
+                <span id="cartSubTotal">0 ₫</span>
+            </div>
+
+            <p style="font-size: 0.85rem; color: var(--text-muted); margin-top: 5px;">
+                * Phí giao hàng, phí cồng kềnh và phí lắp ráp sẽ được tính ở bước Thanh toán.
+            </p>
+
+            <div class="summary-line summary-total">
+                <span>Tổng tiền</span>
+                <span id="cartTotal">0 ₫</span>
+            </div>
+
+            <a href="@Url.Action("Index", "Checkout")" class="btn-checkout">
+                TIẾN HÀNH THANH TOÁN
+            </a>
+
+        </div>
+
     </div>
 
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</div>
 
-    <script>
-        $(document).ready(function () {
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 
-            function formatMoney(value) {
-                return value.toLocaleString('vi-VN') + ' ₫';
-            }
+<script>
+    $(document).ready(function () {
 
-            function updateHeaderCartBadge(totalItems) {
-                var badge = $('#cart-badge');
+        function formatMoney(value) {
+            value = Number(value || 0);
+            return value.toLocaleString('vi-VN') + ' ₫';
+        }
 
-                if (badge.length > 0) {
-                    badge.text(totalItems);
+        function updateHeaderCartBadge(totalItems) {
+            var badge = $('#cart-badge');
+
+            if (badge.length > 0) {
+                badge.text(totalItems);
+
+                if (totalItems > 0) {
                     badge.show();
+                } else {
+                    badge.hide();
                 }
             }
+        }
 
-            function recalculateCart() {
-                let total = 0;
-                let totalItems = 0;
+        function recalculateCart() {
+            let total = 0;
+            let totalItems = 0;
 
-                $('.cart-item-row').each(function () {
-                    let price = parseFloat($(this).data('price'));
-                    let qty = parseInt($(this).find('.qty-input').val());
+            $('.cart-item-row').each(function () {
+                let price = parseFloat($(this).data('price'));
+                let qty = parseInt($(this).find('.qty-input').val());
 
-                    if (isNaN(price)) {
-                        price = 0;
-                    }
-
-                    if (isNaN(qty)) {
-                        qty = 1;
-                    }
-
-                    let lineTotal = price * qty;
-
-                    $(this).find('.item-total').text(formatMoney(lineTotal));
-
-                    total += lineTotal;
-                    totalItems += qty;
-                });
-
-                $('#cartSubTotal').text(formatMoney(total));
-                $('#cartTotal').text(formatMoney(total));
-
-                updateHeaderCartBadge(totalItems);
-            }
-
-            function showEmptyCartMessage() {
-                if ($('.cart-item-row').length === 0) {
-                    $('.cart-items-section').append(
-                        '<p style="color: #888; font-style: italic;">Giỏ hàng của bạn đang trống. <a href="/Product" style="color: #2B2623; font-weight: bold;">Tiếp tục mua sắm</a></p>'
-                    );
-
-                    $('.btn-checkout').addClass('disabled').attr('href', '#');
+                if (isNaN(price)) {
+                    price = 0;
                 }
-            }
 
-            function updateCartAjax(productId, quantity) {
-                $.ajax({
-                    url: '/Cart/UpdateQuantity',
-                    type: 'POST',
-                    data: {
-                        productId: productId,
-                        quantity: quantity
-                    },
-                    success: function (res) {
-                        if (res && res.totalItems !== undefined) {
-                            updateHeaderCartBadge(res.totalItems);
-                        }
+                if (isNaN(qty)) {
+                    qty = 1;
+                }
+
+                let lineTotal = price * qty;
+
+                $(this).find('.item-total').text(formatMoney(lineTotal));
+
+                total += lineTotal;
+                totalItems += qty;
+            });
+
+            $('#cartSubTotal').text(formatMoney(total));
+            $('#cartTotal').text(formatMoney(total));
+
+            updateHeaderCartBadge(totalItems);
+        }
+
+        function showEmptyCartMessage() {
+            if ($('.cart-item-row').length === 0) {
+                $('.cart-items-section').append(
+                    '<p class="empty-cart-text">Giỏ hàng của bạn đang trống. <a href="/Product">Tiếp tục mua sắm</a></p>'
+                );
+
+                $('.btn-checkout').addClass('disabled').attr('href', '#');
+            }
+        }
+
+        function updateCartAjax(productId, quantity) {
+            $.ajax({
+                url: '@Url.Action("UpdateQuantity", "Cart")',
+                type: 'POST',
+                data: {
+                    productId: productId,
+                    quantity: quantity
+                },
+                success: function (res) {
+                    if (res && res.totalItems !== undefined) {
+                        updateHeaderCartBadge(res.totalItems);
                     }
-                });
+                }
+            });
+        }
+
+        recalculateCart();
+
+        $('.btn-plus').click(function () {
+            let row = $(this).closest('.cart-item-row');
+            let input = row.find('.qty-input');
+            let currentVal = parseInt(input.val());
+
+            if (isNaN(currentVal)) {
+                currentVal = 1;
             }
 
+            let newVal = currentVal + 1;
+
+            input.val(newVal);
+
+            let productId = row.data('id');
+
+            updateCartAjax(productId, newVal);
             recalculateCart();
+        });
 
-            $('.btn-plus').click(function () {
-                let row = $(this).closest('.cart-item-row');
-                let input = row.find('.qty-input');
-                let currentVal = parseInt(input.val());
+        $('.btn-minus').click(function () {
+            let row = $(this).closest('.cart-item-row');
+            let input = row.find('.qty-input');
+            let currentVal = parseInt(input.val());
 
-                if (isNaN(currentVal)) {
-                    currentVal = 1;
-                }
+            if (isNaN(currentVal)) {
+                currentVal = 1;
+            }
 
-                let newVal = currentVal + 1;
+            if (currentVal > 1) {
+                let newVal = currentVal - 1;
 
                 input.val(newVal);
 
@@ -355,56 +505,37 @@
 
                 updateCartAjax(productId, newVal);
                 recalculateCart();
-            });
-
-            $('.btn-minus').click(function () {
-                let row = $(this).closest('.cart-item-row');
-                let input = row.find('.qty-input');
-                let currentVal = parseInt(input.val());
-
-                if (isNaN(currentVal)) {
-                    currentVal = 1;
-                }
-
-                if (currentVal > 1) {
-                    let newVal = currentVal - 1;
-
-                    input.val(newVal);
-
-                    let productId = row.data('id');
-
-                    updateCartAjax(productId, newVal);
-                    recalculateCart();
-                }
-            });
-
-            $('.btn-remove').click(function () {
-                if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
-                    let row = $(this).closest('.cart-item-row');
-                    let productId = row.data('id');
-
-                    $.ajax({
-                        url: '/Cart/RemoveItem',
-                        type: 'POST',
-                        data: {
-                            productId: productId
-                        },
-                        success: function (res) {
-                            row.fadeOut(300, function () {
-                                $(this).remove();
-
-                                recalculateCart();
-
-                                if (res && res.totalItems !== undefined) {
-                                    updateHeaderCartBadge(res.totalItems);
-                                }
-
-                                showEmptyCartMessage();
-                            });
-                        }
-                    });
-                }
-            });
-
+            }
         });
-    </script>
+
+        $('.btn-remove').click(function () {
+            if (confirm("Bạn có chắc muốn xóa sản phẩm này khỏi giỏ hàng?")) {
+
+                let row = $(this).closest('.cart-item-row');
+                let productId = row.data('id');
+
+                $.ajax({
+                    url: '@Url.Action("RemoveItem", "Cart")',
+                    type: 'POST',
+                    data: {
+                        productId: productId
+                    },
+                    success: function (res) {
+                        row.fadeOut(300, function () {
+                            $(this).remove();
+
+                            recalculateCart();
+
+                            if (res && res.totalItems !== undefined) {
+                                updateHeaderCartBadge(res.totalItems);
+                            }
+
+                            showEmptyCartMessage();
+                        });
+                    }
+                });
+            }
+        });
+
+    });
+</script>

@@ -20,6 +20,7 @@ namespace DoAnCK.Models
             this.DANHGIAs = new HashSet<DANHGIA>();
             this.DONHANGs = new HashSet<DONHANG>();
             this.GIOHANGs = new HashSet<GIOHANG>();
+            this.YEUTHICHes = new HashSet<YEUTHICH>();
         }
     
         public int MaKH { get; set; }
@@ -36,5 +37,7 @@ namespace DoAnCK.Models
         [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
         public virtual ICollection<GIOHANG> GIOHANGs { get; set; }
         public virtual TAIKHOAN TAIKHOAN { get; set; }
+        [System.Diagnostics.CodeAnalysis.SuppressMessage("Microsoft.Usage", "CA2227:CollectionPropertiesShouldBeReadOnly")]
+        public virtual ICollection<YEUTHICH> YEUTHICHes { get; set; }
     }
 }

@@ -1,77 +1,13 @@
-﻿@model IEnumerable<DoAnCK.Models.SANPHAM>
+﻿@using System.Linq
+@using DoAnCK.Models.ViewModel
+@model IEnumerable<DoAnCK.Models.SANPHAM>
 
 @{
     ViewBag.Title = "Trang chủ";
+    var combos = ViewBag.ComboSuggestions as List<ComboSuggestionViewModel>;
 }
 
 <section class="hero">
-
-    <!--=========================
-        HEADER
-    ==========================-->
-
-    @*<nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
-
-        <div class="container">
-
-            <a class="navbar-brand logo" href="#">
-
-                MODERNO
-
-            </a>
-
-            <button class="navbar-toggler"
-                    data-bs-toggle="collapse"
-                    data-bs-target="#menu">
-
-                <span class="navbar-toggler-icon"></span>
-
-            </button>
-
-            <div class="collapse navbar-collapse"
-                 id="menu">
-
-                <ul class="navbar-nav mx-auto">
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Home")">Home</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Index", "Product")">Product</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("About", "Home")">About</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="#">Blog</a>
-                    </li>
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="@Url.Action("Contact", "Home")">Contact</a>
-                    </li>
-
-                </ul>
-
-
-                    </a>
-
-                </div>
-                </div>
-
-                </div>
-
-            </div>
-
-        </div>
-
-    </nav>*@
-
-    <!--=========================
-        BANNER
-    ==========================-->
 
     <div class="banner">
 
@@ -82,32 +18,23 @@
                 <div class="col-lg-5">
 
                     <span class="sub-title">
-
                         Modern Designs, Timeless Comfort.
-
                     </span>
 
                     <h1>
-
                         Furniture
                         That Defines
                         Your Space
-
                     </h1>
 
                     <p>
-
                         Discover our carefully selected furniture that blends
                         elegance, comfort and functionality for every room.
-
                     </p>
 
-                    <a href="#" class="btn-shop">
-
+                    <a href="@Url.Action("Index", "Product")" class="btn-shop">
                         SHOP NOW
-
                         <i class="fa-solid fa-arrow-right ms-2"></i>
-
                     </a>
 
                 </div>
@@ -115,10 +42,9 @@
                 <div class="col-lg-7">
 
                     <div class="banner-image">
-
-                        <img src="~/Content/images/banner.jpg"
-                             class="img-fluid">
-
+                        <img src="@Url.Content("~/Content/images/banner.jpg")"
+                             class="img-fluid"
+                             alt="Banner" />
                     </div>
 
                 </div>
@@ -142,43 +68,27 @@
         <div class="row text-center">
 
             <div class="col-md-3">
-
                 <i class="fa-solid fa-truck-fast"></i>
-
                 <h6>Free Shipping</h6>
-
                 <p>On orders over $50</p>
-
             </div>
 
             <div class="col-md-3">
-
                 <i class="fa-solid fa-shield-halved"></i>
-
                 <h6>Secure Payment</h6>
-
                 <p>100% Secure Checkout</p>
-
             </div>
 
             <div class="col-md-3">
-
                 <i class="fa-solid fa-medal"></i>
-
                 <h6>Premium Quality</h6>
-
                 <p>Crafted with care</p>
-
             </div>
 
             <div class="col-md-3">
-
                 <i class="fa-solid fa-headset"></i>
-
                 <h6>24/7 Support</h6>
-
                 <p>We're here to help</p>
-
             </div>
 
         </div>
@@ -196,83 +106,51 @@
     <div class="container">
 
         <h3 class="section-title">
-
             SHOP BY CATEGORY
-
         </h3>
 
         <div class="row g-4">
 
             <div class="col-lg-2 col-md-4 col-6">
-
                 <div class="cat-card">
-
-                    <img src="~/Content/images/sopha.jpg">
-
-                    <h6>Sopha</h6>
-
+                    <img src="@Url.Content("~/Content/images/sopha.jpg")" alt="Sofa" />
+                    <h6>Sofa</h6>
                 </div>
-
             </div>
 
             <div class="col-lg-2 col-md-4 col-6">
-
                 <div class="cat-card">
-
-                    <img src="~/Content/images/table.jpg">
-
+                    <img src="@Url.Content("~/Content/images/table.jpg")" alt="Table" />
                     <h6>Table</h6>
-
                 </div>
-
             </div>
 
             <div class="col-lg-2 col-md-4 col-6">
-
                 <div class="cat-card">
-
-                    <img src="~/Content/images/armchair.jpg">
-
+                    <img src="@Url.Content("~/Content/images/armchair.jpg")" alt="Armchair" />
                     <h6>Armchair</h6>
-
                 </div>
-
             </div>
 
             <div class="col-lg-2 col-md-4 col-6">
-
                 <div class="cat-card">
-
-                    <img src="~/Content/images/bed.jpg">
-
+                    <img src="@Url.Content("~/Content/images/bed.jpg")" alt="Bed" />
                     <h6>Bed</h6>
-
                 </div>
-
             </div>
 
             <div class="col-lg-2 col-md-4 col-6">
-
                 <div class="cat-card">
-
-                    <img src="~/Content/images/mirror.jpg">
-
+                    <img src="@Url.Content("~/Content/images/mirror.jpg")" alt="Mirror" />
                     <h6>Mirror</h6>
-
                 </div>
-
             </div>
 
             <div class="col-lg-2 col-md-4 col-6">
-
                 <div class="cat-card">
-
-                    <img src="~/Content/images/lighting.jpg">
-
+                    <img src="@Url.Content("~/Content/images/lighting.jpg")" alt="Lighting" />
                     <h6>Lighting</h6>
-
                 </div>
-
             </div>
 
         </div>
@@ -289,102 +167,64 @@
 
     <div class="container">
 
-        <a href="#" class="sale-banner">
-
-            <img src="~/Content/images/sale2.jpg"
-                 alt="Summer Sale">
-
+        <a href="@Url.Action("Index", "Product")" class="sale-banner">
+            <img src="@Url.Content("~/Content/images/sale2.jpg")"
+                 alt="Summer Sale" />
         </a>
 
     </div>
 
 </section>
 
-<!-- ===================== NEW ARRIVALS ===================== -->
-
-@*<section class="home-arrivals">
-
-    <h3 class="section-title">
-
-        NEW ARRIVALS
-
-    </h3>
-
-    <div class="home-arrival-grid">
-
-        @if (Model != null && Model.Any())
-        {
-            foreach (var item in Model.Take(6))
-            {
-                var hinhAnh = string.IsNullOrEmpty(item.HinhAnh)
-                    ? "~/Content/images/no-image.jpg"
-                    : item.HinhAnh;
-
-            
-                <div class="home-arrival-card" style="display: flex; flex-direction: column;">
-
-                    <div class="home-arrival-img">
-                        <img src="@Url.Content(hinhAnh)" alt="@item.TenSP" />
-                    </div>
-
-                    <div class="home-arrival-info" style="display: flex; flex-direction: column; flex-grow: 1;">
-                        <h5>@item.TenSP</h5>
-                        <p>@item.GiaHienTai.ToString("N0")đ</p>
-
-                        <button class="btn-add-cart"
-                                data-id="@item.MaSP"
-                                data-name="@item.TenSP"
-                                data-price="@item.GiaHienTai"
-                                data-bulky="false"
-                                style="background: #2B2623; color: white; padding: 10px; border:none; border-radius: 6px; cursor: pointer; width: 100%; margin-top: auto; transition: 0.3s; font-weight: 500;">
-                            Thêm vào giỏ
-                        </button>
-                    </div>
-
-                </div>
-            }
-        }
-        else
-        {
-            <p>Chưa có sản phẩm nào.</p>
-        }
-
-    </div>
-
-</section>*@
+<!--=========================
+    NEW ARRIVALS
+==========================-->
 
 <section class="home-arrivals">
+
     <h3 class="section-title">NEW ARRIVALS</h3>
 
     <div class="home-arrival-grid">
+
         @if (Model != null && Model.Any())
         {
-            foreach (var item in Model.Take(6))
+            foreach (var item in Model.Take(8))
             {
-                var hinhAnh = string.IsNullOrEmpty(item.HinhAnh) ? "~/Content/images/no-image.jpg" : item.HinhAnh;
+                var hinhAnh = string.IsNullOrWhiteSpace(item.HinhAnh)
+                    ? "~/Content/images/no-image.jpg"
+                    : item.HinhAnh;
 
                 <div class="home-arrival-card">
-                    <!-- Wrapper ảnh có hiệu ứng zoom -->
+
                     <div class="home-arrival-img-wrapper">
-                        <img src="@Url.Content(hinhAnh)" alt="@item.TenSP" class="product-img" />
+                        <img src="@Url.Content(hinhAnh)"
+                             alt="@item.TenSP"
+                             class="product-img" />
                     </div>
 
-                    <!-- Phần thông tin (Flexbox để căn chỉnh nút luôn ở đáy) -->
                     <div class="home-arrival-info">
-                        <h5 class="product-name" title="@item.TenSP">@item.TenSP</h5>
-                        <p class="product-price">@item.GiaHienTai.ToString("N0") ₫</p>
 
-                        <!-- Nút bấm động -->
-                        <button class="btn-add-cart"
+                        <h5 class="product-name" title="@item.TenSP">
+                            @item.TenSP
+                        </h5>
+
+                        <p class="product-price">
+                            @String.Format("{0:N0} ₫", item.GiaHienTai)
+                        </p>
+
+                        <button type="button"
+                                class="btn-add-cart"
                                 data-id="@item.MaSP"
                                 data-name="@item.TenSP"
                                 data-price="@item.GiaHienTai"
                                 data-bulky="false"
-                                data-image="@Url.Content(hinhAnh)"
-                                style="...">
-                            <i class="fa-solid fa-cart-plus"></i> Thêm vào giỏ
+                                data-image="@Url.Content(hinhAnh)">
+                            <i class="fa-solid fa-cart-plus"></i>
+                            Thêm vào giỏ
                         </button>
+
                     </div>
+
                 </div>
             }
         }
@@ -392,245 +232,108 @@
         {
             <p>Chưa có sản phẩm nào.</p>
         }
+
     </div>
+
 </section>
 
 <!--=========================
-    FOOTER
+    COMBO
 ==========================-->
 
-<!--<footer class="footer">
+@if (combos != null && combos.Count > 0)
+{
+    <section class="combo-section">
 
-    <div class="container">
+        <div class="combo-title">
+            <span>MODERNO COMBO</span>
+            <h2>Combo nội thất ưu đãi</h2>
+            <p>
+                Kết hợp các sản phẩm hài hòa cho không gian sống của bạn với mức giá tốt hơn.
+            </p>
+        </div>
 
-        <div class="row">-->
+        <div class="combo-grid">
 
-            <!-- Logo -->
+            @foreach (var combo in combos)
+            {
+                <div class="combo-card">
 
-            <!--<div class="col-lg-4">
+                    <div class="combo-badge">
+                        Giảm @combo.DiscountPercent.ToString("0")%
+                    </div>
 
-                <h3 class="footer-logo">
+                    <h3>@combo.ComboName</h3>
 
-                    MODERNO
+                    <div class="combo-products">
 
-                </h3>
+                        <div class="combo-product">
 
-                <p class="footer-text">
+                            <img src="@Url.Content(string.IsNullOrWhiteSpace(combo.Product1Image) ? "~/Content/images/no-image.jpg" : combo.Product1Image)"
+                                 alt="@combo.Product1Name" />
 
-                    Moderno là cửa hàng nội thất hiện đại,
-                    mang đến những sản phẩm chất lượng,
-                    thiết kế tối giản và phù hợp với mọi không gian sống.
+                            <strong>@combo.Product1Name</strong>
 
-                </p>
+                            <span>
+                                Tồn: @combo.Product1Stock
+                            </span>
 
-                <div class="social-icons">
+                        </div>
 
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                        <div class="combo-plus">
+                            +
+                        </div>
 
-                    <a href="#"><i class="fab fa-instagram"></i></a>
+                        <div class="combo-product">
 
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                            <img src="@Url.Content(string.IsNullOrWhiteSpace(combo.Product2Image) ? "~/Content/images/no-image.jpg" : combo.Product2Image)"
+                                 alt="@combo.Product2Name" />
 
-                    <a href="#"><i class="fab fa-tiktok"></i></a>
+                            <strong>@combo.Product2Name</strong>
+
+                            <span>
+                                Tồn: @combo.Product2Stock
+                            </span>
+
+                        </div>
+
+                    </div>
+
+                    <div class="combo-price">
+                        <del>@combo.TotalPrice.ToString("N0") ₫</del>
+                        <strong>@combo.FinalPrice.ToString("N0") ₫</strong>
+                    </div>
+
+                    <button type="button"
+                            class="btn-add-combo"
+                            data-product1="@combo.Product1Id"
+                            data-product2="@combo.Product2Id">
+                        Thêm combo vào giỏ
+                    </button>
 
                 </div>
-
-            </div>-->
-
-            <!-- Danh mục -->
-
-            <!--<div class="col-lg-2">
-
-                <h5>Danh mục</h5>
-
-                <ul>
-
-                    <li><a href="#">Sofa</a></li>
-
-                    <li><a href="#">Bàn</a></li>
-
-                    <li><a href="#">Ghế</a></li>
-
-                    <li><a href="#">Giường</a></li>
-
-                    <li><a href="#">Tủ</a></li>
-
-                </ul>
-
-            </div>-->
-
-            <!-- Chính sách -->
-
-            <!--<div class="col-lg-2">
-
-                <h5>Chính sách</h5>
-
-                <ul>
-
-                    <li><a href="#">Bảo hành</a></li>
-
-                    <li><a href="#">Đổi trả</a></li>
-
-                    <li><a href="#">Thanh toán</a></li>
-
-                    <li><a href="#">Vận chuyển</a></li>
-
-                </ul>
-
-            </div>-->
-
-            <!-- Hỗ trợ -->
-
-            <!--<div class="col-lg-2">
-
-                <h5>Hỗ trợ</h5>
-
-                <ul>
-
-                    <li><a href="#">Giới thiệu</a></li>
-
-                    <li><a href="#">Liên hệ</a></li>
-
-                    <li><a href="#">FAQ</a></li>
-
-                    <li><a href="#">Tin tức</a></li>
-
-                </ul>
-
-            </div>-->
-
-            <!-- Liên hệ -->
-
-            <!--<div class="col-lg-2">
-
-                <h5>Liên hệ</h5>
-
-                <ul>
-
-                    <li>
-                        <i class="fa-solid fa-location-dot"></i>
-                        TP. Hồ Chí Minh
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-phone"></i>
-                        0123 456 789
-                    </li>
-
-                    <li>
-                        <i class="fa-solid fa-envelope"></i>
-                        moderno@gmail.com
-                    </li>
-
-                </ul>
-
-            </div>
+            }
 
         </div>
 
-        <hr>
+    </section>
+}
+else
+{
+    <section class="combo-section">
 
-        <div class="copyright">
-
-            © 2026 MODERNO Furniture.
-            All Rights Reserved.
-
+        <div class="combo-title">
+            <span>MODERNO COMBO</span>
+            <h2>Chưa có combo ưu đãi phù hợp</h2>
+            <p>
+                Các combo nội thất mới sẽ được cập nhật trong thời gian tới.
+            </p>
         </div>
 
-    </div>
-
-</footer>-->
+    </section>
+}
 
 <style>
-/*    .home-arrivals {
-        max-width: 1100px;
-        margin: 80px auto;
-        padding: 0 20px;
-        text-align: center;
-    }
-
-        .home-arrivals h2 {
-            font-size: 22px !important;
-            font-weight: 700 !important;
-            margin-bottom: 28px !important;
-            letter-spacing: 0 !important;
-            color: #111 !important;
-            text-transform: uppercase !important;
-        }
-
-    .home-arrival-grid {
-        display: flex;
-        justify-content: center;
-        align-items: stretch;
-        gap: 22px;
-        flex-wrap: wrap;
-    }
-
-    .home-arrival-card {
-        width: 180px;
-        background: #ffffff;
-        border-radius: 16px;
-        overflow: hidden;
-        box-shadow: 0 12px 30px rgba(0,0,0,.08);
-        transition: .3s;
-        text-align: center;
-    }
-
-        .home-arrival-card:hover {
-            transform: translateY(-6px);
-            box-shadow: 0 18px 40px rgba(0,0,0,.12);
-        }
-
-    .home-arrival-img {
-        width: 100%;
-        height: 150px;
-        background: #f6f3ee;
-        overflow: hidden;
-    }
-
-        .home-arrival-img img {
-            width: 100% !important;
-            height: 100% !important;
-            object-fit: cover !important;
-            display: block !important;
-        }
-
-    .home-arrival-info {
-        padding: 14px 12px 18px;
-    }
-
-        .home-arrival-info h5 {
-            font-size: 14px !important;
-            font-weight: 600 !important;
-            color: #111 !important;
-            margin-bottom: 6px !important;
-            line-height: 18px !important;
-            text-align: center !important;
-        }
-
-        .home-arrival-info p {
-            font-size: 14px !important;
-            font-weight: 700 !important;
-            color: #8b6040 !important;
-            margin: 0 !important;
-            text-align: center !important;
-        }
-
-    @@media (max-width: 992px) {
-        .home-arrival-card {
-            width: 170px;
-        }
-    }
-
-    @@media (max-width: 768px) {
-        .home-arrival-card {
-            width: 45%;
-        }
-
-        .home-arrival-img {
-            height: 140px;
-        }
-    }*/
     .home-arrivals {
         max-width: 1200px;
         margin: 80px auto;
@@ -654,13 +357,12 @@
         flex-wrap: wrap;
     }
 
-    /* Khung ngoài cùng của Card */
     .home-arrival-card {
-        width: 260px; /* Mở rộng thẻ một chút cho thoáng */
+        width: 260px;
         background: #ffffff;
         border-radius: 16px;
         overflow: hidden;
-        box-shadow: 0 8px 25px rgba(0,0,0,0.04); /* Đổ bóng cực êm */
+        box-shadow: 0 8px 25px rgba(0,0,0,0.04);
         border: 1px solid #f0f0f0;
         transition: all 0.3s ease;
         display: flex;
@@ -672,7 +374,6 @@
             box-shadow: 0 15px 35px rgba(0,0,0,0.1);
         }
 
-    /* Khu vực chứa ảnh */
     .home-arrival-img-wrapper {
         width: 100%;
         height: 240px;
@@ -687,12 +388,10 @@
         transition: transform 0.5s ease;
     }
 
-    /* Hiệu ứng Zoom ảnh khi hover vào thẻ */
     .home-arrival-card:hover .product-img {
         transform: scale(1.08);
     }
 
-    /* Khu vực chứa chữ và nút */
     .home-arrival-info {
         padding: 20px;
         display: flex;
@@ -707,7 +406,6 @@
         color: #2B2623;
         margin-bottom: 8px;
         line-height: 1.4;
-        /* Giới hạn 2 dòng, quá dài hiện dấu ... */
         display: -webkit-box;
         -webkit-line-clamp: 2;
         -webkit-box-orient: vertical;
@@ -717,20 +415,19 @@
     .product-price {
         font-size: 1.15rem;
         font-weight: 700;
-        color: #8b6040; /* Tone màu nâu cũ của bạn */
+        color: #8b6040;
         margin-bottom: 20px;
     }
 
-    /* Nút bấm Thêm vào giỏ */
     .btn-add-cart {
-        background: #2B2623; /* Đen than */
+        background: #2B2623;
         color: #ffffff;
         padding: 12px 15px;
         border: none;
         border-radius: 8px;
         cursor: pointer;
         width: 100%;
-        margin-top: auto; /* Đẩy nút xuống dưới cùng, thẳng hàng nhau */
+        margin-top: auto;
         font-weight: 600;
         font-size: 0.95rem;
         transition: background 0.3s ease, transform 0.2s ease;
@@ -742,87 +439,274 @@
 
         .btn-add-cart:hover {
             background: #000000;
-            transform: scale(1.03); /* Phình to nhẹ khi bấm */
+            transform: scale(1.03);
         }
+
+    .combo-section {
+        max-width: 1180px;
+        margin: 70px auto;
+        padding: 0 24px;
+    }
+
+    .combo-title {
+        text-align: center;
+        margin-bottom: 35px;
+    }
+
+        .combo-title span {
+            color: #b08a63;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            font-size: 13px;
+        }
+
+        .combo-title h2 {
+            color: #2f241c;
+            font-weight: 800;
+            margin: 10px 0;
+        }
+
+        .combo-title p {
+            color: #7f7368;
+            margin: 0;
+        }
+
+    .combo-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 26px;
+    }
+
+    .combo-card {
+        position: relative;
+        background: #fffdfa;
+        border: 1px solid #eadfd2;
+        border-radius: 22px;
+        padding: 24px;
+        box-shadow: 0 14px 35px rgba(92, 65, 42, 0.08);
+    }
+
+    .combo-badge {
+        position: absolute;
+        top: 18px;
+        right: 18px;
+        background: #b08a63;
+        color: #fff;
+        padding: 6px 12px;
+        border-radius: 999px;
+        font-size: 12px;
+        font-weight: 700;
+    }
+
+    .combo-card h3 {
+        color: #2f241c;
+        font-size: 20px;
+        font-weight: 800;
+        margin-bottom: 20px;
+        padding-right: 90px;
+    }
+
+    .combo-products {
+        display: grid;
+        grid-template-columns: 1fr auto 1fr;
+        align-items: center;
+        gap: 14px;
+    }
+
+    .combo-product {
+        background: #faf7f2;
+        border: 1px solid #eadfd2;
+        border-radius: 16px;
+        padding: 14px;
+        text-align: center;
+    }
+
+        .combo-product img {
+            width: 100%;
+            height: 130px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
+        }
+
+        .combo-product strong {
+            display: block;
+            color: #2f241c;
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .combo-product span {
+            color: #7f7368;
+            font-size: 13px;
+        }
+
+    .combo-plus {
+        width: 34px;
+        height: 34px;
+        border-radius: 50%;
+        background: #2f241c;
+        color: #fff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: 800;
+    }
+
+    .combo-price {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin: 22px 0 18px;
+    }
+
+        .combo-price del {
+            color: #9b9288;
+        }
+
+        .combo-price strong {
+            color: #4f8a56;
+            font-size: 20px;
+            font-weight: 800;
+        }
+
+    .btn-add-combo {
+        width: 100%;
+        border: none;
+        background: #2f241c;
+        color: #fff;
+        border-radius: 12px;
+        padding: 13px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: 0.25s;
+    }
+
+        .btn-add-combo:hover {
+            background: #7b5738;
+        }
+
+    @@media(max-width: 768px) {
+        .combo-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .combo-products {
+            grid-template-columns: 1fr;
+        }
+
+        .combo-plus {
+            margin: 0 auto;
+        }
+    }
 </style>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
 <script>
     $(document).ready(function () {
-        // Hàm load số lượng giỏ hàng ngay khi mở trang web
+
         function loadCartCount() {
             $.get('/Cart/GetCartCount', function (res) {
                 if (res.count > 0) {
-                    $('#cart-badge').text(res.count).fadeIn(); // Hiện bong bóng đỏ
+                    $('#cart-badge').text(res.count).fadeIn();
                 } else {
-                    $('#cart-badge').fadeOut(); // Ẩn nếu giỏ hàng bằng 0
+                    $('#cart-badge').text(0).fadeOut();
                 }
             });
         }
 
-        loadCartCount(); // Chạy ngay lập tức
-    });
+        loadCartCount();
 
-    //$(document).ready(function () {
-    //    $('.btn-add-cart').click(function (e) {
-    //        e.preventDefault(); // Ngăn load lại trang
-
-    //        let btn = $(this);
-    //        let productData = {
-    //            productId: btn.data('id'),
-    //            productName: btn.data('name'),
-    //            price: btn.data('price'),
-    //            isBulky: btn.data('bulky')
-    //        };
-
-    //        // Bắn dữ liệu về Server
-    //        $.post('/Cart/AddToCart', productData, function (res) {
-    //            if (res.success) {
-    //                // Update ngay lập tức con số trên cục đỏ ở Header
-    //                $('#cart-badge').text(res.totalItems).fadeIn();
-
-    //                // Hiện thông báo đẹp (Có thể dùng thư viện Toastr nếu bạn có)
-    //                alert("Đã thêm " + productData.productName + " vào giỏ hàng thành công!");
-    //            }
-    //        });
-    //    });
-    //});
-
-
-
-    $(document).ready(function () {
         $('.btn-add-cart').click(function (e) {
             e.preventDefault();
+
             let btn = $(this);
-            let originalHtml = btn.html(); // Lưu lại HTML cũ (chứa cả icon)
+            let originalHtml = btn.html();
 
             let productData = {
                 productId: btn.data('id'),
-                productName: btn.data('name'),
-                price: parseFloat(btn.data('price')),
-                isBulky: btn.data('bulky'),
-                hinhAnh: btn.data('image') // <--- Đọc link ảnh từ nút bấm gửi lên Server
+                quantity: 1
             };
 
-            // Hiệu ứng đang tải
-            btn.html('<i class="fa-solid fa-spinner fa-spin"></i> Đang thêm...').prop('disabled', true);
+            btn.html('<i class="fa-solid fa-spinner fa-spin"></i> Đang thêm...')
+                .prop('disabled', true);
 
-            $.post('/Cart/AddToCart', productData, function (res) {
-                if (res.success) {
-                    // Cập nhật số lượng trên icon giỏ hàng ở Header
-                    $('#cart-badge').text(res.totalItems).fadeIn();
+            $.ajax({
+                url: '@Url.Action("AddToCart", "Cart")',
+                type: 'POST',
+                data: productData,
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function (res) {
+                    if (res.success) {
+                        $('#cart-badge').text(res.totalItems).fadeIn();
 
-                    // Hiển thị thành công
-                    btn.html('<i class="fa-solid fa-check"></i> Đã thêm').css('background', '#8b6040');
+                        btn.html('<i class="fa-solid fa-check"></i> Đã thêm')
+                            .css('background', '#8b6040');
 
-                    // Trả lại trạng thái sau 2 giây
-                    setTimeout(() => {
-                        btn.html(originalHtml).css('background', '#2B2623').prop('disabled', false);
-                    }, 2000);
+                        setTimeout(function () {
+                            btn.html(originalHtml)
+                                .css('background', '#2B2623')
+                                .prop('disabled', false);
+                        }, 1600);
+                    } else {
+                        alert(res.message || "Không thể thêm sản phẩm vào giỏ hàng.");
+                        btn.html(originalHtml).prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    alert("Có lỗi xảy ra, không thể thêm vào giỏ hàng.");
+                    btn.html(originalHtml).prop('disabled', false);
                 }
-            }).fail(function () {
-                alert("Có lỗi xảy ra, không thể thêm vào giỏ hàng.");
-                btn.html(originalHtml).prop('disabled', false);
             });
         });
+
+        $('.btn-add-combo').click(function (e) {
+            e.preventDefault();
+
+            let btn = $(this);
+            let originalText = btn.text();
+
+            let product1Id = btn.data('product1');
+            let product2Id = btn.data('product2');
+
+            btn.text('Đang thêm combo...').prop('disabled', true);
+
+            $.ajax({
+                url: '@Url.Action("AddComboToCart", "Cart")',
+                type: 'POST',
+                data: {
+                    product1Id: product1Id,
+                    product2Id: product2Id
+                },
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                success: function (res) {
+                    if (res.success) {
+                        $('#cart-badge').text(res.totalItems).fadeIn();
+
+                        btn.text('Đã thêm combo').css('background', '#8b6040');
+
+                        setTimeout(function () {
+                            btn.text(originalText)
+                                .css('background', '#2f241c')
+                                .prop('disabled', false);
+                        }, 1600);
+                    } else {
+                        alert(res.message || "Không thể thêm combo vào giỏ hàng.");
+                        btn.text(originalText).prop('disabled', false);
+                    }
+                },
+                error: function () {
+                    alert("Không kết nối được server.");
+                    btn.text(originalText).prop('disabled', false);
+                }
+            });
+        });
+
     });
 </script>

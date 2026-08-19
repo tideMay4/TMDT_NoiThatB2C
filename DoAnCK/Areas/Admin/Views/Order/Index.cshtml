@@ -1,0 +1,348 @@
+﻿@using System.Collections.Generic
+@using System.Linq
+@model IEnumerable<DoAnCK.Areas.Admin.Models.AdminOrderListItemViewModel>
+
+@{
+    ViewBag.Title = "Quản lý đơn hàng";
+    Layout = "~/Areas/Admin/Views/Shared/_Layout.cshtml";
+
+    var statuses = ViewBag.Statuses as List<string> ?? new List<string>();
+    string currentStatus = ViewBag.Status as string;
+}
+
+@helper StatusBadge(string status)
+{
+    string cls = "badge-soft";
+
+    if (status == "Hoàn thành")
+    {
+        cls = "badge-success";
+    }
+    else if (status == "Chờ xác nhận" || status == "Đã xác nhận")
+    {
+        cls = "badge-warning";
+    }
+    else if (status == "Đã hủy")
+    {
+        cls = "badge-danger";
+    }
+
+    <span class="@cls">@status</span>
+}
+
+<style>
+    .order-summary-grid {
+        display: grid;
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+        gap: 16px;
+        margin-bottom: 26px;
+    }
+
+    .order-summary-card {
+        background: var(--admin-card);
+        border: 1px solid var(--admin-border);
+        border-radius: 20px;
+        padding: 18px;
+        box-shadow: 0 12px 28px rgba(92, 65, 42, .05);
+    }
+
+        .order-summary-card span {
+            color: var(--admin-muted);
+            font-size: 13px;
+            font-weight: 650;
+        }
+
+        .order-summary-card strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 26px;
+            color: var(--admin-text);
+        }
+
+    .order-filter-form {
+        display: flex;
+        justify-content: space-between;
+        gap: 18px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+    }
+
+    .order-filter-left,
+    .order-filter-right {
+        display: flex;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .order-filter-form .form-control,
+    .order-filter-form .form-select {
+        min-width: 180px;
+    }
+
+    .order-status-form {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+        .order-status-form .form-select {
+            height: 38px;
+            min-width: 145px;
+            border-radius: 12px;
+            font-size: 13px;
+        }
+
+        .order-status-form button {
+            height: 38px;
+            border-radius: 12px;
+            padding: 0 12px;
+            border: none;
+            background: var(--admin-primary);
+            color: white;
+            font-size: 13px;
+            font-weight: 700;
+        }
+
+    @@media(max-width: 1200px) {
+        .order-summary-grid {
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+    }
+
+    @@media(max-width: 768px) {
+        .order-summary-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<div class="page-title fade-up">
+
+    <div>
+        <h2>Quản lý đơn hàng</h2>
+        <p>Theo dõi, tìm kiếm và cập nhật trạng thái đơn hàng của khách.</p>
+    </div>
+
+    <div>
+        <a href="@Url.Action("Index", "Dashboard", new { area = "Admin" })" class="btn-outline-admin">
+            <i class="fa-solid fa-arrow-left"></i>
+            Về Dashboard
+        </a>
+    </div>
+
+</div>
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success">
+        @TempData["Success"]
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger">
+        @TempData["Error"]
+    </div>
+}
+
+<div class="order-summary-grid fade-up">
+
+    <div class="order-summary-card">
+        <span>Tổng đơn</span>
+        <strong>@ViewBag.TotalOrders</strong>
+    </div>
+
+    <div class="order-summary-card">
+        <span>Chờ xác nhận</span>
+        <strong>@ViewBag.PendingOrders</strong>
+    </div>
+
+    <div class="order-summary-card">
+        <span>Đã xác nhận</span>
+        <strong>@ViewBag.ConfirmedOrders</strong>
+    </div>
+
+    <div class="order-summary-card">
+        <span>Đang giao</span>
+        <strong>@ViewBag.ShippingOrders</strong>
+    </div>
+
+    <div class="order-summary-card">
+        <span>Hoàn thành / Đã hủy</span>
+        <strong>@ViewBag.CompletedOrders / @ViewBag.CancelledOrders</strong>
+    </div>
+
+</div>
+
+<div class="table-box fade-up">
+
+    <div class="card-header">
+
+        <div>
+            <div class="card-title">Danh sách đơn hàng</div>
+            <small class="text-muted">Quản lý 5 trạng thái: Chờ xác nhận, Đã xác nhận, Đang giao, Hoàn thành, Đã hủy.</small>
+        </div>
+
+    </div>
+
+    @using (Html.BeginForm("Index", "Order", new { area = "Admin" }, FormMethod.Get, new { @class = "order-filter-form" }))
+    {
+        <div class="order-filter-left">
+
+            <input type="text"
+                   name="keyword"
+                   value="@ViewBag.Keyword"
+                   class="form-control"
+                   placeholder="Tìm mã đơn, khách hàng, SĐT..." />
+
+            <select name="status" class="form-select">
+                <option value="">Tất cả trạng thái</option>
+
+                @foreach (var item in statuses)
+                {
+                    if (item == currentStatus)
+                    {
+                        <option value="@item" selected="selected">@item</option>
+                    }
+                    else
+                    {
+                        <option value="@item">@item</option>
+                    }
+                }
+            </select>
+
+            <input type="date"
+                   name="fromDate"
+                   value="@ViewBag.FromDate"
+                   class="form-control" />
+
+            <input type="date"
+                   name="toDate"
+                   value="@ViewBag.ToDate"
+                   class="form-control" />
+
+        </div>
+
+        <div class="order-filter-right">
+
+            <button type="submit" class="btn-admin">
+                <i class="fa-solid fa-filter"></i>
+                Lọc
+            </button>
+
+            <a href="@Url.Action("Index", "Order", new { area = "Admin" })" class="btn-outline-admin">
+                Làm mới
+            </a>
+
+        </div>
+    }
+
+    <div class="table-responsive">
+
+        <table class="table align-middle">
+
+            <thead>
+                <tr>
+                    <th>Mã đơn</th>
+                    <th>Khách hàng</th>
+                    <th>Sản phẩm</th>
+                    <th>Ngày đặt</th>
+                    <th>Tổng tiền</th>
+                    <th>Trạng thái</th>
+                    <th>Cập nhật</th>
+                    <th class="text-end">Thao tác</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                @if (Model == null || !Model.Any())
+                {
+                    <tr>
+                        <td colspan="8" class="text-center text-muted" style="padding: 28px;">
+                            Chưa có đơn hàng nào.
+                        </td>
+                    </tr>
+                }
+                else
+                {
+                    foreach (var item in Model)
+                    {
+                        <tr>
+                            <td>
+                                <strong>#ORD-@item.MaDH</strong>
+                            </td>
+
+                            <td>
+                                <strong>@item.TenKhachHang</strong>
+                                <br />
+                                <span class="text-muted">@item.Email</span>
+                                <br />
+                                <span class="text-muted">@item.SDT</span>
+                            </td>
+
+                            <td style="max-width: 260px;">
+                                @item.SanPhamTomTat
+                            </td>
+
+                            <td>
+                                @(item.NgayDat.HasValue ? item.NgayDat.Value.ToString("dd/MM/yyyy HH:mm") : "")
+                            </td>
+
+                            <td>
+                                <strong style="color: #4f8a56;">
+                                    @String.Format("{0:N0}đ", item.TongTien ?? 0)
+                                </strong>
+                            </td>
+
+                            <td>
+                                @StatusBadge(item.TrangThai)
+                            </td>
+
+                            <td>
+                                @using (Html.BeginForm("UpdateStatus", "Order", new { area = "Admin" }, FormMethod.Post, new { @class = "order-status-form" }))
+                                {
+                                    @Html.AntiForgeryToken()
+
+                                    <input type="hidden" name="id" value="@item.MaDH" />
+                                    <input type="hidden" name="returnUrl" value="@Request.RawUrl" />
+
+                                    <select name="status" class="form-select">
+                                        @foreach (var st in statuses)
+                                        {
+                                            if (st == item.TrangThai)
+                                            {
+                                                <option value="@st" selected="selected">@st</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@st">@st</option>
+                                            }
+                                        }
+                                    </select>
+
+                                    <button type="submit">
+                                        Lưu
+                                    </button>
+                                }
+                            </td>
+
+                            <td class="text-end">
+                                <a href="@Url.Action("Details", "Order", new { area = "Admin", id = item.MaDH })"
+                                   class="action-btn"
+                                   title="Xem chi tiết">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+                            </td>
+                        </tr>
+                    }
+                }
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
